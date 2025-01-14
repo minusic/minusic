@@ -1,0 +1,15 @@
+{
+  "name": "minusic",
+  "description": "Advanced HTML5 audio player designed to elevate the listening experience",
+  "version": "0.0.1",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["Music Player", "Sound Visualizer", "Audio Speed Control", "HTML5 audio", "Interactive Player", "Waveform Visualizer", "Playlist Management", "Audio effects", "Playlist Management"],
+  "author": "Minusic",
+  "license": "MIT"
+}
