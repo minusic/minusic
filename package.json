@@ -20,6 +20,15 @@
     "Audio effects",
     "Playlist Management"
   ],
+  "repository": {
+		"type": "git",
+		"url": "https://github.com/minusic/minusic.git",
+		"directory": "minusic"
+	},
+  "bugs": {
+		"url": "https://github.com/minusic/minusic/issues"
+	},
+  "homepage": "https://github.com/minusic/minusic#readme",
   "author": "Minusic",
   "license": "MIT",
   "devDependencies": {
