@@ -21,17 +21,18 @@
     "Playlist Management"
   ],
   "repository": {
-		"type": "git",
-		"url": "https://github.com/minusic/minusic.git",
-		"directory": "minusic"
-	},
+    "type": "git",
+    "url": "https://github.com/minusic/minusic.git",
+    "directory": "minusic"
+  },
   "bugs": {
-		"url": "https://github.com/minusic/minusic/issues"
-	},
+    "url": "https://github.com/minusic/minusic/issues"
+  },
   "homepage": "https://github.com/minusic/minusic#readme",
   "author": "Minusic",
   "license": "MIT",
   "devDependencies": {
+    "tsup": "^8.3.5",
     "typescript": "^5.7.3"
   }
 }
