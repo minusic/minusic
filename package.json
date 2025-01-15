@@ -2,9 +2,9 @@
   "name": "minusic",
   "description": "Advanced HTML5 audio player designed to elevate the listening experience",
   "version": "0.0.1",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./build/index.js",
+  "module": "./build/index.mjs",
+  "types": "./build/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsup"
