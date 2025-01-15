@@ -7,7 +7,8 @@
   "types": "./build/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "format": "prettier --write \"./src/**/*.{ts,css}\""
   },
   "keywords": [
     "Music Player",
@@ -32,7 +33,16 @@
   "author": "Minusic",
   "license": "MIT",
   "devDependencies": {
+    "prettier": "^3.4.2",
     "tsup": "^8.3.5",
     "typescript": "^5.7.3"
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "singleQuote": false,
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "htmlWhitespaceSensitivity": "strict",
+    "semi": false
   }
 }
