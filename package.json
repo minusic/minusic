@@ -8,7 +8,8 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "format": "prettier --write \"./src/**/*.{ts,css}\""
+    "dev": "tsup --watch",
+    "format": "prettier --write \"./{demo,src}/**/*.{ts,html,js,css}\""
   },
   "keywords": [
     "Music Player",
