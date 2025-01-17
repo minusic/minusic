@@ -125,7 +125,7 @@ export default class Minusic {
           type: "range",
           min: "0",
           max: "100",
-          value: "0",
+          value: "100",
         },
         {
           input: async (e: any) => {
