@@ -127,25 +127,37 @@ export default class Minusic {
           max: "100",
           value: "0",
         },
-        { input: async (e: any) => (this.volume = e.target.value / 100) },
+        {
+          input: async (e: any) => {
+            this.volume = e.target.value / 100
+            if (this.muted) this.unmute()
+          },
+        },
       ) as HTMLInputElement,
     }
+
     this.media.addEventListener("timeupdate", (e: any) => this.timeUpdate())
-    this.media.addEventListener(
-      "volumechange",
-      () => (this.volume = this.media.volume),
-    )
+    this.media.addEventListener("pause", (e: any) => this.pause())
+    this.media.addEventListener("play", (e: any) => this.play())
+    this.media.addEventListener("volumechange", () => {
+      this.volume = this.media.volume
+      if (this.muted) this.mute()
+      else this.unmute()
+    })
     this.timeUpdate()
+    if (this.muted) this.mute()
 
     wrapElement(this.elements.container, this.media)
   }
 
   play() {
-    this.media.play()
+    this.elements!.container.dataset.paused = "false"
+    return this.media.play()
   }
 
   pause() {
-    this.media.pause()
+    this.elements!.container.dataset.paused = "true"
+    return this.media.pause()
   }
 
   stop() {
@@ -154,11 +166,15 @@ export default class Minusic {
   }
 
   mute() {
-    this.media.muted = true
+    this.elements!.container.dataset.muted = "true"
+    this.elements!.soundBar.value = `0`
+    return (this.media.muted = true)
   }
 
   unmute() {
-    this.media.muted = false
+    this.elements!.container.dataset.muted = "false"
+    this.elements!.soundBar.value = `${this.volume * 100}`
+    return (this.media.muted = false)
   }
 
   seek(time: number) {
@@ -166,23 +182,11 @@ export default class Minusic {
   }
 
   togglePlay(state?: boolean) {
-    if (state || this.media.paused) {
-      this.elements!.container.dataset.paused = "false"
-      return this.media.play()
-    } else {
-      this.elements!.container.dataset.paused = "true"
-      return this.media.pause()
-    }
+    return state || this.media.paused ? this.play() : this.pause()
   }
 
   toggleMute(state?: boolean) {
-    if (state || this.media.muted) {
-      this.elements!.container.dataset.muted = "false"
-      return this.unmute()
-    } else {
-      this.elements!.container.dataset.muted = "true"
-      return this.mute()
-    }
+    return state || this.media.muted ? this.unmute() : this.mute()
   }
 
   timeUpdate() {
