@@ -2,46 +2,29 @@ import { CSSClass } from "./enums"
 import Debug from "./lib/debug"
 import { createElement, wrapElement } from "./lib/elements"
 import { bound, formatTime } from "./lib/utils"
-import { ConstructorParameters } from "./types"
+import { ConstructorParameters, Elements } from "./types"
 
 export * from "./types"
 export default class Minusic {
-  private media: HTMLMediaElement | null | any
+  private media!: HTMLMediaElement
   private debug: Debug
-  private elements:
-    | {
-        container: HTMLElement
-        controls: HTMLElement
-        buttons: {
-          play: HTMLElement
-          mute: HTMLElement
-        }
-        progress: {
-          seekBar: HTMLInputElement
-          bufferBar: HTMLProgressElement
-          currentTime: HTMLElement
-          totalTime: HTMLElement
-        }
-        soundBar: HTMLInputElement
-      }
-    | undefined
+  private options!: ConstructorParameters["options"]
+  private elements!: Elements
 
   constructor({ target, options }: ConstructorParameters) {
-    this.media =
-      typeof target !== "undefined" && target?.length
-        ? document.querySelector(target)
-        : null
     this.debug = new Debug(options.debug)
-
-    if (this.media?.nodeName !== "AUDIO") {
+    if (document.querySelector(target)?.nodeName !== "AUDIO") {
       this.debug.error(`Invalid selector "${target}"`)
       return
     }
+    this.media = document.querySelector(target) as HTMLMediaElement
+    this.options = options
 
     if (!this.media.parentNode) {
       this.debug.error(`Player has no parent container`)
       return
     }
+    this.hideControls()
 
     const container = createElement("div")
     const controls = createElement(
@@ -151,12 +134,12 @@ export default class Minusic {
   }
 
   play() {
-    this.elements!.container.dataset.paused = "false"
+    this.elements.container.dataset.paused = "false"
     return this.media.play()
   }
 
   pause() {
-    this.elements!.container.dataset.paused = "true"
+    this.elements.container.dataset.paused = "true"
     return this.media.pause()
   }
 
@@ -166,15 +149,23 @@ export default class Minusic {
   }
 
   mute() {
-    this.elements!.container.dataset.muted = "true"
-    this.elements!.soundBar.value = `0`
+    this.elements.container.dataset.muted = "true"
+    this.elements.soundBar.value = `0`
     return (this.media.muted = true)
   }
 
   unmute() {
-    this.elements!.container.dataset.muted = "false"
-    this.elements!.soundBar.value = `${this.volume * 100}`
+    this.elements.container.dataset.muted = "false"
+    this.elements.soundBar.value = `${this.volume * 100}`
     return (this.media.muted = false)
+  }
+
+  showControls() {
+    return this.media.setAttribute("controls", "")
+  }
+
+  hideControls() {
+    return this.media.removeAttribute("controls")
   }
 
   seek(time: number) {
@@ -189,22 +180,31 @@ export default class Minusic {
     return state || this.media.muted ? this.unmute() : this.mute()
   }
 
+  toggleControls() {
+    return typeof this.media.getAttribute("controls") === "string"
+      ? this.hideControls()
+      : this.showControls()
+  }
+
   timeUpdate() {
-    const progress = this.duration
-      ? (this.currentTime / this.duration) * 100
-      : 0
-    this.elements!.progress.bufferBar.value = this.duration
-      ? (this.buffered / this.duration) * 100
-      : 0
-    this.elements!.progress.seekBar.value = `${progress}`
-    this.elements!.progress.currentTime.innerText = formatTime(this.currentTime)
-    this.elements!.progress.totalTime.innerText = formatTime(this.duration)
+    this.elements.progress.bufferBar.value = this.buffer
+    this.elements.progress.seekBar.value = `${this.progress}`
+    this.elements.progress.currentTime.innerText = formatTime(this.currentTime)
+    this.elements.progress.totalTime.innerText = formatTime(this.duration)
   }
 
   set volume(value) {
     value = bound(value, 0, 1)
-    this.elements!.soundBar.value = `${value * 100}`
+    this.elements.soundBar.value = `${value * 100}`
     this.media.volume = value
+  }
+
+  get progress() {
+    return this.duration ? (this.currentTime / this.duration) * 100 : 0
+  }
+
+  get buffer() {
+    return this.duration ? (this.buffered / this.duration) * 100 : 0
   }
 
   get currentTime() {
@@ -215,7 +215,10 @@ export default class Minusic {
     return !Number.isNaN(this.media.duration) &&
       Number.isFinite(this.media.duration)
       ? this.media.duration
-      : 0
+      : this.options.duration &&
+          !Number.isNaN(parseInt(`${this.options.duration}`))
+        ? parseInt(`${this.options.duration}`)
+        : 0
   }
   get muted() {
     return this.media.muted || this.media.volume === 0

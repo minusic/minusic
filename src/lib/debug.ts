@@ -1,10 +1,9 @@
 export default class Debug {
   private enabled: boolean
-  private prefix: string
+  private prefix: string = "Minusic -"
 
   constructor(enabled = false) {
     this.enabled = window.console && enabled
-    this.prefix = "Minusic - "
 
     if (this.enabled) this.log("logging enabled")
   }
