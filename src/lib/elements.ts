@@ -7,7 +7,7 @@ export function createElement(
     container?: HTMLElement
   } = {},
   attributes: { [key: string]: string | string[] } = {},
-  events: { [key: string]: (event: Event) => {} } = {},
+  events: { [key: string]: (event: Event) => {} | void } = {},
 ) {
   const element = document.createElement(type)
   properties.text && (element.innerText = properties.text)
@@ -16,7 +16,7 @@ export function createElement(
     element.setAttribute(key, Array.isArray(value) ? value.join(" ") : value)
   })
   Object.entries(events).forEach(
-    ([eventType, callback]: [string, (e: Event) => {}]) => {
+    ([eventType, callback]: [string, (e: Event) => {} | void]) => {
       element.addEventListener(eventType, (event: Event) => callback(event))
     },
   )

@@ -14,7 +14,7 @@ export interface Elements {
     mute: HTMLElement
   }
   progress: {
-    seekBar: HTMLInputElement
+    timeBar: HTMLInputElement
     bufferBar: HTMLProgressElement
     currentTime: HTMLElement
     totalTime: HTMLElement

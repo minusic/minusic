@@ -61,11 +61,11 @@ export default class Minusic {
         ),
       },
       progress: {
-        seekBar: createElement(
+        timeBar: createElement(
           "input",
           { container: progress },
           {
-            class: [CSSClass.Range, CSSClass.SeekBar],
+            class: [CSSClass.Range, CSSClass.TimeBar],
             type: "range",
             min: "0",
             max: "100",
@@ -73,7 +73,7 @@ export default class Minusic {
           },
           {
             input: async (e: any) =>
-              this.seek((e.target.value * this.duration) / 100),
+              (this.currentTime = (e.target.value * this.duration) / 100),
           },
         ) as HTMLInputElement,
         bufferBar: createElement(
@@ -111,26 +111,37 @@ export default class Minusic {
           value: "100",
         },
         {
-          input: async (e: any) => {
-            this.volume = e.target.value / 100
+          input: (e: Event) => {
+            this.volume = parseInt((e.target as HTMLInputElement).value) / 100
             if (this.muted) this.unmute()
           },
         },
       ) as HTMLInputElement,
     }
 
-    this.media.addEventListener("timeupdate", (e: any) => this.timeUpdate())
-    this.media.addEventListener("pause", (e: any) => this.pause())
-    this.media.addEventListener("play", (e: any) => this.play())
+    this.setMediaEvents()
+    this.timeUpdate()
+    if (this.muted) this.mute()
+
+    wrapElement(this.elements.container, this.media)
+  }
+
+  private setMediaEvents() {
+    this.media.addEventListener("timeupdate", () => this.timeUpdate())
+    this.media.addEventListener("pause", () => this.pause())
+    this.media.addEventListener("play", () => this.play())
     this.media.addEventListener("volumechange", () => {
       this.volume = this.media.volume
       if (this.muted) this.mute()
       else this.unmute()
     })
-    this.timeUpdate()
-    if (this.muted) this.mute()
+  }
 
-    wrapElement(this.elements.container, this.media)
+  private timeUpdate() {
+    this.elements.progress.bufferBar.value = this.buffer
+    this.elements.progress.timeBar.value = `${this.progress}`
+    this.elements.progress.currentTime.innerText = formatTime(this.currentTime)
+    this.elements.progress.totalTime.innerText = formatTime(this.duration)
   }
 
   play() {
@@ -145,7 +156,7 @@ export default class Minusic {
 
   stop() {
     this.pause()
-    this.seek(0)
+    this.currentTime = 0
   }
 
   mute() {
@@ -168,10 +179,6 @@ export default class Minusic {
     return this.media.removeAttribute("controls")
   }
 
-  seek(time: number) {
-    this.media.currentTime = bound(time, 0, this.duration)
-  }
-
   togglePlay(state?: boolean) {
     return state || this.media.paused ? this.play() : this.pause()
   }
@@ -186,19 +193,6 @@ export default class Minusic {
       : this.showControls()
   }
 
-  timeUpdate() {
-    this.elements.progress.bufferBar.value = this.buffer
-    this.elements.progress.seekBar.value = `${this.progress}`
-    this.elements.progress.currentTime.innerText = formatTime(this.currentTime)
-    this.elements.progress.totalTime.innerText = formatTime(this.duration)
-  }
-
-  set volume(value) {
-    value = bound(value, 0, 1)
-    this.elements.soundBar.value = `${value * 100}`
-    this.media.volume = value
-  }
-
   get progress() {
     return this.duration ? (this.currentTime / this.duration) * 100 : 0
   }
@@ -211,6 +205,10 @@ export default class Minusic {
     return this.media.currentTime || 0
   }
 
+  set currentTime(time) {
+    this.media.currentTime = bound(time, 0, this.duration)
+  }
+
   get duration() {
     return !Number.isNaN(this.media.duration) &&
       Number.isFinite(this.media.duration)
@@ -220,12 +218,19 @@ export default class Minusic {
         ? parseInt(`${this.options.duration}`)
         : 0
   }
+
   get muted() {
     return this.media.muted || this.media.volume === 0
   }
 
   get volume() {
     return this.media.volume
+  }
+
+  set volume(value) {
+    value = bound(value, 0, 1)
+    this.elements.soundBar.value = `${value * 100}`
+    this.media.volume = value
   }
 
   get buffered() {
