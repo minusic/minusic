@@ -28,3 +28,12 @@ export function wrapElement(container: HTMLElement, target: HTMLElement) {
   target.parentNode.insertBefore(container, target)
   container.appendChild(target)
 }
+
+export function setStyle(
+  element: HTMLElement,
+  styles: { [key: string]: string },
+) {
+  for (const property in styles) {
+    element.style.setProperty(property, styles[property])
+  }
+}

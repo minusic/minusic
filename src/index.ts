@@ -2,6 +2,7 @@ import { CSSClass } from "./enums"
 import Debug from "./lib/debug"
 import { createElement, wrapElement } from "./lib/elements"
 import { bound, formatTime } from "./lib/utils"
+import Visualizer from "./lib/visualizer"
 import { ConstructorParameters, Elements } from "./types"
 
 export * from "./types"
@@ -10,6 +11,8 @@ export default class Minusic {
   private debug: Debug
   private options!: ConstructorParameters["options"]
   private elements!: Elements
+  private timeHandler!: any
+  private visualizer!: Visualizer
 
   constructor({ target, options }: ConstructorParameters) {
     this.debug = new Debug(options.debug)
@@ -117,13 +120,30 @@ export default class Minusic {
           },
         },
       ) as HTMLInputElement,
+      visualizer: createElement("canvas", { container }) as HTMLCanvasElement,
     }
 
     this.setMediaEvents()
     this.timeUpdate()
     if (this.muted) this.mute()
+    this.initializeVisualizer()
 
     wrapElement(this.elements.container, this.media)
+    this.updateVisualizer()
+  }
+
+  private initializeVisualizer() {
+    this.visualizer = new Visualizer({
+      canvas: this.elements.visualizer,
+      media: this.media,
+    })
+    this.timeHandler = this.updateVisualizer.bind(this)
+  }
+
+  private updateVisualizer() {
+    const frequencies = this.visualizer.update(this.paused)
+    if (frequencies.some((value) => value > 0) || !this.paused)
+      requestAnimationFrame(this.timeHandler)
   }
 
   private setMediaEvents() {
@@ -137,6 +157,14 @@ export default class Minusic {
     })
   }
 
+  getAudioContext() {
+    if (typeof AudioContext !== "undefined") {
+      return new AudioContext()
+    } else {
+      return false
+    }
+  }
+
   private timeUpdate() {
     this.elements.progress.bufferBar.value = this.buffer
     this.elements.progress.timeBar.value = `${this.progress}`
@@ -146,12 +174,17 @@ export default class Minusic {
 
   play() {
     this.elements.container.dataset.paused = "false"
+    requestAnimationFrame(this.timeHandler)
     return this.media.play()
   }
 
   pause() {
     this.elements.container.dataset.paused = "true"
     return this.media.pause()
+  }
+
+  get paused() {
+    return this.media.paused
   }
 
   stop() {

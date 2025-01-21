@@ -20,4 +20,5 @@ export interface Elements {
     totalTime: HTMLElement
   }
   soundBar: HTMLInputElement
+  visualizer: HTMLCanvasElement
 }
