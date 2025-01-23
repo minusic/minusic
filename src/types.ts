@@ -3,6 +3,12 @@ export interface ConstructorParameters {
   options: {
     duration?: number | string
     debug?: boolean
+    autoplay?: boolean
+    controls?: boolean
+    muted?: boolean
+    visualizer?: boolean
+    playbackRate?: number
+    preservesPitch?: boolean
   }
 }
 

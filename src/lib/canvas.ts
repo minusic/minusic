@@ -5,8 +5,8 @@ export function drawRectangle(
   width: number,
   height: number,
 ) {
-  //context.fillRect(x, y, width, height)
   context.strokeRect(x, y, width, height)
+  //context.fillRect(x, y , width, height)
 }
 
 export function drawRoundedRectangle(
@@ -29,6 +29,6 @@ export function drawRoundedRectangle(
   context.arcTo(x, y + height, x, y, radius)
   context.arcTo(x, y, x + width, y, radius)
   context.closePath()
-  context.fill()
-  //context.stroke();
+  //context.fill()
+  context.stroke()
 }

@@ -4,6 +4,7 @@ export enum CSSClass {
   PlayButton = "minusic-controls-play-button",
   MuteButton = "minusic-controls-mute-button",
   Range = "minusic-controls-range",
+  Progress = "minusic-controls-progress",
   ProgressContainer = "minusic-progress-container",
   TimeBar = "minusic-controls-seek-bar",
   BufferBar = "minusic-controls-buffer-bar",

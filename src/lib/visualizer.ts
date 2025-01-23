@@ -7,6 +7,7 @@ export default class Visualizer {
   private audioContext!: AudioContext
   private audioSource!: MediaElementAudioSourceNode
   private analyser!: AnalyserNode
+  initialized: Boolean = false
 
   constructor({
     canvas,
@@ -32,6 +33,7 @@ export default class Visualizer {
     this.updateCanvasSize()
     this.strokeStyle()
     this.fillStyle()
+    this.initialized = true
   }
 
   getAudioContext() {
@@ -88,16 +90,24 @@ export default class Visualizer {
 
     for (let i = 0; i < tick; i++) {
       const current = Math.floor(length / tick) * i
-      //this.drawRectangle(this.visualizer.context, (width/tick)*i, (height-(array[current]/2)), 10, array[current]/2)
-      //this.drawRectangle(this.visualizer.context, (width/tick)*i, 0, 10, array[current]/2)
+      //drawRectangle(this.context, (width/tick)*i, 0, 10, array[current]/2)
+      //drawRectangle(this.context, (width/tick)*i, (height-(array[current]/2)), 10, array[current]/2)
 
-      drawRectangle(
-        this.context,
-        Math.round((width / tick) * i),
-        Math.round((height - (array[current] / tickSize) * 100) / 2),
-        tickWidth,
-        Math.round((array[current] / tickSize) * 100) + 1,
-      )
+      // drawRectangle(
+      //   this.context,
+      //   (width / tick) * i,
+      //   height - array[current] / 2,
+      //   10,
+      //   array[current] / 2,
+      // )
+
+      // drawRectangle(
+      //   this.context,
+      //   Math.round((width / tick) * i),
+      //   Math.round((height - (array[current] / tickSize) * 100) / 2),
+      //   tickWidth,
+      //   Math.round((array[current] / tickSize) * 100) + 1,
+      // )
 
       drawRoundedRectangle(
         this.context,

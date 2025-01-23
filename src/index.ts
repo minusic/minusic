@@ -1,6 +1,6 @@
 import { CSSClass } from "./enums"
 import Debug from "./lib/debug"
-import { createElement, wrapElement } from "./lib/elements"
+import { createElement, unwrapElement, wrapElement } from "./lib/elements"
 import { bound, formatTime } from "./lib/utils"
 import Visualizer from "./lib/visualizer"
 import { ConstructorParameters, Elements } from "./types"
@@ -11,23 +11,22 @@ export default class Minusic {
   private debug: Debug
   private options!: ConstructorParameters["options"]
   private elements!: Elements
-  private timeHandler!: any
+  private timeHandler!: () => void
   private visualizer!: Visualizer
 
   constructor({ target, options }: ConstructorParameters) {
     this.debug = new Debug(options.debug)
-    if (document.querySelector(target)?.nodeName !== "AUDIO") {
+    this.media = document.querySelector(target) as HTMLMediaElement
+    if (this.media?.nodeName !== "AUDIO") {
       this.debug.error(`Invalid selector "${target}"`)
       return
     }
-    this.media = document.querySelector(target) as HTMLMediaElement
     this.options = options
 
     if (!this.media.parentNode) {
       this.debug.error(`Player has no parent container`)
       return
     }
-    this.hideControls()
 
     const container = createElement("div")
     const controls = createElement(
@@ -51,7 +50,7 @@ export default class Minusic {
             class: [CSSClass.ControlButton, CSSClass.PlayButton],
             "aria-label": "Play",
           },
-          { click: async () => this.togglePlay() },
+          { click: () => this.togglePlay() },
         ),
         mute: createElement(
           "button",
@@ -60,7 +59,7 @@ export default class Minusic {
             class: [CSSClass.ControlButton, CSSClass.MuteButton],
             "aria-label": "Mute",
           },
-          { click: async () => this.toggleMute() },
+          { click: () => this.toggleMute() },
         ),
       },
       progress: {
@@ -72,7 +71,8 @@ export default class Minusic {
             type: "range",
             min: "0",
             max: "100",
-            value: "0",
+            value: "25",
+            step: "0.01",
           },
           {
             input: async (e: any) =>
@@ -83,10 +83,10 @@ export default class Minusic {
           "progress",
           { container: progress },
           {
-            class: [CSSClass.Range, CSSClass.BufferBar],
+            class: [CSSClass.Progress, CSSClass.BufferBar],
             max: "100",
             min: "0",
-            value: "0",
+            value: "50",
           },
           {},
         ) as HTMLProgressElement,
@@ -112,6 +112,7 @@ export default class Minusic {
           min: "0",
           max: "100",
           value: "100",
+          style: "--value: 100%"
         },
         {
           input: (e: Event) => {
@@ -123,27 +124,25 @@ export default class Minusic {
       visualizer: createElement("canvas", { container }) as HTMLCanvasElement,
     }
 
+    this.setupMedia()
     this.setMediaEvents()
     this.timeUpdate()
-    if (this.muted) this.mute()
-    this.initializeVisualizer()
 
     wrapElement(this.elements.container, this.media)
-    this.updateVisualizer()
   }
 
-  private initializeVisualizer() {
-    this.visualizer = new Visualizer({
-      canvas: this.elements.visualizer,
-      media: this.media,
-    })
-    this.timeHandler = this.updateVisualizer.bind(this)
+  destroy() {
+    this.removeMediaEvents()
+    unwrapElement(this.elements.container, this.media)
   }
 
-  private updateVisualizer() {
-    const frequencies = this.visualizer.update(this.paused)
-    if (frequencies.some((value) => value > 0) || !this.paused)
-      requestAnimationFrame(this.timeHandler)
+  private setupMedia() {
+    if (!this.options.controls) this.hideControls()
+    if (this.options.autoplay) this.media.setAttribute("autoplay", "")
+    if (this.muted || this.options.muted) this.mute()
+    if (this.options.playbackRate) this.playbackRate = this.options.playbackRate
+    if (typeof this.options.preservesPitch !== "undefined")
+      this.media.preservesPitch = !!this.options.preservesPitch
   }
 
   private setMediaEvents() {
@@ -155,26 +154,45 @@ export default class Minusic {
       if (this.muted) this.mute()
       else this.unmute()
     })
+    this.media.addEventListener("ratechange", () => {})
+    this.media.addEventListener("ended", () => {})
   }
 
-  getAudioContext() {
-    if (typeof AudioContext !== "undefined") {
-      return new AudioContext()
-    } else {
-      return false
-    }
+  private removeMediaEvents() {
+    this.media.removeEventListener("timeupdate", this.timeUpdate)
+    this.media.removeEventListener("pause", this.pause)
+    this.media.removeEventListener("play", this.play)
+  }
+
+  private createVisualizer() {
+    if (!this.options.visualizer) return
+    this.visualizer = new Visualizer({
+      canvas: this.elements.visualizer,
+      media: this.media,
+    })
+    if (!this.visualizer.initialized) return
+    this.timeHandler = this.updateVisualizer.bind(this)
+  }
+
+  private updateVisualizer() {
+    if (!this.visualizer) this.createVisualizer()
+    if (!this.visualizer?.initialized) return
+    const frequencies = this.visualizer.update(this.paused)
+    if (frequencies.some((value) => value > 0) || !this.paused)
+      requestAnimationFrame(this.timeHandler)
   }
 
   private timeUpdate() {
     this.elements.progress.bufferBar.value = this.buffer
     this.elements.progress.timeBar.value = `${this.progress}`
+    this.elements.progress.timeBar.style.setProperty("--value", `${this.progress.toFixed(2)}%`)
     this.elements.progress.currentTime.innerText = formatTime(this.currentTime)
     this.elements.progress.totalTime.innerText = formatTime(this.duration)
   }
 
   play() {
     this.elements.container.dataset.paused = "false"
-    requestAnimationFrame(this.timeHandler)
+    this.updateVisualizer()
     return this.media.play()
   }
 
@@ -195,13 +213,15 @@ export default class Minusic {
   mute() {
     this.elements.container.dataset.muted = "true"
     this.elements.soundBar.value = `0`
-    return (this.media.muted = true)
+    this.elements.soundBar.style.setProperty("--value", `0%`)
+    this.media.muted = true
   }
 
   unmute() {
     this.elements.container.dataset.muted = "false"
     this.elements.soundBar.value = `${this.volume * 100}`
-    return (this.media.muted = false)
+    this.elements.soundBar.style.setProperty("--value", `${this.volume * 100}%`)
+    this.media.muted = false
   }
 
   showControls() {
@@ -213,11 +233,11 @@ export default class Minusic {
   }
 
   togglePlay(state?: boolean) {
-    return state || this.media.paused ? this.play() : this.pause()
+    ;(state ?? this.paused) ? this.play() : this.pause()
   }
 
   toggleMute(state?: boolean) {
-    return state || this.media.muted ? this.unmute() : this.mute()
+    ;(state ?? this.media.muted) ? this.unmute() : this.mute()
   }
 
   toggleControls() {
@@ -263,7 +283,15 @@ export default class Minusic {
   set volume(value) {
     value = bound(value, 0, 1)
     this.elements.soundBar.value = `${value * 100}`
-    this.media.volume = value
+    if (this.media.volume !== value) this.media.volume = value
+  }
+
+  get playbackRate() {
+    return this.media.playbackRate
+  }
+
+  set playbackRate(rate) {
+    this.media.playbackRate = rate
   }
 
   get buffered() {

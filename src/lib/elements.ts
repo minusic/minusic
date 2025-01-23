@@ -29,6 +29,12 @@ export function wrapElement(container: HTMLElement, target: HTMLElement) {
   container.appendChild(target)
 }
 
+export function unwrapElement(container: HTMLElement, target: HTMLElement) {
+  if (!container.parentNode) return
+  container.parentNode.insertBefore(target, container)
+  container.parentNode.removeChild(container)
+}
+
 export function setStyle(
   element: HTMLElement,
   styles: { [key: string]: string },

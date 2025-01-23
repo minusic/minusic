@@ -1,0 +1,218 @@
+@charset "UTF-8";
+:root {
+  --minusic-color-theme: #30b7ff;
+  --minusic-color-buffer: #bbbbbb;
+  --minusic-color-range-background: #25282b;
+  --minusic-filter-hover: brightness(0) saturate(100%) invert(58%) sepia(30%) saturate(2383%)
+  hue-rotate(175deg) brightness(103%) contrast(101%);
+}
+
+.minusic-container {
+  display: flex;
+  align-items: center;
+  min-width: 300px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 13px;
+  height: 40px;
+  background-color: #3e4347;
+}
+
+.minusic-controls-button {
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 1.2rem;
+  border: none;
+  width: 2.2rem;
+  /* height: 2.2rem; */
+  width: 32px;
+  margin: 4px;
+  height: 32px;
+  box-sizing: border-box;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.minusic-controls-button:hover,
+.minusic-controls-range:hover::-moz-range-thumb {
+  filter: var(--minusic-filter-hover);
+}
+.minusic-controls-button:hover,
+.minusic-controls-range:hover::-webkit-slider-thumb {
+  filter: var(--minusic-filter-hover);
+}
+
+input[type="range"].minusic-controls-range {
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  height: 19px;
+  padding: 5px 0;
+
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-width: 0;
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+}
+
+
+.minusic-controls-range::-moz-range-progress {
+  background-color: #30b7ff;
+  height: 100%;
+  border-radius: 10px;
+}
+
+.minusic-controls-range::-moz-range-thumb {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  appearance: none;
+  /* -moz-appearance: none; */
+  border: 0;
+  background-color: #30b7ff;
+  background-color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.minusic-controls-range::-webkit-slider-runnable-track {
+  background-image: linear-gradient(
+    to right,
+    var(--minusic-color-theme) var(--value, 0),
+    #0000 var(--value, 0)
+  );
+  height: 9px;
+  border-radius: 10px;
+  transition: 0;
+  height: 100%;
+}
+.minusic-controls-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 0;
+  background-color: #30b7ff;
+  background-color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
+  transition: 0;
+  margin-top: -4px
+}
+
+.minusic-progress-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 2.2rem;
+}
+
+.minusic-controls-buffer-bar {
+  position: absolute;
+  inset: 0 0;
+  z-index: 0;
+  margin: auto;
+  height: 9px;
+  background: #ccc;
+  padding: 0;
+}
+
+progress.minusic-controls-progress {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  height: 9px;
+  width: 100%;
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+progress::-webkit-progress-bar {
+  /* stream background bar */
+  background: transparent;
+  border-radius: 10px;
+}
+progress::-webkit-progress-value {
+  /* stream progress bar */
+  border-radius: 10px;
+  min-width: 5px;
+  -webkit-transition: width 0.2s ease;
+  transition: width 0.2s ease;
+  background: var(--minusic-color-buffer);
+}
+progress::-moz-progress-bar {
+  /* stream progress bar */
+  background: var(--minusic-color-buffer);
+  border-radius: 10px;
+}
+
+.minusic-controls-seek-bar {
+  position: absolute;
+  inset: 0 0;
+  z-index: 1;
+  margin: auto;
+}
+
+.minusic-controls-sound-bar::-moz-range-track {
+  background: #ddd;
+}
+
+.minnusic-controls-total-time:before {
+  content: "/";
+  margin: 0 4px 0 2px;
+}
+
+.minusic-controls-play-button {
+  order: 1;
+}
+.minusic-progress-container {
+  order: 2;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 60px;
+}
+.minnusic-controls-current-time {
+  order: 3;
+  color: #fff;
+  font-size: 12px;
+  padding: 0 6px 0 12px;
+  letter-spacing: -0.5px;
+}
+.minnusic-controls-total-time {
+  order: 4;
+  color: #888;
+  font-size: 12px;
+}
+.minusic-controls-mute-button {
+  order: 5;
+}
+.minusic-controls-sound-bar {
+  width: 100%;
+  order: 6;
+  flex: 1;
+  margin-right: 10px;
+  max-width: 75px;
+  box-sizing: border-box;
+  background-color: var(--minusic-color-range-background);
+}
+.minusic-controls-sound-bar::-moz-range-track {
+  background-color: var(--minusic-color-range-background);
+  height: 9px;
+  border-radius: 10px;
+}
+.minusic-controls-sound-bar::-webkit-slider-runnable-track {
+  background-color: var(--minusic-color-range-background);
+  height: 9px;
+  border-radius: 10px;
+}
+
+.minusic-container {
+  width: 900px;
+}
