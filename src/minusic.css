@@ -3,8 +3,8 @@
   --minusic-color-theme: #30b7ff;
   --minusic-color-buffer: #bbbbbb;
   --minusic-color-range-background: #25282b;
-  --minusic-filter-hover: brightness(0) saturate(100%) invert(58%) sepia(30%) saturate(2383%)
-  hue-rotate(175deg) brightness(103%) contrast(101%);
+  --minusic-filter-hover: brightness(0) saturate(100%) invert(58%) sepia(30%)
+    saturate(2383%) hue-rotate(175deg) brightness(103%) contrast(101%);
 }
 
 .minusic-container {
@@ -57,7 +57,6 @@ input[type="range"].minusic-controls-range {
   border-radius: 10px;
 }
 
-
 .minusic-controls-range::-moz-range-progress {
   background-color: #30b7ff;
   height: 100%;
@@ -100,7 +99,7 @@ input[type="range"].minusic-controls-range {
   border: 2px solid #fff;
   box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
   transition: 0;
-  margin-top: -4px
+  margin-top: -4px;
 }
 
 .minusic-progress-container {

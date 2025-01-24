@@ -12,3 +12,31 @@ export enum CSSClass {
   CurrentTime = "minnusic-controls-current-time",
   TotalTime = "minnusic-controls-total-time",
 }
+
+export enum VisualizerShape {
+  Line = "line",
+  Circle = "circle",
+  Polygon = "polygon",
+}
+
+export enum VisualizerPosition {
+  Top = "top",
+  Bottom = "bottom",
+  Center = "center",
+}
+
+export enum VisualizerDirection {
+  LeftToRight = "ltr",
+  RightToLeft = "rtl",
+  TopToBottom = "ttb",
+  BottomToTop = "btt",
+}
+
+export enum VisualizerSymmetry {
+  Symmetric = "symmetric",
+  Reversed = "reversed",
+}
+
+export enum VisualizerMode {
+  Bars = "bars",
+}

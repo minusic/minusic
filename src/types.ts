@@ -9,6 +9,9 @@ export interface ConstructorParameters {
     visualizer?: boolean
     playbackRate?: number
     preservesPitch?: boolean
+    startTime?: number
+    defaultVolume?: number
+    visualizerType?: string
   }
 }
 

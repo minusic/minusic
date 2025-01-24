@@ -15,7 +15,7 @@ export function drawRoundedRectangle(
   y: number,
   width: number,
   height: number,
-  radius: number,
+  radius: number = 0,
 ) {
   if (radius < 0) {
     radius = width
@@ -29,6 +29,6 @@ export function drawRoundedRectangle(
   context.arcTo(x, y + height, x, y, radius)
   context.arcTo(x, y, x + width, y, radius)
   context.closePath()
-  //context.fill()
+  context.fill()
   context.stroke()
 }

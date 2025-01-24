@@ -73,6 +73,7 @@ export default class Minusic {
             max: "100",
             value: "25",
             step: "0.01",
+            "aria-label": "Seek time",
           },
           {
             input: async (e: any) =>
@@ -93,15 +94,15 @@ export default class Minusic {
         currentTime: createElement(
           "span",
           { container: controls },
-          { class: CSSClass.CurrentTime },
+          { class: CSSClass.CurrentTime, "aria-label": "Current time" },
           {},
-        ) as HTMLProgressElement,
+        ) as HTMLSpanElement,
         totalTime: createElement(
           "span",
           { container: controls },
-          { class: CSSClass.TotalTime },
+          { class: CSSClass.TotalTime, "aria-label": "Total time" },
           {},
-        ) as HTMLProgressElement,
+        ) as HTMLSpanElement,
       },
       soundBar: createElement(
         "input",
@@ -112,7 +113,7 @@ export default class Minusic {
           min: "0",
           max: "100",
           value: "100",
-          style: "--value: 100%"
+          style: "--value: 100%",
         },
         {
           input: (e: Event) => {
@@ -129,6 +130,8 @@ export default class Minusic {
     this.timeUpdate()
 
     wrapElement(this.elements.container, this.media)
+
+    this.createVisualizer()
   }
 
   destroy() {
@@ -143,6 +146,10 @@ export default class Minusic {
     if (this.options.playbackRate) this.playbackRate = this.options.playbackRate
     if (typeof this.options.preservesPitch !== "undefined")
       this.media.preservesPitch = !!this.options.preservesPitch
+    if (typeof this.options.startTime !== "undefined")
+      this.currentTime = this.options.startTime
+    if (typeof this.options.defaultVolume !== "undefined")
+      this.volume = this.options.defaultVolume
   }
 
   private setMediaEvents() {
@@ -175,7 +182,6 @@ export default class Minusic {
   }
 
   private updateVisualizer() {
-    if (!this.visualizer) this.createVisualizer()
     if (!this.visualizer?.initialized) return
     const frequencies = this.visualizer.update(this.paused)
     if (frequencies.some((value) => value > 0) || !this.paused)
@@ -185,7 +191,10 @@ export default class Minusic {
   private timeUpdate() {
     this.elements.progress.bufferBar.value = this.buffer
     this.elements.progress.timeBar.value = `${this.progress}`
-    this.elements.progress.timeBar.style.setProperty("--value", `${this.progress.toFixed(2)}%`)
+    this.elements.progress.timeBar.style.setProperty(
+      "--value",
+      `${this.progress.toFixed(2)}%`,
+    )
     this.elements.progress.currentTime.innerText = formatTime(this.currentTime)
     this.elements.progress.totalTime.innerText = formatTime(this.duration)
   }
