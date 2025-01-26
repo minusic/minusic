@@ -35,8 +35,11 @@ export enum VisualizerDirection {
 export enum VisualizerSymmetry {
   Symmetric = "symmetric",
   Reversed = "reversed",
+  None = "none",
 }
 
 export enum VisualizerMode {
   Bars = "bars",
+  Levels = "levels",
+  Drops = "drops",
 }
