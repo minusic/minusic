@@ -1,3 +1,4 @@
+import "./minusic.css"
 import { CSSClass } from "./enums"
 import Debug from "./lib/debug"
 import { createElement, unwrapElement, wrapElement } from "./lib/elements"
