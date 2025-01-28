@@ -20,8 +20,8 @@ export enum VisualizerShape {
 }
 
 export enum VisualizerPosition {
-  Top = "top",
-  Bottom = "bottom",
+  Start = "start",
+  End = "end",
   Center = "center",
 }
 
@@ -42,4 +42,5 @@ export enum VisualizerMode {
   Bars = "bars",
   Levels = "levels",
   Drops = "drops",
+  Waves = "waves",
 }

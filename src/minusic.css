@@ -84,7 +84,6 @@ input[type="range"].minusic-controls-range {
   );
   height: 9px;
   border-radius: 10px;
-  transition: 0;
   height: 100%;
 }
 .minusic-controls-range::-webkit-slider-thumb {
@@ -98,7 +97,6 @@ input[type="range"].minusic-controls-range {
   background-color: #fff;
   border: 2px solid #fff;
   box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
-  transition: 0;
   margin-top: -4px;
 }
 

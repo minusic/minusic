@@ -11,6 +11,32 @@ export function drawLine(
   context.stroke()
 }
 
+export function drawCurvyLine(
+  context: CanvasRenderingContext2D,
+  points: number[][],
+  closePath: boolean = false,
+) {
+  context.beginPath()
+  context.moveTo(points[0][0], points[0][1])
+
+  for (let i = 1; i < points.length; i++) {
+    const [x, y] = points[i]
+    const isLastPoint = i === points.length - 1
+
+    if (!isLastPoint) {
+      const [nextX, nextY] = points[i + 1]
+      const controlX = (x + nextX) / 2
+      const controlY = (y + nextY) / 2
+      context.quadraticCurveTo(x, y, controlX, controlY)
+    } else {
+      context.lineTo(x, y)
+    }
+  }
+
+  if (closePath) context.closePath()
+  context.stroke()
+}
+
 export function drawRectangle(
   context: CanvasRenderingContext2D,
   x: number,

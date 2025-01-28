@@ -6,6 +6,7 @@ import {
   VisualizerSymmetry,
 } from "../enums"
 import {
+  drawCurvyLine,
   drawDrop,
   drawLevels,
   drawLine,
@@ -27,19 +28,19 @@ export default class Visualizer {
     canvasWidth: 900,
     canvasHeight: 400, //220,
     barAmplitude: 400, //220, // should default at max size
-    barThickness: 10,
-    tickRadius: 0, //200,
+    barThickness: 8,
+    tickRadius: 10, //200,
     strokeWidth: 1, //3,
     range: 0.75,
     maxValue: 255,
     shape: VisualizerShape.Line,
-    mode: VisualizerMode.Drops,
+    mode: VisualizerMode.Waves,
     position: VisualizerPosition.Center,
-    direction: VisualizerDirection.LeftToRight,
+    direction: VisualizerDirection.RightToLeft,
     symmetry: VisualizerSymmetry.Reversed,
     backgroundColor: "transparent", //"#000",
-    fillStyle: "transparent", // "#89E76F",
-    strokeStyle: "#000",
+    fillStyle: "#000", // "#89E76F",
+    strokeStyle: "#0005",
     invertColors: false,
   }
 
@@ -174,44 +175,44 @@ export default class Visualizer {
       maxValue,
       barAmplitude,
       strokeWidth,
-      canvasWidth: width,
+      canvasWidth,
       barThickness,
-      canvasHeight: height,
+      canvasHeight,
       position,
     } = this.options
-    const totalBars = frequencies.length
+    const totalTicks = frequencies.length
     const isVertical = this.isVertical()
-
-    const size = isVertical ? height / totalBars : width / totalBars
-
-    for (let i = 0; i < totalBars; i++) {
-      const normalizedValue =
+    const size = isVertical
+      ? canvasHeight / totalTicks
+      : canvasWidth / totalTicks
+    const thickness = this.isLine() ? 0 : barThickness
+    const points = []
+    for (let i = 0; i < totalTicks; i++) {
+      const amplitude =
         (frequencies[i] / maxValue) * (barAmplitude - strokeWidth * 2)
+      const basePosition = size * i + size / 2 - thickness / 2
 
-      const primaryPos = size * i + size / 2 - barThickness / 2
-
-      if (isVertical) {
-        const primaryAxis = primaryPos
-        const secondaryAxis = this.getPosition(
-          position,
-          width,
-          normalizedValue,
-          strokeWidth,
-        )
-        if (secondaryAxis === null) return
-        this.draw(secondaryAxis, primaryAxis, normalizedValue, barThickness)
-      } else {
-        const primaryAxis = primaryPos
-        const secondaryAxis = this.getPosition(
-          position,
-          height,
-          normalizedValue,
-          strokeWidth,
-        )
-        if (secondaryAxis === null) return
-        this.draw(primaryAxis, secondaryAxis, barThickness, normalizedValue)
-      }
+      const x = isVertical
+        ? (this.getPosition(
+            position,
+            canvasWidth,
+            amplitude,
+            strokeWidth,
+          ) as number)
+        : basePosition
+      const y = isVertical
+        ? basePosition
+        : (this.getPosition(
+            position,
+            canvasHeight,
+            amplitude,
+            strokeWidth,
+          ) as number)
+      const w = isVertical ? amplitude : thickness
+      const h = isVertical ? thickness : amplitude
+      points.push([x, y, w, h])
     }
+    this.draw(points)
   }
 
   getPosition(
@@ -221,9 +222,9 @@ export default class Visualizer {
     stroke: number,
   ) {
     switch (alignment) {
-      case VisualizerPosition.Top:
+      case VisualizerPosition.Start:
         return stroke
-      case VisualizerPosition.Bottom:
+      case VisualizerPosition.End:
         return totalSize - barSize - stroke
       case VisualizerPosition.Center:
         return totalSize / 2 - barSize / 2
@@ -240,25 +241,79 @@ export default class Visualizer {
     ].includes(this.options.direction)
   }
 
-  draw(x: number, y: number, w: number, h: number) {
+  isLine() {
+    return this.options.mode === VisualizerMode.Waves
+  }
+
+  draw(points: number[][]) {
     const { barThickness, mode, tickRadius } = this.options
     switch (mode) {
+      case VisualizerMode.Waves:
+        this.drawWaves(points)
+        break
       case VisualizerMode.Bars:
-        drawRoundedRectangle(this.context, x, y, w, h, tickRadius)
+        points.forEach((point) => {
+          const [x, y, w, h] = point
+          drawRoundedRectangle(this.context, x, y, w, h, tickRadius)
+        })
         break
       case VisualizerMode.Drops:
-        this.drawDrop(x, y, w, h)
-
+        points.forEach((point) => {
+          const [x, y, w, h] = point
+          this.drawDrop(x, y, w, h)
+        })
         break
       case VisualizerMode.Levels:
-        drawLevels(this.context, x, y, w, h, barThickness, tickRadius)
+        points.forEach((point) => {
+          const [x, y, w, h] = point
+          drawLevels(this.context, x, y, w, h, barThickness, tickRadius)
+        })
         break
       default:
-        console.warn(
-          `Invalid value for visualizer mode option: ${this.options.mode}`,
-        )
+        console.warn(`Invalid value for visualizer mode option: ${mode}`)
         return
     }
+  }
+
+  private drawWaves(points: number[][]) {
+    const {
+      canvasWidth: cW,
+      canvasHeight: cH,
+      position,
+      tickRadius,
+    } = this.options
+    const isVertical = this.isVertical()
+
+    let [startX, startY, endX, endY] = [0, 0, 0, 0]
+    if (isVertical) {
+      endY = cH
+      if (position === VisualizerPosition.Center) startX = endX = cW / 2
+      else if (position === VisualizerPosition.End) startX = endX = cW
+    } else {
+      endX = cW
+      if (position === VisualizerPosition.Center) startY = endY = cH / 2
+      else if (position === VisualizerPosition.End) startY = endY = cH
+    }
+    points.unshift([startX, startY])
+    points.push([endX, endY])
+
+    if (position === VisualizerPosition.Center) {
+      const symmetricPoints = points
+        .slice()
+        .reverse()
+        .map(([x, y]) => {
+          return isVertical ? [cW - x, y] : [x, cH - y]
+        })
+      points.push(...symmetricPoints)
+    }
+    if (position === VisualizerPosition.Start) {
+      points = points.map(([x, y, w = 0, h = 0]) =>
+        isVertical ? [x + w, y, w, h] : [x, y + h, w, h],
+      )
+    }
+
+    ;(tickRadius > 0 ? drawCurvyLine : drawLine)(this.context, points)
+    this.context.fill()
   }
 
   private drawDrop(x: number, y: number, width: number, height: number) {
@@ -277,8 +332,8 @@ export default class Visualizer {
       : canvasHeight - strokeWidth
 
     const positionAngles: Record<VisualizerPosition, number | number[]> = {
-      [VisualizerPosition.Top]: isVertical ? 1 : 0,
-      [VisualizerPosition.Bottom]: isVertical ? 3 : 2,
+      [VisualizerPosition.Start]: isVertical ? 1 : 0,
+      [VisualizerPosition.End]: isVertical ? 3 : 2,
       [VisualizerPosition.Center]: isVertical ? [1, 3] : [0, 2],
     }
 
@@ -312,23 +367,18 @@ export default class Visualizer {
   }
 
   private showAxis() {
+    const { canvasWidth: w, canvasHeight: h } = this.options
     this.context.lineWidth = 2
     this.context.strokeStyle = "#f005"
     drawLine(this.context, [
-      [this.options.canvasWidth / 2, 0],
-      [this.options.canvasWidth / 2, this.options.canvasHeight],
+      [w / 2, 0],
+      [w / 2, h],
     ])
     drawLine(this.context, [
-      [0, this.options.canvasHeight / 2],
-      [this.options.canvasWidth, this.options.canvasHeight / 2],
+      [0, h / 2],
+      [w, h / 2],
     ])
-    drawRectangle(
-      this.context,
-      0,
-      0,
-      this.options.canvasWidth,
-      this.options.canvasHeight,
-    )
+    drawRectangle(this.context, 0, 0, w, h)
     this.strokeStyle()
   }
 }
