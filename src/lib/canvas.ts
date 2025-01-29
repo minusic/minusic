@@ -2,38 +2,52 @@ export function drawLine(
   context: CanvasRenderingContext2D,
   points: number[][],
   closePath: boolean = false,
+  loop: boolean = false,
 ) {
   context.beginPath()
   points.forEach(([x, y], index) => {
     index === 0 ? context.moveTo(x, y) : context.lineTo(x, y)
   })
+  if (loop) context.lineTo(points[0][0], points[0][1])
   if (closePath) context.closePath()
   context.stroke()
 }
 
-export function drawCurvyLine(
+function getMidpoint([x1, y1]: number[], [x2, y2]: number[]): [number, number] {
+  return [(x1 + x2) / 2, (y1 + y2) / 2]
+}
+
+function drawSegment(
+  context: CanvasRenderingContext2D,
+  current: number[],
+  next: number[],
+) {
+  const [x, y] = current
+  const [controlX, controlY] = getMidpoint(current, next)
+  context.quadraticCurveTo(x, y, controlX, controlY)
+}
+
+export function drawCurve(
   context: CanvasRenderingContext2D,
   points: number[][],
   closePath: boolean = false,
 ) {
+  if (!points.length) return
   context.beginPath()
-  context.moveTo(points[0][0], points[0][1])
 
-  for (let i = 1; i < points.length; i++) {
-    const [x, y] = points[i]
-    const isLastPoint = i === points.length - 1
+  const firstPoint = points[0] as [number, number]
+  const startPoint = closePath
+    ? getMidpoint(points[points.length - 1], firstPoint)
+    : firstPoint
 
-    if (!isLastPoint) {
-      const [nextX, nextY] = points[i + 1]
-      const controlX = (x + nextX) / 2
-      const controlY = (y + nextY) / 2
-      context.quadraticCurveTo(x, y, controlX, controlY)
-    } else {
-      context.lineTo(x, y)
-    }
-  }
+  context.moveTo(...startPoint)
 
-  if (closePath) context.closePath()
+  points.forEach((point, index) => {
+    const nextPoint = points[(index + 1) % points.length]
+    drawSegment(context, point, nextPoint)
+  })
+
+  if (closePath) drawSegment(context, firstPoint, points[1])
   context.stroke()
 }
 
@@ -56,11 +70,13 @@ export function drawRoundedRectangle(
   height: number,
   radius: number = 0,
 ) {
-  if (radius < 0) {
-    radius = width
-  }
+  if (width === 0) width = 1
+  if (height === 0) height = 1
+
+  if (radius < 0) radius = 0
   if (width < 2 * radius) radius = Math.round(width / 2)
   if (height < 2 * radius) radius = Math.round(height / 2)
+
   context.beginPath()
   context.moveTo(x + radius, y)
   context.arcTo(x + width, y, x + width, y + height, radius)

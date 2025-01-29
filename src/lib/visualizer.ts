@@ -6,7 +6,7 @@ import {
   VisualizerSymmetry,
 } from "../enums"
 import {
-  drawCurvyLine,
+  drawCurve,
   drawDrop,
   drawLevels,
   drawLine,
@@ -24,24 +24,25 @@ export default class Visualizer {
   private analyser!: AnalyserNode
   initialized: Boolean = false
   options = {
-    tick: 40,
+    tick: 10,
     canvasWidth: 900,
     canvasHeight: 400, //220,
     barAmplitude: 400, //220, // should default at max size
-    barThickness: 8,
-    tickRadius: 10, //200,
-    strokeWidth: 1, //3,
+    barThickness: 5,
+    tickRadius: 1, //200,
+    strokeWidth: 2, //3,
     range: 0.75,
     maxValue: 255,
-    shape: VisualizerShape.Line,
+    shape: VisualizerShape.Circle,
     mode: VisualizerMode.Waves,
     position: VisualizerPosition.Center,
     direction: VisualizerDirection.RightToLeft,
-    symmetry: VisualizerSymmetry.Reversed,
+    symmetry: VisualizerSymmetry.None,
     backgroundColor: "transparent", //"#000",
     fillStyle: "#000", // "#89E76F",
-    strokeStyle: "#0005",
+    strokeStyle: "#000",
     invertColors: false,
+    radius: 80,
   }
 
   constructor({
@@ -137,9 +138,11 @@ export default class Visualizer {
 
     if (!processedFrequencies.length) return frequencyData
 
+    //processedFrequencies = Array(20).fill(255).map((v,i) => v-i)
     if (this.options.shape === VisualizerShape.Line) {
-      //processedFrequencies = Array(20).fill(255).map((v,i) => v-i)
       this.displayLine(processedFrequencies)
+    } else if (this.options.shape === VisualizerShape.Circle) {
+      this.displayCircle(processedFrequencies)
     }
     return frequencyData
   }
@@ -168,6 +171,80 @@ export default class Visualizer {
 
   clearCanvas() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+  }
+
+  displayCircle(frequencies: number[]) {
+    const {
+      maxValue,
+      barThickness,
+      barAmplitude,
+      tickRadius,
+      position,
+      radius,
+      mode,
+      canvasHeight,
+      canvasWidth,
+      strokeWidth,
+    } = this.options
+    const x = -barThickness / 2
+    const angle = 360 / frequencies.length
+
+    if (mode === VisualizerMode.Waves) {
+      const h = canvasWidth / 2
+      const k = canvasHeight / 2
+
+      const amplitudes = frequencies.map((frequency, i) => {
+        const size = (k - radius) * (frequency / maxValue)
+        const r = radius + size
+        return [
+          h + r * Math.cos(angle * (i + 0.5) * (Math.PI / 180) - Math.PI / 2),
+          k + r * Math.sin(angle * (i + 0.5) * (Math.PI / 180) - Math.PI / 2),
+        ]
+      })
+      ;(tickRadius > 0 ? drawCurve : drawLine)(this.context, amplitudes, true)
+      return
+    }
+
+    for (let i = 0, l = frequencies.length; i < l; i++) {
+      const amplitude = ((frequencies[i] / maxValue) * barAmplitude) / 2
+      let y = 0
+      if (position === VisualizerPosition.Start) y = radius - amplitude
+      else if (position === VisualizerPosition.Center)
+        y = radius - amplitude / 2
+      else y = radius
+      this.context.save()
+      this.rotateContext((i + 0.5) * angle)
+      if (mode === VisualizerMode.Bars) {
+        drawRoundedRectangle(
+          this.context,
+          x,
+          y,
+          barThickness,
+          amplitude,
+          tickRadius,
+        )
+      } else if (mode === VisualizerMode.Drops) {
+        let dropAngle = position === VisualizerPosition.Center ? [0, 2] : 2
+        if (position === VisualizerPosition.Start)
+          y = radius - amplitude + barThickness
+        else if (position === VisualizerPosition.End) y = radius + amplitude
+        //
+        drawDrop(
+          this.context,
+          x,
+          y,
+          barThickness,
+          amplitude,
+          barThickness,
+          dropAngle,
+          tickRadius,
+          canvasHeight - strokeWidth,
+        )
+      }
+
+      //
+      this.context.restore()
+    }
   }
 
   displayLine(frequencies: number[]) {
@@ -212,7 +289,7 @@ export default class Visualizer {
       const h = isVertical ? thickness : amplitude
       points.push([x, y, w, h])
     }
-    this.draw(points)
+    this.drawLine(points)
   }
 
   getPosition(
@@ -245,7 +322,7 @@ export default class Visualizer {
     return this.options.mode === VisualizerMode.Waves
   }
 
-  draw(points: number[][]) {
+  drawLine(points: number[][]) {
     const { barThickness, mode, tickRadius } = this.options
     switch (mode) {
       case VisualizerMode.Waves:
@@ -312,7 +389,7 @@ export default class Visualizer {
       )
     }
 
-    ;(tickRadius > 0 ? drawCurvyLine : drawLine)(this.context, points)
+    ;(tickRadius > 0 ? drawCurve : drawLine)(this.context, points)
     this.context.fill()
   }
 
@@ -338,7 +415,6 @@ export default class Visualizer {
     }
 
     const dropAngle = positionAngles[position] ?? 0
-
     drawDrop(
       this.context,
       x,
@@ -353,11 +429,11 @@ export default class Visualizer {
   }
 
   private rotateContext(angle: number = 0) {
-    //this.context.save()
-    this.context.translate(this.canvas.width / 2, this.canvas.height / 2)
+    this.context.translate(
+      this.options.canvasWidth / 2,
+      this.options.canvasHeight / 2,
+    )
     this.context.rotate(angle * (Math.PI / 180))
-    this.context.translate(-(this.canvas.width / 2), -(this.canvas.height / 2))
-    //this.context.restore()
   }
 
   private applyInvertEffect() {
