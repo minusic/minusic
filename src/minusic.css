@@ -2,8 +2,11 @@
 :root {
   --minusic-color-theme: #30b7ff;
   --minusic-color-buffer: #bbbbbb;
-  --minusic-color-range-background: #25282b;
-  --minusic-filter-hover: brightness(0) saturate(100%) invert(58%) sepia(30%)
+  --minusic-bg-range: #25282b;
+  --minusic-bg-container: #3e4347;
+  --minusic-text-primary: #fff;
+  --minusic-text-secondary: #888;
+  --minusic-hover-filter: brightness(0) saturate(100%) invert(58%) sepia(30%)
     saturate(2383%) hue-rotate(175deg) brightness(103%) contrast(101%);
 }
 
@@ -14,7 +17,7 @@
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 13px;
   height: 40px;
-  background-color: #3e4347;
+  background-color: var(--minusic-bg-container);
 }
 
 .minusic-controls-button {
@@ -34,11 +37,11 @@
 }
 .minusic-controls-button:hover,
 .minusic-controls-range:hover::-moz-range-thumb {
-  filter: var(--minusic-filter-hover);
+  filter: var(--minusic-hover-filter);
 }
 .minusic-controls-button:hover,
 .minusic-controls-range:hover::-webkit-slider-thumb {
-  filter: var(--minusic-filter-hover);
+  filter: var(--minusic-hover-filter);
 }
 
 input[type="range"].minusic-controls-range {
@@ -58,7 +61,7 @@ input[type="range"].minusic-controls-range {
 }
 
 .minusic-controls-range::-moz-range-progress {
-  background-color: #30b7ff;
+  background-color: var(--minusic-color-theme);
   height: 100%;
   border-radius: 10px;
 }
@@ -70,7 +73,7 @@ input[type="range"].minusic-controls-range {
   appearance: none;
   /* -moz-appearance: none; */
   border: 0;
-  background-color: #30b7ff;
+  background-color: var(--minusic-color-theme);
   background-color: #fff;
   border: 2px solid #fff;
   box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
@@ -93,7 +96,7 @@ input[type="range"].minusic-controls-range {
   height: 18px;
   border-radius: 50%;
   border: 0;
-  background-color: #30b7ff;
+  background-color: var(--minusic-color-theme);
   background-color: #fff;
   border: 2px solid #fff;
   box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
@@ -177,14 +180,14 @@ progress::-moz-progress-bar {
 }
 .minnusic-controls-current-time {
   order: 3;
-  color: #fff;
+  color: var(--minusic-text-primary);
   font-size: 12px;
   padding: 0 6px 0 12px;
   letter-spacing: -0.5px;
 }
 .minnusic-controls-total-time {
   order: 4;
-  color: #888;
+  color: var(--minusic-text-secondary);
   font-size: 12px;
 }
 .minusic-controls-mute-button {
@@ -197,15 +200,15 @@ progress::-moz-progress-bar {
   margin-right: 10px;
   max-width: 75px;
   box-sizing: border-box;
-  background-color: var(--minusic-color-range-background);
+  background-color: var(--minusic-bg-range);
 }
 .minusic-controls-sound-bar::-moz-range-track {
-  background-color: var(--minusic-color-range-background);
+  background-color: var(--minusic-bg-range);
   height: 9px;
   border-radius: 10px;
 }
 .minusic-controls-sound-bar::-webkit-slider-runnable-track {
-  background-color: var(--minusic-color-range-background);
+  background-color: var(--minusic-bg-range);
   height: 9px;
   border-radius: 10px;
 }
