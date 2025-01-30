@@ -1,6 +1,5 @@
 import "./minusic.css"
 import { CSSClass } from "./enums"
-import Debug from "./lib/debug"
 import { createElement, unwrapElement, wrapElement } from "./lib/elements"
 import { bound, formatTime } from "./lib/utils"
 import Visualizer from "./lib/visualizer"
@@ -9,251 +8,305 @@ import { ConstructorParameters, Elements } from "./types"
 export * from "./types"
 export default class Minusic {
   private media!: HTMLMediaElement
-  private debug: Debug
   private options!: ConstructorParameters["options"]
   private elements!: Elements
-  private timeHandler!: () => void
+  private animationHandler!: () => void
   private visualizer!: Visualizer
 
+  private applyInitialSettings(options: ConstructorParameters["options"]) {
+    if (!options.controls) this.hideControls()
+    if (options.autoplay) this.media.setAttribute("autoplay", "")
+    if (this.muted || options.muted) this.mute()
+    if (options.playbackRate) this.playbackRate = options.playbackRate
+    if (typeof options.preservesPitch !== "undefined")
+      this.media.preservesPitch = options.preservesPitch
+    if (typeof options.startTime !== "undefined")
+      this.currentTime = options.startTime
+    if (typeof options.defaultVolume !== "undefined")
+      this.volume = options.defaultVolume
+  }
+
   constructor({ target, options }: ConstructorParameters) {
-    this.debug = new Debug(options.debug)
+    this.initializePlayer(target, options)
+  }
+
+  private initializePlayer(
+    target: string,
+    options: ConstructorParameters["options"],
+  ) {
     this.media = document.querySelector(target) as HTMLMediaElement
-    if (this.media?.nodeName !== "AUDIO") {
-      this.debug.error(`Invalid selector "${target}"`)
-      return
-    }
+    if (!this.validateMediaElement()) return
     this.options = options
 
-    if (!this.media.parentNode) {
-      this.debug.error(`Player has no parent container`)
-      return
-    }
+    const { container, controls } = this.buildPlayerStructure()
+    this.elements = this.createPlayerElements(container, controls)
 
+    this.applyInitialSettings(options)
+    this.bindMediaEvents()
+    wrapElement(container, this.media)
+
+    if (options.visualizer) {
+      this.initializeVisualizer()
+    }
+  }
+
+  public destroy() {
+    this.removeMediaEvents()
+    unwrapElement(this.elements.container, this.media)
+  }
+
+  private validateMediaElement() {
+    return this.media?.nodeName === "AUDIO" && !!this.media.parentNode
+  }
+
+  private buildPlayerStructure() {
     const container = createElement("div")
     const controls = createElement(
       "div",
       { container },
       { class: CSSClass.Container },
     )
-    const progress = createElement(
+    return { container, controls }
+  }
+
+  private createPlayerElements(
+    container: HTMLElement,
+    controls: HTMLElement,
+  ): Elements {
+    const progressContainer = this.createProgressContainer(controls)
+
+    return {
+      container,
+      controls,
+      buttons: {
+        play: this.createButton(controls, "Play", CSSClass.PlayButton, () =>
+          this.togglePlay(),
+        ),
+        mute: this.createButton(controls, "Mute", CSSClass.MuteButton, () =>
+          this.toggleMute(),
+        ),
+      },
+      progress: {
+        ...this.createProgressElements(progressContainer),
+        bufferBar: this.createBufferBar(progressContainer),
+        currentTime: this.createTimeDisplay(
+          controls,
+          CSSClass.CurrentTime,
+          "Current time",
+        ),
+        totalTime: this.createTimeDisplay(
+          controls,
+          CSSClass.TotalTime,
+          "Total time",
+        ),
+      },
+      soundBar: this.createSoundBar(controls),
+      visualizer: createElement("canvas", { container }) as HTMLCanvasElement,
+    }
+  }
+
+  private createProgressContainer(controls: HTMLElement) {
+    return createElement(
       "div",
       { container: controls },
       { class: [CSSClass.ProgressContainer] },
     )
-    this.elements = {
-      container,
-      controls,
-      buttons: {
-        play: createElement(
-          "button",
-          { container: controls },
-          {
-            class: [CSSClass.ControlButton, CSSClass.PlayButton],
-            "aria-label": "Play",
-          },
-          { click: () => this.togglePlay() },
-        ),
-        mute: createElement(
-          "button",
-          { container: controls },
-          {
-            class: [CSSClass.ControlButton, CSSClass.MuteButton],
-            "aria-label": "Mute",
-          },
-          { click: () => this.toggleMute() },
-        ),
+  }
+
+  private createButton(
+    container: HTMLElement,
+    label: string,
+    cssClass: CSSClass,
+    onClick: () => void,
+  ) {
+    return createElement(
+      "button",
+      { container },
+      {
+        class: [CSSClass.ControlButton, cssClass],
+        "aria-label": label,
       },
-      progress: {
-        timeBar: createElement(
-          "input",
-          { container: progress },
-          {
-            class: [CSSClass.Range, CSSClass.TimeBar],
-            type: "range",
-            min: "0",
-            max: "100",
-            value: "25",
-            step: "0.01",
-            "aria-label": "Seek time",
-          },
-          {
-            input: async (e: any) =>
-              (this.currentTime = (e.target.value * this.duration) / 100),
-          },
-        ) as HTMLInputElement,
-        bufferBar: createElement(
-          "progress",
-          { container: progress },
-          {
-            class: [CSSClass.Progress, CSSClass.BufferBar],
-            max: "100",
-            min: "0",
-            value: "50",
-          },
-          {},
-        ) as HTMLProgressElement,
-        currentTime: createElement(
-          "span",
-          { container: controls },
-          { class: CSSClass.CurrentTime, "aria-label": "Current time" },
-          {},
-        ) as HTMLSpanElement,
-        totalTime: createElement(
-          "span",
-          { container: controls },
-          { class: CSSClass.TotalTime, "aria-label": "Total time" },
-          {},
-        ) as HTMLSpanElement,
-      },
-      soundBar: createElement(
+      { click: onClick },
+    )
+  }
+
+  private createProgressElements(container: HTMLElement) {
+    return {
+      timeBar: createElement(
         "input",
-        { container: controls },
+        { container },
         {
-          class: [CSSClass.Range, CSSClass.SoundBar],
+          class: [CSSClass.Range, CSSClass.TimeBar],
           type: "range",
           min: "0",
           max: "100",
-          value: "100",
-          style: "--value: 100%",
+          value: "0",
+          step: "0.01",
+          "aria-label": "Seek time",
         },
         {
-          input: (e: Event) => {
-            this.volume = parseInt((e.target as HTMLInputElement).value) / 100
-            if (this.muted) this.unmute()
-          },
+          input: (e: Event) =>
+            (this.currentTime =
+              (Number((e.target as HTMLInputElement).value) * this.duration) /
+              100),
         },
       ) as HTMLInputElement,
-      visualizer: createElement("canvas", { container }) as HTMLCanvasElement,
     }
-
-    this.setupMedia()
-    this.setMediaEvents()
-    this.timeUpdate()
-
-    wrapElement(this.elements.container, this.media)
-
-    this.createVisualizer()
   }
 
-  destroy() {
-    this.removeMediaEvents()
-    unwrapElement(this.elements.container, this.media)
+  private createBufferBar(container: HTMLElement) {
+    return createElement(
+      "progress",
+      { container },
+      {
+        class: [CSSClass.Progress, CSSClass.BufferBar],
+        max: "100",
+        min: "0",
+        value: "0",
+      },
+    ) as HTMLProgressElement
   }
 
-  private setupMedia() {
-    if (!this.options.controls) this.hideControls()
-    if (this.options.autoplay) this.media.setAttribute("autoplay", "")
-    if (this.muted || this.options.muted) this.mute()
-    if (this.options.playbackRate) this.playbackRate = this.options.playbackRate
-    if (typeof this.options.preservesPitch !== "undefined")
-      this.media.preservesPitch = !!this.options.preservesPitch
-    if (typeof this.options.startTime !== "undefined")
-      this.currentTime = this.options.startTime
-    if (typeof this.options.defaultVolume !== "undefined")
-      this.volume = this.options.defaultVolume
+  private createTimeDisplay(
+    container: HTMLElement,
+    cssClass: CSSClass,
+    label: string,
+  ) {
+    return createElement(
+      "span",
+      { container },
+      {
+        class: cssClass,
+        "aria-label": label,
+      },
+    ) as HTMLSpanElement
   }
 
-  private setMediaEvents() {
-    this.media.addEventListener("timeupdate", () => this.timeUpdate())
-    this.media.addEventListener("pause", () => this.pause())
-    this.media.addEventListener("play", () => this.play())
-    this.media.addEventListener("volumechange", () => {
-      this.volume = this.media.volume
-      if (this.muted) this.mute()
-      else this.unmute()
+  private createSoundBar(container: HTMLElement) {
+    return createElement(
+      "input",
+      { container },
+      {
+        class: [CSSClass.Range, CSSClass.SoundBar],
+        type: "range",
+        min: "0",
+        max: "100",
+        value: "100",
+        style: "--value: 100%",
+      },
+      {
+        input: (e: Event) => {
+          const value = parseInt((e.target as HTMLInputElement).value) / 100
+          this.volume = value
+          if (this.muted) this.unmute()
+        },
+      },
+    ) as HTMLInputElement
+  }
+
+  private bindMediaEvents() {
+    const events = {
+      timeupdate: () => this.updateProgress(),
+      pause: () => this.handlePauseState(),
+      play: () => this.handlePlayState(),
+      volumechange: () => this.handleVolumeChange(),
+      ratechange: () => {},
+      ended: () => {},
+    }
+    Object.entries(events).forEach(([event, handler]) => {
+      this.media.addEventListener(event, handler)
     })
-    this.media.addEventListener("ratechange", () => {})
-    this.media.addEventListener("ended", () => {})
   }
 
   private removeMediaEvents() {
-    this.media.removeEventListener("timeupdate", this.timeUpdate)
+    this.media.removeEventListener("timeupdate", this.updateProgress)
     this.media.removeEventListener("pause", this.pause)
     this.media.removeEventListener("play", this.play)
   }
 
-  private createVisualizer() {
+  private initializeVisualizer() {
     if (!this.options.visualizer) return
     this.visualizer = new Visualizer({
       canvas: this.elements.visualizer,
       media: this.media,
     })
     if (!this.visualizer.initialized) return
-    this.timeHandler = this.updateVisualizer.bind(this)
+    this.animationHandler = this.updateVisualizer.bind(this)
   }
 
   private updateVisualizer() {
     if (!this.visualizer?.initialized) return
     const frequencies = this.visualizer.update(this.paused)
     if (frequencies.some((value) => value > 0) || !this.paused)
-      requestAnimationFrame(this.timeHandler)
+      requestAnimationFrame(this.animationHandler)
   }
 
-  private timeUpdate() {
-    this.elements.progress.bufferBar.value = this.buffer
-    this.elements.progress.timeBar.value = `${this.progress}`
-    this.elements.progress.timeBar.style.setProperty(
-      "--value",
-      `${this.progress.toFixed(2)}%`,
-    )
-    this.elements.progress.currentTime.innerText = formatTime(this.currentTime)
-    this.elements.progress.totalTime.innerText = formatTime(this.duration)
+  private updateProgress() {
+    const { timeBar, currentTime, totalTime, bufferBar } =
+      this.elements.progress
+    bufferBar.value = this.buffer
+    timeBar.value = `${this.progress}`
+    timeBar.style.setProperty("--value", `${this.progress.toFixed(2)}%`)
+    currentTime.innerText = formatTime(this.currentTime)
+    totalTime.innerText = formatTime(this.duration)
   }
 
-  play() {
-    this.elements.container.dataset.paused = "false"
-    this.updateVisualizer()
+  public play() {
     return this.media.play()
   }
 
-  pause() {
-    this.elements.container.dataset.paused = "true"
+  public pause() {
     return this.media.pause()
   }
 
-  get paused() {
-    return this.media.paused
+  private handlePlayState() {
+    this.elements.container.dataset.paused = "false"
+    this.updateVisualizer()
   }
 
-  stop() {
+  private handlePauseState() {
+    this.elements.container.dataset.paused = "true"
+  }
+
+  private handleVolumeChange() {
+    this.volume = this.media.volume
+    this.muted ? this.mute() : this.unmute()
+  }
+
+  public stop() {
     this.pause()
     this.currentTime = 0
   }
 
-  mute() {
+  public mute() {
     this.elements.container.dataset.muted = "true"
     this.elements.soundBar.value = `0`
     this.elements.soundBar.style.setProperty("--value", `0%`)
     this.media.muted = true
   }
 
-  unmute() {
+  public unmute() {
     this.elements.container.dataset.muted = "false"
     this.elements.soundBar.value = `${this.volume * 100}`
     this.elements.soundBar.style.setProperty("--value", `${this.volume * 100}%`)
     this.media.muted = false
   }
 
-  showControls() {
-    return this.media.setAttribute("controls", "")
-  }
+  public showControls = () => this.media.setAttribute("controls", "")
+  public hideControls = () => this.media.removeAttribute("controls")
 
-  hideControls() {
-    return this.media.removeAttribute("controls")
-  }
+  public togglePlay = (state?: boolean) =>
+    (state ?? this.paused) ? this.play() : this.pause()
+  public toggleMute = (state?: boolean) =>
+    (state ?? this.media.muted) ? this.unmute() : this.mute()
 
-  togglePlay(state?: boolean) {
-    ;(state ?? this.paused) ? this.play() : this.pause()
-  }
-
-  toggleMute(state?: boolean) {
-    ;(state ?? this.media.muted) ? this.unmute() : this.mute()
-  }
-
-  toggleControls() {
-    return typeof this.media.getAttribute("controls") === "string"
+  public toggleControls = () =>
+    this.media.getAttribute("controls")
       ? this.hideControls()
       : this.showControls()
+
+  get paused() {
+    return this.media.paused
   }
 
   get progress() {
