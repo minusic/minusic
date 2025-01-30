@@ -44,14 +44,15 @@ export function drawCurve(
 
   points.forEach((point, index) => {
     const isLastPoint = index === points.length - 1
-    if(!closePath && isLastPoint) context.lineTo(...point as [number,number])
+    if (!closePath && isLastPoint)
+      context.lineTo(...(point as [number, number]))
     else {
       const nextPoint = points[(index + 1) % points.length]
       drawSegment(context, point, nextPoint)
     }
   })
 
-  //if (closePath) drawSegment(context, firstPoint, points[1])
+  if (closePath) drawSegment(context, firstPoint, points[1])
   context.stroke()
 }
 
