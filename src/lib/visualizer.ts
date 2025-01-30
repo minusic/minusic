@@ -34,12 +34,12 @@ export default class Visualizer {
     frequencyRange: 0.75,
     frequencyMaxValue: 255,
     shape: VisualizerShape.Circle,
-    mode: VisualizerMode.Drops,
-    position: VisualizerPosition.End,
-    direction: VisualizerDirection.LeftToRight,
+    mode: VisualizerMode.Waves,
+    position: VisualizerPosition.Start,
+    direction: VisualizerDirection.TopToBottom,
     symmetry: VisualizerSymmetry.None,
     canvasBackground: "transparent", //"#000",
-    fillColor: "#000", // "#89E76F",
+    fillColor: "#f005", // "#89E76F",
     outlineColor: "#000",
     invertColors: false,
     circleRadius: 80,
@@ -225,10 +225,7 @@ export default class Visualizer {
   private renderLineVisualization(frequencies: number[]) {
     const { width, height, frequencyMaxValue, barAmplitude, strokeWidth } =
       this.options
-    const isVertical = [
-      VisualizerDirection.TopToBottom,
-      VisualizerDirection.BottomToTop,
-    ].includes(this.options.direction)
+    const isVertical = this.isVertical()
     const unitSize = isVertical
       ? height / frequencies.length
       : width / frequencies.length
@@ -260,6 +257,7 @@ export default class Visualizer {
     const { mode } = this.options
     switch (mode) {
       case VisualizerMode.Waves:
+        points = this.boundWaveFrequencies(points)
         this.drawWaveform(points)
         break
       case VisualizerMode.Bars:
@@ -276,10 +274,7 @@ export default class Visualizer {
 
   private calculatePosition(amplitude: number) {
     const { position, width, height, strokeWidth } = this.options
-    const isVertical = [
-      VisualizerDirection.TopToBottom,
-      VisualizerDirection.BottomToTop,
-    ].includes(this.options.direction)
+    const isVertical = this.isVertical()
     const total = isVertical ? width : height
 
     switch (position) {
@@ -315,10 +310,7 @@ export default class Visualizer {
       strokeWidth,
       shape,
     } = this.options
-    const isVertical = [
-      VisualizerDirection.TopToBottom,
-      VisualizerDirection.BottomToTop,
-    ].includes(direction)
+    const isVertical = this.isVertical()
     const canvasSize = isVertical ? width - strokeWidth : height - strokeWidth
 
     const angleMap = {
@@ -361,6 +353,47 @@ export default class Visualizer {
   private drawLevels(x: number, y: number, w: number, h: number) {
     const { outlineSize, tickRadius } = this.options
     drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+  }
+
+  private boundWaveFrequencies(points: number[][]) {
+    const { width: cW, height: cH, position, tickRadius } = this.options
+    const isVertical = this.isVertical()
+
+    let [startX, startY, endX, endY] = [0, 0, 0, 0]
+    if (isVertical) {
+      endY = cH
+      if (position === VisualizerPosition.Center) startX = endX = cW / 2
+      else if (position === VisualizerPosition.End) startX = endX = cW
+    } else {
+      endX = cW
+      if (position === VisualizerPosition.Center) startY = endY = cH / 2
+      else if (position === VisualizerPosition.End) startY = endY = cH
+    }
+    points.unshift([startX, startY])
+    points.push([endX, endY])
+
+    if (position === VisualizerPosition.Center) {
+      const symmetricPoints = points
+        .slice()
+        .reverse()
+        .map(([x, y]) => {
+          return isVertical ? [cW - x, y] : [x, cH - y]
+        })
+      points.push(...symmetricPoints)
+    }
+    if (position === VisualizerPosition.Start) {
+      points = points.map(([x, y, w = 0, h = 0]) =>
+        isVertical ? [x + w, y, w, h] : [x, y + h, w, h],
+      )
+    }
+    return points
+  }
+
+  private isVertical() {
+    return [
+      VisualizerDirection.TopToBottom,
+      VisualizerDirection.BottomToTop,
+    ].includes(this.options.direction)
   }
 
   private showAxis() {
