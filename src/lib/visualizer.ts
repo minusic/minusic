@@ -22,27 +22,28 @@ export default class Visualizer {
   private audioContext!: AudioContext
   private audioSource!: MediaElementAudioSourceNode
   private analyser!: AnalyserNode
-  initialized: Boolean = false
+  initialized = false
   options = {
-    tick: 10,
-    canvasWidth: 900,
-    canvasHeight: 400, //220,
+    tick: 40,
+    width: 900,
+    height: 400, //220,
     barAmplitude: 400, //220, // should default at max size
-    barThickness: 5,
+    outlineSize: 5,
     tickRadius: 1, //200,
     strokeWidth: 2, //3,
-    range: 0.75,
-    maxValue: 255,
+    frequencyRange: 0.75,
+    frequencyMaxValue: 255,
     shape: VisualizerShape.Circle,
-    mode: VisualizerMode.Waves,
-    position: VisualizerPosition.Center,
-    direction: VisualizerDirection.RightToLeft,
+    mode: VisualizerMode.Drops,
+    position: VisualizerPosition.End,
+    direction: VisualizerDirection.LeftToRight,
     symmetry: VisualizerSymmetry.None,
-    backgroundColor: "transparent", //"#000",
-    fillStyle: "#000", // "#89E76F",
-    strokeStyle: "#000",
+    canvasBackground: "transparent", //"#000",
+    fillColor: "#000", // "#89E76F",
+    outlineColor: "#000",
     invertColors: false,
-    radius: 80,
+    circleRadius: 80,
+    showAxis: true,
   }
 
   constructor({
@@ -58,18 +59,20 @@ export default class Visualizer {
     this.media = media
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D
 
-    this.updateCanvasSize()
-    this.strokeStyle()
-    this.fillStyle()
+    this.initializeCanvas()
     this.initialized = true
     this.update(true)
-
-    if (this.options.backgroundColor)
-      this.canvas.style.background = this.options.backgroundColor
   }
 
-  setAudioContext() {
-    this.audioContext = this.getAudioContext() as AudioContext
+  private initializeCanvas() {
+    const { canvasBackground } = this.options
+    this.updateCanvasSize()
+    this.applyStyles()
+    if (canvasBackground) this.canvas.style.background = canvasBackground
+  }
+
+  private initializeAudioContext() {
+    this.audioContext = new (window.AudioContext || null)()
     if (this.audioContext === null) {
       this.initialized = false
       return
@@ -78,372 +81,290 @@ export default class Visualizer {
     this.audioSource = this.audioContext.createMediaElementSource(this.media)
     this.analyser = this.audioContext.createAnalyser()
 
-    this.audioSource.connect(this.analyser)
-    this.analyser.connect(this.audioContext.destination)
+    this.audioSource
+      .connect(this.analyser)
+      .connect(this.audioContext.destination)
   }
 
-  getAudioContext() {
-    if (typeof AudioContext !== "undefined") {
-      return new AudioContext()
-    }
-    return null
-  }
-
-  setScaleRatio() {
+  private updateCanvasSize() {
+    const { width, height } = this.options
+    setStyle(this.canvas, {
+      width: `${width}px`,
+      height: `${height}px`,
+    })
     const scale = window.devicePixelRatio || 1
-    this.canvas.width = scale * this.options.canvasWidth
-    this.canvas.height = scale * this.options.canvasHeight
+    this.canvas.width = scale * width
+    this.canvas.height = scale * height
     this.context.scale(scale, scale)
   }
 
-  updateCanvasSize() {
-    setStyle(this.canvas, {
-      width: `${this.options.canvasWidth}px`,
-      height: `${this.options.canvasHeight}px`,
-    })
-    this.setScaleRatio()
-  }
-
-  fillStyle() {
-    this.context.fillStyle = this.options.fillStyle || "transparent"
-  }
-
-  strokeStyle() {
-    const grad = this.context.createLinearGradient(0, 0, 900, 130)
-    grad.addColorStop(0, "#98067F")
-    grad.addColorStop(0.5, "#685FEE")
-    grad.addColorStop(1, "#98067F")
-    this.context.strokeStyle = grad
+  private applyStyles() {
+    this.context.fillStyle = this.options.fillColor || "transparent"
+    const gradient = this.context.createLinearGradient(0, 0, 900, 130)
+    gradient.addColorStop(0, "#98067F")
+    gradient.addColorStop(0.5, "#685FEE")
+    gradient.addColorStop(1, "#98067F")
+    this.context.strokeStyle = this.options.outlineColor
     this.context.lineWidth = this.options.strokeWidth
-    this.context.strokeStyle = this.options.strokeStyle
-  }
-
-  private getFrequencies(paused: boolean) {
-    return paused
-      ? new Uint8Array(Array(256).fill(0))
-      : new Uint8Array(this.analyser.frequencyBinCount)
   }
 
   update(paused: boolean) {
-    if (!paused && !this.audioContext) this.setAudioContext()
-    this.clearCanvas()
-    this.showAxis()
+    if (!paused && !this.audioContext) this.initializeAudioContext()
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    if (this.options.showAxis) this.showAxis()
 
-    if (this.options.invertColors) this.applyInvertEffect()
-
-    let frequencyData: Uint8Array | number[] = this.getFrequencies(paused)
-    this.analyser?.getByteFrequencyData(frequencyData)
-
-    let processedFrequencies = this.applySymmetryAndDirection(frequencyData)
-
-    if (!processedFrequencies.length) return frequencyData
-
-    //processedFrequencies = Array(20).fill(255).map((v,i) => v-i)
-    if (this.options.shape === VisualizerShape.Line) {
-      this.displayLine(processedFrequencies)
-    } else if (this.options.shape === VisualizerShape.Circle) {
-      this.displayCircle(processedFrequencies)
+    if (this.options.invertColors) {
+      this.context.globalCompositeOperation = "source-over"
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+      this.context.globalCompositeOperation = "destination-out"
     }
-    return frequencyData
-  }
 
-  applySymmetryAndDirection(frequencyData: Uint8Array) {
-    const { tick, range, symmetry, direction } = this.options
-    const step = Math.floor(Math.floor(frequencyData.length * range) / tick)
-    let frequencies = Array.from(
-      { length: tick },
-      (_, i) => frequencyData[step * i],
-    )
-    if (symmetry === VisualizerSymmetry.Symmetric) {
-      const symmetricDuplicate = [...frequencies].reverse()
-      return [...frequencies, ...symmetricDuplicate]
-    } else if (symmetry === VisualizerSymmetry.Reversed) {
-      const symmetricDuplicate = [...frequencies].reverse()
-      return [...symmetricDuplicate, ...frequencies]
-    } else if (
-      direction === VisualizerDirection.RightToLeft ||
-      direction === VisualizerDirection.BottomToTop
-    ) {
-      return [...frequencies].reverse()
-    }
+    const frequencies = this.getProcessedFrequencies(paused)
+    if (!frequencies.length) return frequencies
+    this.renderVisualization(frequencies)
     return frequencies
   }
 
-  clearCanvas() {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+  private getProcessedFrequencies(paused: boolean) {
+    const rawFrequencies = paused
+      ? new Uint8Array(256).fill(0)
+      : new Uint8Array(this.analyser.frequencyBinCount)
+
+    if (!paused) this.analyser?.getByteFrequencyData(rawFrequencies)
+    return this.applySymmetryAndDirection(rawFrequencies)
   }
 
-  displayCircle(frequencies: number[]) {
-    const {
-      maxValue,
-      barThickness,
-      barAmplitude,
-      tickRadius,
-      position,
-      radius,
-      mode,
-      canvasHeight,
-      canvasWidth,
-      strokeWidth,
-    } = this.options
-    const x = -barThickness / 2
-    const angle = 360 / frequencies.length
+  private applySymmetryAndDirection(frequencies: Uint8Array) {
+    const { tick, frequencyRange, symmetry, direction } = this.options
+    const step = Math.floor((frequencies.length * frequencyRange) / tick)
+    const processedFreq = Array.from(
+      { length: tick },
+      (_, i) => frequencies[step * i],
+    )
+
+    if (symmetry === VisualizerSymmetry.Symmetric) {
+      return [...processedFreq, ...processedFreq.reverse()]
+    } else if (symmetry === VisualizerSymmetry.Reversed) {
+      return [...[...processedFreq].reverse(), ...processedFreq]
+    } else if (
+      [
+        VisualizerDirection.RightToLeft,
+        VisualizerDirection.BottomToTop,
+      ].includes(direction)
+    ) {
+      return processedFreq.reverse()
+    }
+    return processedFreq
+  }
+
+  private renderVisualization(frequencies: number[]) {
+    const { shape } = this.options
+    if (shape === VisualizerShape.Line) {
+      this.renderLineVisualization(frequencies)
+    } else if (shape === VisualizerShape.Circle) {
+      this.renderCircleVisualization(frequencies)
+    }
+  }
+
+  private renderCircleVisualization(frequencies: number[]) {
+    const { mode, width, height, frequencyMaxValue, circleRadius } =
+      this.options
 
     if (mode === VisualizerMode.Waves) {
-      const h = canvasWidth / 2
-      const k = canvasHeight / 2
+      const centerX = width / 2
+      const centerY = height / 2
+      const angle = 360 / frequencies.length
 
-      const amplitudes = frequencies.map((frequency, i) => {
-        const size = (k - radius) * (frequency / maxValue)
-        const r = radius + size
-        return [
-          h + r * Math.cos(angle * (i + 0.5) * (Math.PI / 180) - Math.PI / 2),
-          k + r * Math.sin(angle * (i + 0.5) * (Math.PI / 180) - Math.PI / 2),
-        ]
+      const points = frequencies.map((freq, i) => {
+        const size = (centerY - circleRadius) * (freq / frequencyMaxValue)
+        const r = circleRadius + size
+        const theta = angle * (i + 0.5) * (Math.PI / 180) - Math.PI / 2
+        return [centerX + r * Math.cos(theta), centerY + r * Math.sin(theta)]
       })
-      ;(tickRadius > 0 ? drawCurve : drawLine)(this.context, amplitudes, true)
+
+      this.drawWaveform(points, true)
       return
     }
 
-    for (let i = 0, l = frequencies.length; i < l; i++) {
-      const amplitude = ((frequencies[i] / maxValue) * barAmplitude) / 2
-      let y = 0
-      if (position === VisualizerPosition.Start) y = radius - amplitude
-      else if (position === VisualizerPosition.Center)
-        y = radius - amplitude / 2
-      else y = radius
+    this.renderCircularBarsOrDrops(frequencies)
+  }
+  private renderCircularBarsOrDrops(frequencies: number[]) {
+    const {
+      outlineSize,
+      frequencyMaxValue,
+      barAmplitude,
+      position,
+      circleRadius,
+      mode,
+    } = this.options
+    const angle = 360 / frequencies.length
+    const x = -outlineSize / 2
+
+    frequencies.forEach((freq, i) => {
+      const amplitude = ((freq / frequencyMaxValue) * barAmplitude) / 2
+      let y =
+        position === VisualizerPosition.Start
+          ? circleRadius - amplitude
+          : position === VisualizerPosition.Center
+            ? circleRadius - amplitude / 2
+            : circleRadius
+
       this.context.save()
-      this.rotateContext((i + 0.5) * angle)
+      this.context.translate(this.options.width / 2, this.options.height / 2)
+      this.context.rotate((i + 0.5) * angle * (Math.PI / 180))
+
       if (mode === VisualizerMode.Bars) {
-        drawRoundedRectangle(
-          this.context,
-          x,
-          y,
-          barThickness,
-          amplitude,
-          tickRadius,
-        )
+        this.drawBar(x, y, outlineSize, amplitude)
       } else if (mode === VisualizerMode.Drops) {
-        let dropAngle = position === VisualizerPosition.Center ? [0, 2] : 2
-        if (position === VisualizerPosition.Start)
-          y = radius - amplitude + barThickness
-        else if (position === VisualizerPosition.End) y = radius + amplitude
-        //
-        drawDrop(
-          this.context,
-          x,
-          y,
-          barThickness,
-          amplitude,
-          barThickness,
-          dropAngle,
-          tickRadius,
-          canvasHeight - strokeWidth,
-        )
+        this.drawDroplet(x, y, outlineSize, amplitude)
       }
 
-      //
       this.context.restore()
-    }
+    })
   }
-
-  displayLine(frequencies: number[]) {
-    const {
-      maxValue,
-      barAmplitude,
-      strokeWidth,
-      canvasWidth,
-      barThickness,
-      canvasHeight,
-      position,
-    } = this.options
-    const totalTicks = frequencies.length
-    const isVertical = this.isVertical()
-    const size = isVertical
-      ? canvasHeight / totalTicks
-      : canvasWidth / totalTicks
-    const thickness = this.isLine() ? 0 : barThickness
-    const points = []
-    for (let i = 0; i < totalTicks; i++) {
-      const amplitude =
-        (frequencies[i] / maxValue) * (barAmplitude - strokeWidth * 2)
-      const basePosition = size * i + size / 2 - thickness / 2
-
-      const x = isVertical
-        ? (this.getPosition(
-            position,
-            canvasWidth,
-            amplitude,
-            strokeWidth,
-          ) as number)
-        : basePosition
-      const y = isVertical
-        ? basePosition
-        : (this.getPosition(
-            position,
-            canvasHeight,
-            amplitude,
-            strokeWidth,
-          ) as number)
-      const w = isVertical ? amplitude : thickness
-      const h = isVertical ? thickness : amplitude
-      points.push([x, y, w, h])
-    }
-    this.drawLine(points)
-  }
-
-  getPosition(
-    alignment: VisualizerPosition,
-    totalSize: number,
-    barSize: number,
-    stroke: number,
-  ) {
-    switch (alignment) {
-      case VisualizerPosition.Start:
-        return stroke
-      case VisualizerPosition.End:
-        return totalSize - barSize - stroke
-      case VisualizerPosition.Center:
-        return totalSize / 2 - barSize / 2
-      default:
-        console.warn(`Invalid value for visualizer position: ${alignment}`)
-        return null
-    }
-  }
-
-  isVertical() {
-    return [
+  private renderLineVisualization(frequencies: number[]) {
+    const { width, height, frequencyMaxValue, barAmplitude, strokeWidth } =
+      this.options
+    const isVertical = [
       VisualizerDirection.TopToBottom,
       VisualizerDirection.BottomToTop,
     ].includes(this.options.direction)
+    const unitSize = isVertical
+      ? height / frequencies.length
+      : width / frequencies.length
+
+    const points = frequencies.map((freq, i) => {
+      const amplitude =
+        (freq / frequencyMaxValue) * (barAmplitude - strokeWidth * 2)
+      const basePos = unitSize * i + unitSize / 2 - this.options.outlineSize / 2
+
+      return isVertical
+        ? [
+            this.calculatePosition(amplitude),
+            basePos,
+            amplitude,
+            this.options.outlineSize,
+          ]
+        : [
+            basePos,
+            this.calculatePosition(amplitude),
+            this.options.outlineSize,
+            amplitude,
+          ]
+    })
+
+    this.renderVisualizationMode(points)
   }
 
-  isLine() {
-    return this.options.mode === VisualizerMode.Waves
-  }
-
-  drawLine(points: number[][]) {
-    const { barThickness, mode, tickRadius } = this.options
+  private renderVisualizationMode(points: number[][]) {
+    const { mode } = this.options
     switch (mode) {
       case VisualizerMode.Waves:
-        this.drawWaves(points)
+        this.drawWaveform(points)
         break
       case VisualizerMode.Bars:
-        points.forEach((point) => {
-          const [x, y, w, h] = point
-          drawRoundedRectangle(this.context, x, y, w, h, tickRadius)
-        })
+        points.forEach(([x, y, w, h]) => this.drawBar(x, y, w, h))
         break
       case VisualizerMode.Drops:
-        points.forEach((point) => {
-          const [x, y, w, h] = point
-          this.drawDrop(x, y, w, h)
-        })
+        points.forEach(([x, y, w, h]) => this.drawDroplet(x, y, w, h))
         break
       case VisualizerMode.Levels:
-        points.forEach((point) => {
-          const [x, y, w, h] = point
-          drawLevels(this.context, x, y, w, h, barThickness, tickRadius)
-        })
+        points.forEach(([x, y, w, h]) => this.drawLevels(x, y, w, h))
         break
-      default:
-        console.warn(`Invalid value for visualizer mode option: ${mode}`)
-        return
     }
   }
 
-  private drawWaves(points: number[][]) {
-    const {
-      canvasWidth: cW,
-      canvasHeight: cH,
-      position,
-      tickRadius,
-    } = this.options
-    const isVertical = this.isVertical()
+  private calculatePosition(amplitude: number) {
+    const { position, width, height, strokeWidth } = this.options
+    const isVertical = [
+      VisualizerDirection.TopToBottom,
+      VisualizerDirection.BottomToTop,
+    ].includes(this.options.direction)
+    const total = isVertical ? width : height
 
-    let [startX, startY, endX, endY] = [0, 0, 0, 0]
-    if (isVertical) {
-      endY = cH
-      if (position === VisualizerPosition.Center) startX = endX = cW / 2
-      else if (position === VisualizerPosition.End) startX = endX = cW
-    } else {
-      endX = cW
-      if (position === VisualizerPosition.Center) startY = endY = cH / 2
-      else if (position === VisualizerPosition.End) startY = endY = cH
+    switch (position) {
+      case VisualizerPosition.Start:
+        return strokeWidth
+      case VisualizerPosition.End:
+        return total - amplitude - strokeWidth
+      case VisualizerPosition.Center:
+        return total / 2 - amplitude / 2
+      default:
+        return strokeWidth
     }
-    points.unshift([startX, startY])
-    points.push([endX, endY])
+  }
 
-    if (position === VisualizerPosition.Center) {
-      const symmetricPoints = points
-        .slice()
-        .reverse()
-        .map(([x, y]) => {
-          return isVertical ? [cW - x, y] : [x, cH - y]
-        })
-      points.push(...symmetricPoints)
-    }
-    if (position === VisualizerPosition.Start) {
-      points = points.map(([x, y, w = 0, h = 0]) =>
-        isVertical ? [x + w, y, w, h] : [x, y + h, w, h],
-      )
-    }
-
-    ;(tickRadius > 0 ? drawCurve : drawLine)(this.context, points)
+  private drawWaveform(points: number[][], isClosed = false) {
+    const { tickRadius } = this.options
+    ;(tickRadius > 0 ? drawCurve : drawLine)(this.context, points, isClosed)
     this.context.fill()
   }
 
-  private drawDrop(x: number, y: number, width: number, height: number) {
+  private drawBar(x: number, y: number, w: number, h: number) {
+    drawRoundedRectangle(this.context, x, y, w, h, this.options.tickRadius)
+  }
+
+  private drawDroplet(x: number, y: number, w: number, h: number) {
     const {
-      tickRadius,
-      barThickness,
-      canvasWidth,
-      canvasHeight,
-      strokeWidth,
       position,
+      direction,
+      outlineSize,
+      tickRadius,
+      width,
+      height,
+      strokeWidth,
+      shape,
     } = this.options
+    const isVertical = [
+      VisualizerDirection.TopToBottom,
+      VisualizerDirection.BottomToTop,
+    ].includes(direction)
+    const canvasSize = isVertical ? width - strokeWidth : height - strokeWidth
 
-    const isVertical = this.isVertical()
-    const canvasSize = isVertical
-      ? canvasWidth - strokeWidth
-      : canvasHeight - strokeWidth
-
-    const positionAngles: Record<VisualizerPosition, number | number[]> = {
-      [VisualizerPosition.Start]: isVertical ? 1 : 0,
-      [VisualizerPosition.End]: isVertical ? 3 : 2,
+    const angleMap = {
+      [VisualizerPosition.Start]: isVertical
+        ? 1
+        : shape === VisualizerShape.Circle
+          ? 2
+          : 0,
+      [VisualizerPosition.End]: isVertical
+        ? 3
+        : shape === VisualizerShape.Circle
+          ? 0
+          : 2,
       [VisualizerPosition.Center]: isVertical ? [1, 3] : [0, 2],
     }
+    let angle = angleMap[position] ?? 0
+    if (isVertical && shape === VisualizerShape.Circle) {
+      const circleAngleMap = {
+        [VisualizerPosition.Start]: 3,
+        [VisualizerPosition.End]: 0,
+        [VisualizerPosition.Center]: [0, 2],
+      }
+      if (position === VisualizerPosition.Start) [w, h] = [h, w]
+      angle = circleAngleMap[position]
+    }
 
-    const dropAngle = positionAngles[position] ?? 0
     drawDrop(
       this.context,
       x,
       y,
-      width,
-      height,
-      barThickness,
-      dropAngle,
+      w,
+      h,
+      outlineSize,
+      angle,
       tickRadius,
       canvasSize,
     )
   }
 
-  private rotateContext(angle: number = 0) {
-    this.context.translate(
-      this.options.canvasWidth / 2,
-      this.options.canvasHeight / 2,
-    )
-    this.context.rotate(angle * (Math.PI / 180))
-  }
-
-  private applyInvertEffect() {
-    this.context.globalCompositeOperation = "source-over"
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
-    this.context.globalCompositeOperation = "destination-out"
+  private drawLevels(x: number, y: number, w: number, h: number) {
+    const { outlineSize, tickRadius } = this.options
+    drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
   }
 
   private showAxis() {
-    const { canvasWidth: w, canvasHeight: h } = this.options
+    const { width: w, height: h } = this.options
     this.context.lineWidth = 2
     this.context.strokeStyle = "#f005"
     drawLine(this.context, [
@@ -455,6 +376,6 @@ export default class Visualizer {
       [w, h / 2],
     ])
     drawRectangle(this.context, 0, 0, w, h)
-    this.strokeStyle()
+    this.applyStyles()
   }
 }
