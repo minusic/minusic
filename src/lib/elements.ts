@@ -10,15 +10,14 @@ export function createElement(
   events: { [key: string]: (event: Event) => {} | void } = {},
 ) {
   const element = document.createElement(type)
-  properties.text && (element.innerText = properties.text)
-  properties.container && properties.container.appendChild(element)
-  Object.entries(attributes).forEach(([key, value]) => {
-    element.setAttribute(key, Array.isArray(value) ? value.join(" ") : value)
-  })
-  Object.entries(events).forEach(
-    ([eventType, callback]: [string, (e: Event) => {} | void]) => {
-      element.addEventListener(eventType, (event: Event) => callback(event))
-    },
+  if (properties.text) element.innerText = properties.text
+  if (properties.container) properties.container.appendChild(element)
+
+  Object.entries(attributes).forEach(([key, value]) =>
+    element.setAttribute(key, Array.isArray(value) ? value.join(" ") : value),
+  )
+  Object.entries(events).forEach(([type, handler]) =>
+    element.addEventListener(type, (event) => handler(event)),
   )
   return element
 }
@@ -35,11 +34,11 @@ export function unwrapElement(container: HTMLElement, target: HTMLElement) {
   container.parentNode.removeChild(container)
 }
 
-export function setStyle(
+export function applyStyles(
   element: HTMLElement,
   styles: { [key: string]: string },
 ) {
-  for (const property in styles) {
-    element.style.setProperty(property, styles[property])
-  }
+  Object.entries(styles).forEach(([property, value]) =>
+    element.style.setProperty(property, value),
+  )
 }

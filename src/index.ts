@@ -51,7 +51,15 @@ export default class Minusic {
   }
 
   public destroy() {
-    this.removeMediaEvents()
+    const events = [
+      "timeupdate",
+      "pause",
+      "play",
+      "volumechange",
+      "ratechange",
+      "ended",
+    ]
+    events.forEach((event) => this.media.removeEventListener(event, () => {}))
     unwrapElement(this.elements.container, this.media)
   }
 
@@ -218,12 +226,6 @@ export default class Minusic {
     })
   }
 
-  private removeMediaEvents() {
-    this.media.removeEventListener("timeupdate", this.updateProgress)
-    this.media.removeEventListener("pause", this.pause)
-    this.media.removeEventListener("play", this.play)
-  }
-
   private initializeVisualizer() {
     if (!this.options.visualizer) return
     this.visualizer = new Visualizer({
@@ -326,13 +328,16 @@ export default class Minusic {
   }
 
   get duration() {
-    return !Number.isNaN(this.media.duration) &&
+    if (
+      !Number.isNaN(this.media.duration) &&
       Number.isFinite(this.media.duration)
-      ? this.media.duration
-      : this.options.duration &&
-          !Number.isNaN(parseInt(`${this.options.duration}`))
-        ? parseInt(`${this.options.duration}`)
-        : 0
+    ) {
+      return this.media.duration
+    }
+    const optionsDuration = this.options?.duration
+    return optionsDuration && !Number.isNaN(parseInt(`${optionsDuration}`))
+      ? parseInt(`${optionsDuration}`)
+      : 0
   }
 
   get muted() {

@@ -13,7 +13,7 @@ import {
   drawRectangle,
   drawRoundedRectangle,
 } from "./canvas"
-import { setStyle } from "./elements"
+import { applyStyles } from "./elements"
 
 export default class Visualizer {
   private media!: HTMLMediaElement
@@ -88,7 +88,7 @@ export default class Visualizer {
 
   private updateCanvasSize() {
     const { width, height } = this.options
-    setStyle(this.canvas, {
+    applyStyles(this.canvas, {
       width: `${width}px`,
       height: `${height}px`,
     })
