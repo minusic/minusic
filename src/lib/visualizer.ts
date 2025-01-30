@@ -39,11 +39,15 @@ export default class Visualizer {
     direction: VisualizerDirection.TopToBottom,
     symmetry: VisualizerSymmetry.None,
     canvasBackground: "transparent", //"#000",
-    fillColor: "#f005", // "#89E76F",
+    fillColor: "#f000", // "#89E76F",
     outlineColor: "#000",
     invertColors: false,
     circleRadius: 80,
-    showAxis: true,
+    showAxis: false,
+    shadowColor: "#f005",
+    shadowBlur: 0,
+    shadowOffsetX: -10,
+    shadowOffsetY: 10
   }
 
   constructor({
@@ -106,6 +110,10 @@ export default class Visualizer {
     gradient.addColorStop(1, "#98067F")
     this.context.strokeStyle = this.options.outlineColor
     this.context.lineWidth = this.options.strokeWidth
+    this.context.shadowColor = this.options.shadowColor || "transparent"
+    this.context.shadowBlur = this.options.shadowBlur || 0
+    this.context.shadowOffsetX = this.options.shadowOffsetX || 0
+    this.context.shadowOffsetY = this.options.shadowOffsetY || 0
   }
 
   update(paused: boolean) {
