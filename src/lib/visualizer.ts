@@ -3,6 +3,7 @@ import {
   VisualizerMode,
   VisualizerPosition,
   VisualizerShape,
+  VisualizerStack,
   VisualizerSymmetry,
 } from "../enums"
 import {
@@ -24,7 +25,7 @@ export default class Visualizer {
   private analyser!: AnalyserNode
   initialized = false
   options = {
-    tick: 40,
+    tick: 21,
     width: 900,
     height: 400, //220,
     barAmplitude: 400, //220, // should default at max size
@@ -33,21 +34,26 @@ export default class Visualizer {
     strokeWidth: 2, //3,
     frequencyRange: 0.75,
     frequencyMaxValue: 255,
-    shape: VisualizerShape.Circle,
+    circleRadius: 20,
+    circleStartAngle: 0, // 0 by default
+    circleEndAngle: 360, // 360 by default
+    shape: VisualizerShape.Line,
     mode: VisualizerMode.Waves,
-    position: VisualizerPosition.Start,
-    direction: VisualizerDirection.TopToBottom,
+    position: VisualizerPosition.End,
+    direction: VisualizerDirection.LeftToRight,
     symmetry: VisualizerSymmetry.None,
     canvasBackground: "transparent", //"#000",
     fillColor: "#f000", // "#89E76F",
     outlineColor: "#000",
     invertColors: false,
-    circleRadius: 80,
-    showAxis: false,
-    shadowColor: "#f005",
+    showAxis: true,
+    shadowColor: "#f000",
     shadowBlur: 0,
     shadowOffsetX: -10,
-    shadowOffsetY: 10
+    shadowOffsetY: 10,
+    stack: VisualizerStack.None,
+    stackDepth: 1,
+    stackScale: 0.9,
   }
 
   constructor({
@@ -108,7 +114,7 @@ export default class Visualizer {
     gradient.addColorStop(0, "#98067F")
     gradient.addColorStop(0.5, "#685FEE")
     gradient.addColorStop(1, "#98067F")
-    this.context.strokeStyle = this.options.outlineColor
+    this.context.strokeStyle = gradient //this.options.outlineColor
     this.context.lineWidth = this.options.strokeWidth
     this.context.shadowColor = this.options.shadowColor || "transparent"
     this.context.shadowBlur = this.options.shadowBlur || 0
@@ -120,16 +126,21 @@ export default class Visualizer {
     if (!paused && !this.audioContext) this.initializeAudioContext()
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     if (this.options.showAxis) this.showAxis()
+    if (this.options.invertColors) this.invertCanvasColors()
 
-    if (this.options.invertColors) {
-      this.context.globalCompositeOperation = "source-over"
-      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
-      this.context.globalCompositeOperation = "destination-out"
-    }
-
-    const frequencies = this.getProcessedFrequencies(paused)
+    let frequencies = this.getProcessedFrequencies(paused)
     if (!frequencies.length) return frequencies
-    this.renderVisualization(frequencies)
+
+    switch (this.options.stack) {
+      case VisualizerStack.Duplicate:
+        this.renderDuplicateStack(frequencies)
+        break
+      case VisualizerStack.Divide:
+        this.renderDividedStack(frequencies)
+        break
+      default:
+        this.renderVisualization(frequencies)
+    }
     return frequencies
   }
 
@@ -174,23 +185,64 @@ export default class Visualizer {
     }
   }
 
+  private renderDuplicateStack(frequencies: number[]) {
+    this.renderVisualization(frequencies)
+    let scaledFrequencies = [...frequencies]
+
+    for (let i = 0; i < this.options.stackDepth; i++) {
+      scaledFrequencies = scaledFrequencies.map(
+        (value) => value * this.options.stackScale,
+      )
+      this.renderVisualization(scaledFrequencies)
+    }
+  }
+
+  private renderDividedStack(frequencies: number[]): void {
+    const chunkSize = Math.floor(frequencies.length / this.options.stackDepth)
+
+    for (let i = 0; i < this.options.stackDepth; i++) {
+      const frequencyChunk = frequencies.slice(
+        i * chunkSize,
+        (i + 1) * chunkSize,
+      )
+      this.renderVisualization(frequencyChunk)
+    }
+  }
+
   private renderCircleVisualization(frequencies: number[]) {
-    const { mode, width, height, frequencyMaxValue, circleRadius } =
-      this.options
+    const {
+      mode,
+      width,
+      height,
+      frequencyMaxValue,
+      circleRadius,
+      circleStartAngle,
+      circleEndAngle,
+    } = this.options
 
     if (mode === VisualizerMode.Waves) {
       const centerX = width / 2
       const centerY = height / 2
-      const angle = 360 / frequencies.length
+      const angleSize = circleEndAngle - circleStartAngle
+      const angle =
+        angleSize === 360
+          ? angleSize / frequencies.length
+          : angleSize / (frequencies.length - 1)
 
       const points = frequencies.map((freq, i) => {
         const size = (centerY - circleRadius) * (freq / frequencyMaxValue)
         const r = circleRadius + size
-        const theta = angle * (i + 0.5) * (Math.PI / 180) - Math.PI / 2
+        let theta = angle * (i + 0.5) * (Math.PI / 180) + Math.PI / 2
+        if (angleSize !== 360) {
+          theta =
+            angle * i * (Math.PI / 180) +
+            Math.PI / 2 +
+            circleStartAngle * (Math.PI / 180)
+        }
         return [centerX + r * Math.cos(theta), centerY + r * Math.sin(theta)]
       })
 
-      this.drawWaveform(points, true)
+      this.drawWaveform(points, angleSize === 360)
       return
     }
 
@@ -203,9 +255,15 @@ export default class Visualizer {
       barAmplitude,
       position,
       circleRadius,
+      circleStartAngle,
+      circleEndAngle,
       mode,
     } = this.options
-    const angle = 360 / frequencies.length
+    const angleSize = circleEndAngle - circleStartAngle
+    const angle =
+      angleSize === 360
+        ? angleSize / frequencies.length
+        : angleSize / (frequencies.length - 1)
     const x = -outlineSize / 2
 
     frequencies.forEach((freq, i) => {
@@ -219,7 +277,12 @@ export default class Visualizer {
 
       this.context.save()
       this.context.translate(this.options.width / 2, this.options.height / 2)
-      this.context.rotate((i + 0.5) * angle * (Math.PI / 180))
+      if (angleSize === 360)
+        this.context.rotate((i + 0.5) * angle * (Math.PI / 180))
+      else
+        this.context.rotate(
+          i * angle * (Math.PI / 180) + circleStartAngle * (Math.PI / 180),
+        )
 
       if (mode === VisualizerMode.Bars) {
         this.drawBar(x, y, outlineSize, amplitude)
@@ -402,6 +465,12 @@ export default class Visualizer {
       VisualizerDirection.TopToBottom,
       VisualizerDirection.BottomToTop,
     ].includes(this.options.direction)
+  }
+
+  private invertCanvasColors() {
+    this.context.globalCompositeOperation = "source-over"
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    this.context.globalCompositeOperation = "destination-out"
   }
 
   private showAxis() {
