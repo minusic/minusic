@@ -38,8 +38,8 @@ export default class Minusic {
     if (!this.validateMediaElement()) return
     this.options = options
 
-    const { container, controls } = this.buildPlayerStructure()
-    this.elements = this.createPlayerElements(container, controls)
+    const { container, controls, metadata } = this.buildPlayerStructure()
+    this.elements = this.createPlayerElements(container, controls, metadata)
 
     this.applyInitialSettings(options)
     this.bindMediaEvents()
@@ -68,24 +68,31 @@ export default class Minusic {
   }
 
   private buildPlayerStructure() {
-    const container = createElement("div")
+    const container = createElement("div", {}, { class: CSSClass.Container })
     const controls = createElement(
       "div",
       { container },
-      { class: CSSClass.Container },
+      { class: CSSClass.Controls },
     )
-    return { container, controls }
+    const metadata = createElement(
+      "div",
+      { container },
+      { class: CSSClass.Metadata },
+    )
+    return { container, controls, metadata }
   }
 
   private createPlayerElements(
     container: HTMLElement,
     controls: HTMLElement,
+    metadata: HTMLElement,
   ): Elements {
     const progressContainer = this.createProgressContainer(controls)
 
     return {
       container,
       controls,
+      metadata,
       buttons: {
         play: this.createButton(controls, "Play", CSSClass.PlayButton, () =>
           this.togglePlay(),
@@ -109,7 +116,34 @@ export default class Minusic {
         ),
       },
       soundBar: this.createSoundBar(controls),
-      visualizer: createElement("canvas", { container }) as HTMLCanvasElement,
+      visualizer: createElement(
+        "canvas",
+        { container },
+        { class: CSSClass.Visualizer },
+      ) as HTMLCanvasElement,
+      title: createElement(
+        "p",
+        { text: this.options.title, container: metadata },
+        { class: CSSClass.Title },
+      ),
+      author: createElement(
+        "p",
+        { text: this.options.author, container: metadata },
+        { class: CSSClass.Author },
+      ),
+      album: createElement(
+        "p",
+        { text: this.options.album, container: metadata },
+        { class: CSSClass.Album },
+      ),
+      thumbnail: createElement(
+        "img",
+        { container: metadata },
+        {
+          src: this.options.thumbnail ? this.options.thumbnail : "",
+          class: CSSClass.Thumbnail,
+        },
+      ),
     }
   }
 

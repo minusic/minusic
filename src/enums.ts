@@ -1,5 +1,7 @@
 export enum CSSClass {
   Container = "minusic-container",
+  Controls = "minusic-controls",
+  Metadata = "minusic-metadata",
   ControlButton = "minusic-controls-button",
   PlayButton = "minusic-controls-play-button",
   MuteButton = "minusic-controls-mute-button",
@@ -11,6 +13,11 @@ export enum CSSClass {
   SoundBar = "minusic-controls-sound-bar",
   CurrentTime = "minnusic-controls-current-time",
   TotalTime = "minnusic-controls-total-time",
+  Visualizer = "minusic-visualizer",
+  Title = "minnusic-meta-title",
+  Author = "minnusic-meta-author",
+  Album = "minnusic-meta-album",
+  Thumbnail = "minnusic-meta-thumbnail",
 }
 
 export enum VisualizerShape {
@@ -43,4 +50,10 @@ export enum VisualizerMode {
   Levels = "levels",
   Drops = "drops",
   Waves = "waves",
+}
+
+export enum VisualizerStack {
+  Duplicate = "duplicate",
+  Divide = "divide",
+  None = "none",
 }

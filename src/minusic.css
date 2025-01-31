@@ -11,6 +11,12 @@
 }
 
 .minusic-container {
+  width: 900px;
+  display: flex;
+  flex-direction: column;
+}
+
+.minusic-controls {
   display: flex;
   align-items: center;
   min-width: 300px;
@@ -18,6 +24,7 @@
   font-size: 13px;
   height: 40px;
   background-color: var(--minusic-bg-container);
+  order: 2;
 }
 
 .minusic-controls-button {
@@ -213,6 +220,41 @@ progress::-moz-progress-bar {
   border-radius: 10px;
 }
 
-.minusic-container {
-  width: 900px;
+.minusic-visualizer {
+  order: 1;
+}
+
+.minusic-metadata {
+  display: grid;
+  grid-template-columns: 90px 3fr;
+  grid-template-rows: repeat(3, 1fr);
+  grid-column-gap: 10px;
+  grid-row-gap: 0px;
+  order: 3;
+  padding: 20px;
+  background: #fff;
+}
+
+.minusic-metadata p {
+  margin: 0;
+}
+
+.minnusic-meta-title {
+  grid-area: 1 / 2 / 2 / 3;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #101010;
+}
+.minnusic-meta-author {
+  grid-area: 2 / 2 / 3 / 3;
+  font-size: 1rem;
+  color: var(--minusic-text-secondary);
+}
+.minnusic-meta-album {
+  grid-area: 3 / 2 / 4 / 3;
+}
+.minnusic-meta-thumbnail {
+  display: block;
+  width: 100%;
+  grid-area: 1 / 1 / 4 / 2;
 }

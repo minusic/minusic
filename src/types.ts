@@ -12,12 +12,17 @@ export interface ConstructorParameters {
     startTime?: number
     defaultVolume?: number
     visualizerType?: string
+    title?: string
+    author?: string
+    album?: string
+    thumbnail?: string
   }
 }
 
 export interface Elements {
   container: HTMLElement
   controls: HTMLElement
+  metadata: HTMLElement
   buttons: {
     play: HTMLElement
     mute: HTMLElement
@@ -30,4 +35,8 @@ export interface Elements {
   }
   soundBar: HTMLInputElement
   visualizer: HTMLCanvasElement
+  title: HTMLElement
+  author: HTMLElement
+  album: HTMLElement
+  thumbnail: HTMLElement
 }
