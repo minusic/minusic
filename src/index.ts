@@ -38,8 +38,8 @@ export default class Minusic {
     if (!this.validateMediaElement()) return
     this.options = options
 
-    const { container, controls, metadata } = this.buildPlayerStructure()
-    this.elements = this.createPlayerElements(container, controls, metadata)
+    const { container, controls } = this.buildPlayerStructure()
+    this.elements = this.createPlayerElements(container, controls)
 
     this.applyInitialSettings(options)
     this.bindMediaEvents()
@@ -48,6 +48,7 @@ export default class Minusic {
     if (options.visualizer) {
       this.initializeVisualizer()
     }
+    this.updateProgress()
   }
 
   public destroy() {
@@ -74,25 +75,18 @@ export default class Minusic {
       { container },
       { class: CSSClass.Controls },
     )
-    const metadata = createElement(
-      "div",
-      { container },
-      { class: CSSClass.Metadata },
-    )
-    return { container, controls, metadata }
+    return { container, controls }
   }
 
   private createPlayerElements(
     container: HTMLElement,
     controls: HTMLElement,
-    metadata: HTMLElement,
   ): Elements {
     const progressContainer = this.createProgressContainer(controls)
 
     return {
       container,
       controls,
-      metadata,
       buttons: {
         play: this.createButton(controls, "Play", CSSClass.PlayButton, () =>
           this.togglePlay(),
@@ -121,6 +115,18 @@ export default class Minusic {
         { container },
         { class: CSSClass.Visualizer },
       ) as HTMLCanvasElement,
+      ...this.createMetadata(container),
+    }
+  }
+
+  private createMetadata(container: HTMLElement) {
+    if (!this.options.metadata) return {}
+    const metadata = createElement(
+      "div",
+      { container },
+      { class: CSSClass.Metadata },
+    )
+    return {
       title: createElement(
         "p",
         { text: this.options.title, container: metadata },

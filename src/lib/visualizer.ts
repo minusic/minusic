@@ -26,9 +26,9 @@ export default class Visualizer {
   initialized = false
   options = {
     tick: 21,
-    width: 900,
-    height: 400, //220,
-    barAmplitude: 400, //220, // should default at max size
+    width: 500,
+    height: 200, //220,
+    barAmplitude: 200, //220, // should default at max size
     outlineSize: 5,
     tickRadius: 1, //200,
     strokeWidth: 2, //3,
@@ -46,13 +46,13 @@ export default class Visualizer {
     fillColor: "#f000", // "#89E76F",
     outlineColor: "#000",
     invertColors: false,
-    showAxis: true,
+    showAxis: false,
     shadowColor: "#f000",
     shadowBlur: 0,
     shadowOffsetX: -10,
     shadowOffsetY: 10,
-    stack: VisualizerStack.None,
-    stackDepth: 1,
+    stack: VisualizerStack.Duplicate,
+    stackDepth: 8,
     stackScale: 0.9,
   }
 
@@ -109,11 +109,11 @@ export default class Visualizer {
   }
 
   private applyStyles() {
-    this.context.fillStyle = this.options.fillColor || "transparent"
     const gradient = this.context.createLinearGradient(0, 0, 900, 130)
     gradient.addColorStop(0, "#98067F")
     gradient.addColorStop(0.5, "#685FEE")
     gradient.addColorStop(1, "#98067F")
+    this.context.fillStyle = this.options.fillColor || "transparent"
     this.context.strokeStyle = gradient //this.options.outlineColor
     this.context.lineWidth = this.options.strokeWidth
     this.context.shadowColor = this.options.shadowColor || "transparent"

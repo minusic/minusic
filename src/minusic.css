@@ -11,7 +11,7 @@
 }
 
 .minusic-container {
-  width: 900px;
+  width: 500px;
   display: flex;
   flex-direction: column;
 }
@@ -25,6 +25,7 @@
   height: 40px;
   background-color: var(--minusic-bg-container);
   order: 2;
+  border-radius: 3px;
 }
 
 .minusic-controls-button {
@@ -233,6 +234,8 @@ progress::-moz-progress-bar {
   order: 3;
   padding: 20px;
   background: #fff;
+  margin-top: 20px;
+  border-radius: 3px;
 }
 
 .minusic-metadata p {
