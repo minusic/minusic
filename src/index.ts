@@ -5,6 +5,7 @@ import { bound, formatTime } from "./lib/utils"
 import Visualizer from "./lib/visualizer"
 import { ConstructorParameters, Elements } from "./types"
 import Range from "./lib/range"
+import { Progress } from "./lib/progress"
 
 export * from "./types"
 export default class Minusic {
@@ -198,16 +199,10 @@ export default class Minusic {
   }
 
   private createBufferBar(container: HTMLElement) {
-    return createElement(
-      "progress",
-      { container },
-      {
-        class: [CSSClass.Progress, CSSClass.BufferBar],
-        max: "100",
-        min: "0",
-        value: "0",
-      },
-    ) as HTMLProgressElement
+    return new Progress({
+      container,
+      cssClass: [CSSClass.BufferBar],
+    })
   }
 
   private createTimeDisplay(

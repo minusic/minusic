@@ -32,7 +32,7 @@ export interface Elements {
   }
   progress: {
     timeBar: any //HTMLInputElement
-    bufferBar: HTMLProgressElement
+    bufferBar: any //HTMLProgressElement
     currentTime: HTMLElement
     totalTime: HTMLElement
   }
