@@ -58,7 +58,10 @@ export default class Range {
       },
       {
         click: this.handleInteraction.bind(this),
-        mousedown: () => (this.config.isActive = true),
+        mousedown: (event) => {
+          this.config.isActive = true
+          this.handleInteraction(event)
+        },
         keydown: this.handleKeyDown.bind(this),
       },
     )
