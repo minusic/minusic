@@ -4,6 +4,7 @@ import { createElement, unwrapElement, wrapElement } from "./lib/elements"
 import { bound, formatTime } from "./lib/utils"
 import Visualizer from "./lib/visualizer"
 import { ConstructorParameters, Elements } from "./types"
+import Range from "./lib/range"
 
 export * from "./types"
 export default class Minusic {
@@ -180,25 +181,19 @@ export default class Minusic {
 
   private createProgressElements(container: HTMLElement) {
     return {
-      timeBar: createElement(
-        "input",
-        { container },
-        {
-          class: [CSSClass.Range, CSSClass.TimeBar],
-          type: "range",
-          min: "0",
-          max: "100",
-          value: "0",
-          step: "0.01",
-          "aria-label": "Seek time",
+      timeBar: new Range({
+        container,
+        cssClass: [CSSClass.TimeBar],
+        label: "Seek time",
+        min: 0,
+        max: 100,
+        step: 0.01,
+        handler: (value) => {
+          this.currentTime = Number(value * this.duration) / 100
+          console.log(value)
         },
-        {
-          input: (e: Event) =>
-            (this.currentTime =
-              (Number((e.target as HTMLInputElement).value) * this.duration) /
-              100),
-        },
-      ) as HTMLInputElement,
+        value: 0,
+      }),
     }
   }
 
@@ -231,25 +226,15 @@ export default class Minusic {
   }
 
   private createSoundBar(container: HTMLElement) {
-    return createElement(
-      "input",
-      { container },
-      {
-        class: [CSSClass.Range, CSSClass.SoundBar],
-        type: "range",
-        min: "0",
-        max: "100",
-        value: "100",
-        style: "--value: 100%",
+    return new Range({
+      container,
+      label: "Sound bar",
+      handler: (value) => {
+        this.volume = value
       },
-      {
-        input: (e: Event) => {
-          const value = parseInt((e.target as HTMLInputElement).value) / 100
-          this.volume = value
-          if (this.muted) this.unmute()
-        },
-      },
-    ) as HTMLInputElement
+      value: this.volume,
+      cssClass: [CSSClass.SoundBar],
+    })
   }
 
   private bindMediaEvents() {
@@ -287,8 +272,7 @@ export default class Minusic {
     const { timeBar, currentTime, totalTime, bufferBar } =
       this.elements.progress
     bufferBar.value = this.buffer
-    timeBar.value = `${this.progress}`
-    timeBar.style.setProperty("--value", `${this.progress.toFixed(2)}%`)
+    timeBar.value = this.progress
     currentTime.innerText = formatTime(this.currentTime)
     totalTime.innerText = formatTime(this.duration)
   }
@@ -322,15 +306,13 @@ export default class Minusic {
 
   public mute() {
     this.elements.container.dataset.muted = "true"
-    this.elements.soundBar.value = `0`
-    this.elements.soundBar.style.setProperty("--value", `0%`)
+    this.elements.soundBar.value = 0
     this.media.muted = true
   }
 
   public unmute() {
     this.elements.container.dataset.muted = "false"
-    this.elements.soundBar.value = `${this.volume * 100}`
-    this.elements.soundBar.style.setProperty("--value", `${this.volume * 100}%`)
+    this.elements.soundBar.value = this.volume
     this.media.muted = false
   }
 
@@ -390,8 +372,11 @@ export default class Minusic {
 
   set volume(value) {
     value = bound(value, 0, 1)
-    this.elements.soundBar.value = `${value * 100}`
-    if (this.media.volume !== value) this.media.volume = value
+    this.elements.soundBar.value = value
+    if (this.media.volume !== value) {
+      this.media.volume = value
+      if (this.muted && this.volume) this.unmute()
+    }
   }
 
   get playbackRate() {

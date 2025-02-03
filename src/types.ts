@@ -1,3 +1,5 @@
+import Range from "./lib/range"
+
 export interface ConstructorParameters {
   target: string
   options: {
@@ -29,12 +31,12 @@ export interface Elements {
     mute: HTMLElement
   }
   progress: {
-    timeBar: HTMLInputElement
+    timeBar: any //HTMLInputElement
     bufferBar: HTMLProgressElement
     currentTime: HTMLElement
     totalTime: HTMLElement
   }
-  soundBar: HTMLInputElement
+  soundBar: Range
   visualizer: HTMLCanvasElement
   title?: HTMLElement
   author?: HTMLElement

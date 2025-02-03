@@ -7,7 +7,7 @@ export function createElement(
     container?: HTMLElement
   } = {},
   attributes: { [key: string]: string | string[] } = {},
-  events: { [key: string]: (event: Event) => {} | void } = {},
+  events: { [key: string]: (event: any) => void } = {},
 ) {
   const element = document.createElement(type)
   if (properties.text) element.innerText = properties.text
