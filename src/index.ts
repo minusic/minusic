@@ -4,8 +4,9 @@ import { createElement, unwrapElement, wrapElement } from "./lib/elements"
 import { bound, formatTime } from "./lib/utils"
 import Visualizer from "./lib/visualizer"
 import { ConstructorParameters, Elements } from "./types"
-import Range from "./lib/range"
-import { Progress } from "./lib/progress"
+import Range from "./lib/ui/range"
+import CircularRange from "./lib/ui/circularRange"
+import Progress from "./lib/ui/progress"
 
 export * from "./types"
 export default class Minusic {
@@ -191,7 +192,6 @@ export default class Minusic {
         step: 0.01,
         handler: (value) => {
           this.currentTime = Number(value * this.duration) / 100
-          console.log(value)
         },
         value: 0,
       }),
@@ -221,7 +221,7 @@ export default class Minusic {
   }
 
   private createSoundBar(container: HTMLElement) {
-    return new Range({
+    return new CircularRange({
       container,
       label: "Sound bar",
       handler: (value) => {
@@ -230,6 +230,15 @@ export default class Minusic {
       value: this.volume,
       cssClass: [CSSClass.SoundBar],
     })
+    // return new Range({
+    //   container,
+    //   label: "Sound bar",
+    //   handler: (value) => {
+    //     this.volume = value
+    //   },
+    //   value: this.volume,
+    //   cssClass: [CSSClass.SoundBar],
+    // })
   }
 
   private bindMediaEvents() {
@@ -369,6 +378,7 @@ export default class Minusic {
     value = bound(value, 0, 1)
     this.elements.soundBar.value = value
     if (this.media.volume !== value) {
+      console.log("======>", value, typeof value)
       this.media.volume = value
       if (this.muted && this.volume) this.unmute()
     }

@@ -22,6 +22,17 @@ export function createElement(
   return element
 }
 
+export function createSVGElement(
+  type: string,
+  attributes: { [key: string]: string } = {},
+) {
+  const element = document.createElementNS("http://www.w3.org/2000/svg", type)
+  for (const [key, value] of Object.entries(attributes)) {
+    element.setAttribute(key, value)
+  }
+  return element
+}
+
 export function wrapElement(container: HTMLElement, target: HTMLElement) {
   if (!target.parentNode) return
   target.parentNode.insertBefore(container, target)

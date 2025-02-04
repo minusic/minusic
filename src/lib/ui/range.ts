@@ -1,6 +1,6 @@
-import { CSSClass } from "../enums"
-import { createElement } from "./elements"
-import { bound } from "./utils"
+import { CSSClass } from "../../enums"
+import { createElement } from "../elements"
+import { bound } from "../utils"
 
 export default class Range {
   private container: HTMLElement

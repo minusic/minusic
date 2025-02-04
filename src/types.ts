@@ -1,4 +1,5 @@
-import Range from "./lib/range"
+import CircularRange from "./lib/ui/circularRange"
+import Range from "./lib/ui/range"
 
 export interface ConstructorParameters {
   target: string
@@ -36,7 +37,7 @@ export interface Elements {
     currentTime: HTMLElement
     totalTime: HTMLElement
   }
-  soundBar: Range
+  soundBar: Range | CircularRange
   visualizer: HTMLCanvasElement
   title?: HTMLElement
   author?: HTMLElement
