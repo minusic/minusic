@@ -10,6 +10,7 @@ export enum CSSClass {
   RangeProgress = "minusic-range-progress",
   RangeThumb = "minusic-range-thumb",
   CircularRange = "minusic-circular-range",
+  CircularRangeBackground = "minusic-circular-range-background",
   CircularRangeProgress = "minusic-circular-range-progress",
   CircularRangeThumb = "minusic-circular-range-thumb",
   ProgressContainer = "minusic-progress-container",
