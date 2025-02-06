@@ -138,10 +138,8 @@ export default class CircularRange {
     const x = event.clientX - centerX
     const y = event.clientY - centerY
     let angle = Math.atan2(y, x) * (180 / Math.PI)
-    angle = (angle + 90 + 360) % 360
-    angle = bound(angle, 0, 360)
-    angle -= this.config.startAngle
-
+    if (angle < 0) angle = 360 + angle
+    angle = (angle + 90 - this.config.startAngle + 360) % 360
     let value = (angle / this.config.angleRange) * this.config.max
     value = bound(value, this.config.min, this.config.max)
     value = this.config.clockwise ? value : this.config.max - value
