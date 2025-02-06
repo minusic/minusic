@@ -106,13 +106,15 @@ export default class CircularRange {
   }
 
   private setupEventListeners() {
-    const moveHandler = (event: MouseEvent) => {
+    const moveHandler = (event: MouseEvent | TouchEvent) => {
       if (this.config.isActive) this.handleInteraction(event)
     }
     const upHandler = () => (this.config.isActive = false)
 
     document.addEventListener("mousemove", moveHandler)
     document.addEventListener("mouseup", upHandler)
+    document.addEventListener("touchmove", moveHandler)
+    document.addEventListener("touchend", upHandler)
     ;[
       this.elements.background,
       this.elements.progress,
@@ -123,6 +125,11 @@ export default class CircularRange {
         this.config.isActive = true
         this.handleInteraction(event)
       })
+      element.addEventListener("touchstart", (event: TouchEvent) => {
+        event.preventDefault()
+        this.config.isActive = true
+        this.handleInteraction(event)
+      })
     })
     this.elements.thumb.addEventListener(
       "keydown",
@@ -130,14 +137,18 @@ export default class CircularRange {
     )
   }
 
-  private handleInteraction(event: MouseEvent) {
+  private handleInteraction(event: MouseEvent | TouchEvent) {
     const { angleRange, min, max, clockwise, startAngle } = this.config
     const { left, width, top, height } =
       this.elements.svg.getBoundingClientRect()
+    const clientX =
+      event instanceof MouseEvent ? event.clientX : event.touches[0].clientX
+    const clientY =
+      event instanceof MouseEvent ? event.clientY : event.touches[0].clientY
     const centerX = left + width / 2
     const centerY = top + height / 2
-    const x = event.clientX - centerX
-    const y = event.clientY - centerY
+    const x = clientX - centerX
+    const y = clientY - centerY
     let angle = Math.atan2(y, x) * (180 / Math.PI)
     // normalize angle
     if (angle < 0) angle = 360 + angle

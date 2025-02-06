@@ -62,6 +62,11 @@ export default class Range {
           this.config.isActive = true
           this.handleInteraction(event)
         },
+        touchstart: (event) => {
+          event.preventDefault()
+          this.config.isActive = true
+          this.handleInteraction(event)
+        },
         keydown: this.handleKeyDown.bind(this),
       },
     )
@@ -88,18 +93,22 @@ export default class Range {
   }
 
   private setupEventListeners() {
-    const moveHandler = (event: MouseEvent) => {
+    const moveHandler = (event: MouseEvent | TouchEvent) => {
       if (this.config.isActive) this.handleInteraction(event)
     }
     const upHandler = () => (this.config.isActive = false)
 
     document.addEventListener("mousemove", moveHandler)
     document.addEventListener("mouseup", upHandler)
+    document.addEventListener("touchmove", moveHandler)
+    document.addEventListener("touchend", upHandler)
   }
 
-  private handleInteraction(event: MouseEvent) {
+  private handleInteraction(event: MouseEvent | TouchEvent) {
     const { left, width } = this.elements.background.getBoundingClientRect()
-    const newValue = ((event.clientX - left) / width) * this.config.max
+    const clientX =
+      event instanceof MouseEvent ? event.clientX : event.touches[0].clientX
+    const newValue = ((clientX - left) / width) * this.config.max
 
     if (!isNaN(newValue)) {
       this.value = newValue
