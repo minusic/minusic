@@ -1,7 +1,6 @@
 import { CSSClass } from "../../enums"
 import { createElement, createSVGElement } from "../elements"
 import { bound } from "../utils"
-import Range from "./range"
 
 export default class CircularRange {
   private radius: number
@@ -12,6 +11,10 @@ export default class CircularRange {
     endAngle: number
     min: number
     max: number
+    angleRange: number
+    step: number
+    isActive: boolean
+    clockwise: boolean
   }
   private elements: {
     svg: SVGElement
@@ -27,15 +30,15 @@ export default class CircularRange {
     step = 0.05,
     min = 0,
     max = 1,
-    startAngle = 90,
-    endAngle = 270,
+    startAngle = 120,
+    endAngle = 240,
     radius = 100,
     value = 0,
     cssClass = [],
+    clockwise = false,
   }: {
     container: HTMLElement
     label: string
-
     handler: (value: number) => void
     value: number
     step?: number
@@ -45,23 +48,39 @@ export default class CircularRange {
     endAngle?: number
     radius?: number
     cssClass: string[]
+    clockwise?: boolean
   }) {
     this.radius = radius
     this.strokeWidth = 15
-    this.config = { value, startAngle, endAngle, min, max }
+    this.config = {
+      value,
+      startAngle,
+      endAngle,
+      step,
+      min,
+      max,
+      isActive: false,
+      clockwise,
+      angleRange: endAngle - startAngle,
+    }
     this.handler = handler
-    this.elements = this.createElements(container, cssClass)
+    this.elements = this.createElements(container, cssClass, label)
     this.updateBackground()
     this.setupEventListeners()
 
     this.value = value
   }
 
-  private createElements(container: HTMLElement, cssClass: string[]) {
+  private createElements(
+    container: HTMLElement,
+    cssClass: string[],
+    label: string = "",
+  ) {
     const svg = createSVGElement("svg", {
       width: `${this.radius * 2}`,
       height: `${this.radius * 2}`,
       class: [CSSClass.CircularRange, ...cssClass].join(" "),
+      "aria-label": label,
     })
 
     const background = createSVGElement("path", {
@@ -77,33 +96,41 @@ export default class CircularRange {
     const thumb = createSVGElement("circle", {
       r: `7.5`,
       class: CSSClass.CircularRangeThumb,
+      tabindex: "1",
     })
 
-    svg.appendChild(background)
-    svg.appendChild(progress)
-    svg.appendChild(thumb)
+    svg.append(background, progress, thumb)
     container.appendChild(svg)
 
     return { svg, progress, background, thumb }
   }
 
   private setupEventListeners() {
-    this.elements.background.addEventListener(
-      "click",
-      this.handleInteraction.bind(this),
-    )
-    this.elements.progress.addEventListener(
-      "click",
-      this.handleInteraction.bind(this),
-    )
+    const moveHandler = (event: MouseEvent) => {
+      if (this.config.isActive) this.handleInteraction(event)
+    }
+    const upHandler = () => (this.config.isActive = false)
+
+    document.addEventListener("mousemove", moveHandler)
+    document.addEventListener("mouseup", upHandler)
+    ;[
+      this.elements.background,
+      this.elements.progress,
+      this.elements.thumb,
+    ].forEach((element) => {
+      element.addEventListener("click", this.handleInteraction.bind(this))
+      element.addEventListener("mousedown", (event: MouseEvent) => {
+        this.config.isActive = true
+        this.handleInteraction(event)
+      })
+    })
     this.elements.thumb.addEventListener(
-      "click",
-      this.handleInteraction.bind(this),
+      "keydown",
+      this.handleKeyDown.bind(this),
     )
   }
 
   private handleInteraction(event: MouseEvent) {
-    const angleRange = this.config.endAngle - this.config.startAngle
     const { left, width, top, height } =
       this.elements.svg.getBoundingClientRect()
     const centerX = left + width / 2
@@ -115,10 +142,21 @@ export default class CircularRange {
     angle = bound(angle, 0, 360)
     angle -= this.config.startAngle
 
-    let value = (angle / angleRange) * this.config.max
+    let value = (angle / this.config.angleRange) * this.config.max
     value = bound(value, this.config.min, this.config.max)
+    value = this.config.clockwise ? value : this.config.max - value
     this.update(value)
     this.handler(value)
+  }
+
+  private handleKeyDown(event: KeyboardEvent) {
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      event.preventDefault()
+      const adjustment =
+        event.key === "ArrowLeft" ? -this.config.step : this.config.step
+      this.value = this.value + adjustment * this.config.max
+      this.handler(this.value)
+    }
   }
 
   private updateBackground() {
@@ -135,8 +173,7 @@ export default class CircularRange {
 
   private update(value: number) {
     const endAngle =
-      (value / this.config.max) *
-        (this.config.endAngle - this.config.startAngle) +
+      (value / this.config.max) * this.config.angleRange +
       this.config.startAngle
     this.elements.progress.setAttribute(
       "d",
@@ -147,10 +184,17 @@ export default class CircularRange {
         endAngle,
       ),
     )
+
+    const angle = this.config.clockwise
+      ? endAngle
+      : this.config.angleRange +
+        this.config.startAngle -
+        (endAngle - this.config.startAngle)
+
     const { x, y } = this.convertAngle(
       { x: this.radius, y: this.radius },
       this.radius - 7.5,
-      endAngle,
+      angle,
     )
     this.elements.thumb.setAttribute("cx", `${x}`)
     this.elements.thumb.setAttribute("cy", `${y}`)
@@ -174,29 +218,26 @@ export default class CircularRange {
     startAngle: number,
     endAngle: number,
   ) {
+    if (!this.config.clockwise) {
+      const gap = this.config.angleRange - (endAngle - startAngle)
+      startAngle += gap
+      endAngle += gap
+    }
     const isFullCircle = (endAngle - startAngle) % 360 === 0
     const adjustedEndAngle = isFullCircle ? endAngle - 1 : endAngle
 
     const start = this.convertAngle(centerPoint, radius, adjustedEndAngle)
     const end = this.convertAngle(centerPoint, radius, startAngle)
+    const rotation = 0
+    const largeArc = endAngle - startAngle <= 180 ? "0" : "1"
+    const sweepFlag = 0
+    const closePath = isFullCircle ? "z" : ""
 
-    const arcSweep = endAngle - startAngle <= 180 ? "0" : "1"
-    const pathCommands = [
-      "M",
-      start.x,
-      start.y,
-      "A",
-      radius,
-      radius,
-      0,
-      arcSweep,
-      0,
-      end.x,
-      end.y,
-      ...(isFullCircle ? ["z"] : []),
-    ]
-
-    return pathCommands.join(" ")
+    return `
+      M ${start.x} ${start.y}
+      A ${radius} ${radius} ${rotation} ${largeArc} ${sweepFlag} ${end.x} ${end.y}
+      ${closePath}
+    `
   }
 
   get value() {

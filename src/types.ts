@@ -20,6 +20,9 @@ export interface ConstructorParameters {
     author?: string
     album?: string
     thumbnail?: string
+    circularSoundBar?: {
+      radius?: number
+    }
   }
 }
 

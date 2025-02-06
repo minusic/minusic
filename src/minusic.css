@@ -12,7 +12,7 @@
 
 .minusic-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
 }
@@ -109,10 +109,9 @@
 .minusic-circular-range {
   background: rgba(255, 0, 0, 0.05);
   position: absolute;
-  right: 0;
-  bottom: 0;
-  margin: 0 !important;
-  max-width: 200px !important;
+  right: 50px;
+  bottom: 10px;
+  max-width: 240px !important;
 }
 .minusic-circular-range-background {
   fill: none;
@@ -128,6 +127,15 @@
 .minusic-circular-range-thumb {
   fill: #fff;
   stroke: none;
+}
+.minusic-circular-range-thumb:focus {
+  appearance: none;
+  box-shadow: none;
+  outline: solid var(--minusic-color-theme);
+  outline-offset: 2px;
+  outline-width: 3px;
+  border: none;
+  border-radius: 100%;
 }
 
 .minusic-progress {

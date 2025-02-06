@@ -221,24 +221,28 @@ export default class Minusic {
   }
 
   private createSoundBar(container: HTMLElement) {
-    return new CircularRange({
-      container,
-      label: "Sound bar",
-      handler: (value) => {
-        this.volume = value
-      },
-      value: this.volume,
-      cssClass: [CSSClass.SoundBar],
-    })
-    // return new Range({
-    //   container,
-    //   label: "Sound bar",
-    //   handler: (value) => {
-    //     this.volume = value
-    //   },
-    //   value: this.volume,
-    //   cssClass: [CSSClass.SoundBar],
-    // })
+    if (this.options.circularSoundBar) {
+      return new CircularRange({
+        container,
+        label: "Sound bar",
+        handler: (value) => {
+          this.volume = value
+        },
+        value: this.volume,
+        cssClass: [CSSClass.SoundBar],
+        radius: this.options.circularSoundBar.radius,
+      })
+    } else {
+      return new Range({
+        container,
+        label: "Sound bar",
+        handler: (value) => {
+          this.volume = value
+        },
+        value: this.volume,
+        cssClass: [CSSClass.SoundBar],
+      })
+    }
   }
 
   private bindMediaEvents() {
@@ -378,7 +382,6 @@ export default class Minusic {
     value = bound(value, 0, 1)
     this.elements.soundBar.value = value
     if (this.media.volume !== value) {
-      console.log("======>", value, typeof value)
       this.media.volume = value
       if (this.muted && this.volume) this.unmute()
     }
