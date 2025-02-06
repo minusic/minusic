@@ -32,7 +32,7 @@ export default class CircularRange {
     max = 1,
     startAngle = 0,
     endAngle = 360,
-    radius = 100,
+    radius = 0,
     value = 0,
     cssClass = [],
     clockwise = true,

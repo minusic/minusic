@@ -7,6 +7,7 @@ import { ConstructorParameters, Elements } from "./types"
 import Range from "./lib/ui/range"
 import CircularRange from "./lib/ui/circularRange"
 import Progress from "./lib/ui/progress"
+import CircularProgress from "./lib/ui/circularProgress"
 
 export * from "./types"
 export default class Minusic {
@@ -220,6 +221,16 @@ export default class Minusic {
   }
 
   private createBufferBar(container: HTMLElement) {
+    if (this.options.circularTimeBar) {
+      return new CircularProgress({
+        container,
+        cssClass: [CSSClass.BufferBar],
+        radius: this.options.circularTimeBar.radius,
+        startAngle: this.options.circularTimeBar.startAngle,
+        endAngle: this.options.circularTimeBar.endAngle,
+        clockwise: this.options.circularTimeBar.clockwise,
+      })
+    }
     return new Progress({
       container,
       cssClass: [CSSClass.BufferBar],
