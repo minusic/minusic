@@ -182,19 +182,40 @@ export default class Minusic {
   }
 
   private createProgressElements(container: HTMLElement) {
-    return {
-      timeBar: new Range({
-        container,
-        cssClass: [CSSClass.TimeBar],
-        label: "Seek time",
-        min: 0,
-        max: 100,
-        step: 0.01,
-        handler: (value) => {
-          this.currentTime = Number(value * this.duration) / 100
-        },
-        value: 0,
-      }),
+    if (this.options.circularTimeBar) {
+      return {
+        timeBar: new CircularRange({
+          container,
+          label: "Seek time",
+          handler: (value) => {
+            this.currentTime = Number(value * this.duration) / 100
+          },
+          min: 0,
+          max: 100,
+          step: 0.01,
+          value: this.volume,
+          cssClass: [CSSClass.TimeBar],
+          radius: this.options.circularTimeBar.radius,
+          startAngle: this.options.circularTimeBar.startAngle,
+          endAngle: this.options.circularTimeBar.endAngle,
+          clockwise: this.options.circularTimeBar.clockwise,
+        }),
+      }
+    } else {
+      return {
+        timeBar: new Range({
+          container,
+          cssClass: [CSSClass.TimeBar],
+          label: "Seek time",
+          min: 0,
+          max: 100,
+          step: 0.01,
+          handler: (value) => {
+            this.currentTime = Number(value * this.duration) / 100
+          },
+          value: 0,
+        }),
+      }
     }
   }
 
@@ -233,7 +254,7 @@ export default class Minusic {
         radius: this.options.circularSoundBar.radius,
         startAngle: this.options.circularSoundBar.startAngle,
         endAngle: this.options.circularSoundBar.endAngle,
-        clockwise: this.options.circularSoundBar.clockwise
+        clockwise: this.options.circularSoundBar.clockwise,
       })
     } else {
       return new Range({

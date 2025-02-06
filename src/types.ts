@@ -20,8 +20,14 @@ export interface ConstructorParameters {
     author?: string
     album?: string
     thumbnail?: string
+    circularTimeBar?: {
+      radius?: number
+      startAngle?: number
+      endAngle?: number
+      clockwise?: boolean
+    }
     circularSoundBar?: {
-      radius?: number,
+      radius?: number
       startAngle?: number
       endAngle?: number
       clockwise?: boolean
