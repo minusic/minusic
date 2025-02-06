@@ -131,6 +131,7 @@ export default class CircularRange {
   }
 
   private handleInteraction(event: MouseEvent) {
+    const { angleRange, min, max, clockwise, startAngle } = this.config
     const { left, width, top, height } =
       this.elements.svg.getBoundingClientRect()
     const centerX = left + width / 2
@@ -138,11 +139,16 @@ export default class CircularRange {
     const x = event.clientX - centerX
     const y = event.clientY - centerY
     let angle = Math.atan2(y, x) * (180 / Math.PI)
+    // normalize angle
     if (angle < 0) angle = 360 + angle
-    angle = (angle + 90 - this.config.startAngle + 360) % 360
-    let value = (angle / this.config.angleRange) * this.config.max
-    value = bound(value, this.config.min, this.config.max)
-    value = this.config.clockwise ? value : this.config.max - value
+    // compute angle depending on startAngle
+    angle = (angle + 90 - startAngle + 360) % 360
+    // avoid value jumping from 0 to max when dragging to minimum
+    if (angle > angleRange + (360 - angleRange) / 2) angle = 0
+
+    let value = (angle / angleRange) * max
+    value = bound(value, min, max)
+    value = clockwise ? value : max - value
     this.update(value)
     this.handler(value)
   }
