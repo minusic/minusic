@@ -21,7 +21,10 @@ export interface ConstructorParameters {
     album?: string
     thumbnail?: string
     circularSoundBar?: {
-      radius?: number
+      radius?: number,
+      startAngle?: number
+      endAngle?: number
+      clockwise?: boolean
     }
   }
 }

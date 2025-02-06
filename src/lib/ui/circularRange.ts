@@ -30,12 +30,12 @@ export default class CircularRange {
     step = 0.05,
     min = 0,
     max = 1,
-    startAngle = 120,
-    endAngle = 240,
+    startAngle = 0,
+    endAngle = 360,
     radius = 100,
     value = 0,
     cssClass = [],
-    clockwise = false,
+    clockwise = true,
   }: {
     container: HTMLElement
     label: string

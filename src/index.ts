@@ -231,6 +231,9 @@ export default class Minusic {
         value: this.volume,
         cssClass: [CSSClass.SoundBar],
         radius: this.options.circularSoundBar.radius,
+        startAngle: this.options.circularSoundBar.startAngle,
+        endAngle: this.options.circularSoundBar.endAngle,
+        clockwise: this.options.circularSoundBar.clockwise
       })
     } else {
       return new Range({
