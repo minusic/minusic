@@ -6,6 +6,7 @@ export default class CircularProgress {
   private container: HTMLElement
   private elements: {
     progressContainer: SVGElement
+    progressBackground: SVGElement
     progressBar: SVGElement
   }
   private config: {
@@ -25,7 +26,7 @@ export default class CircularProgress {
     max = 100,
     value = 0,
     radius = 10,
-    strokeWidth = 1,
+    strokeWidth = 15,
     cssClass = [],
     startAngle = 0,
     endAngle = 360,
@@ -60,18 +61,32 @@ export default class CircularProgress {
     const progressContainer = createSVGElement("svg", {
       width: `${this.config.radius * 2}`,
       height: `${this.config.radius * 2}`,
-      class: [CSSClass.CircularRange, ...cssClass].join(" "),
+      class: [CSSClass.CircularProgress, ...cssClass].join(" "),
     })
+
+    const progressBackground = createSVGElement("path", {
+      "stroke-width": `${this.config.strokeWidth}`,
+      class: CSSClass.CircularProgressBackground,
+    })
+    progressBackground.setAttribute(
+      "d",
+      this.generateArcPath(
+        { x: this.config.radius, y: this.config.radius },
+        this.config.radius - this.config.strokeWidth / 2,
+        this.config.startAngle,
+        this.config.endAngle,
+      ),
+    )
 
     const progressBar = createSVGElement("path", {
       "stroke-width": `${this.config.strokeWidth}`,
-      class: CSSClass.CircularRangeProgress,
+      class: CSSClass.CircularProgressBar,
     })
 
-    progressContainer.appendChild(progressBar)
+    progressContainer.append(progressBackground, progressBar)
     this.container.appendChild(progressContainer)
 
-    return { progressContainer, progressBar }
+    return { progressContainer, progressBackground, progressBar }
   }
 
   private update(value: number) {

@@ -107,7 +107,6 @@
   margin: auto auto auto -9px;
 }
 .minusic-circular-range {
-  background: rgba(255, 0, 0, 0.05);
   position: absolute;
   right: 50px;
   bottom: 10px;
@@ -115,7 +114,7 @@
 }
 .minusic-circular-range-background {
   fill: none;
-  stroke: #eee;
+  stroke: transparent;
   stroke-linecap: round;
 }
 .minusic-circular-range-progress {
@@ -136,6 +135,26 @@
   outline-width: 3px;
   border: none;
   border-radius: 100%;
+}
+.minusic-circular-progress {
+  position: absolute;
+  right: 50px;
+  bottom: 10px;
+  max-width: 240px !important;
+
+  inset: 0;
+  margin: auto;
+}
+.minusic-circular-progress-background {
+  fill: none;
+  stroke: var(--minusic-bg-range);
+  stroke-linecap: round;
+}
+.minusic-circular-progress-bar {
+  stroke: var(--minusic-color-buffer);
+  fill: none;
+  stroke-linecap: round;
+  /* stroke: #eeeeee; */
 }
 
 .minusic-progress {
