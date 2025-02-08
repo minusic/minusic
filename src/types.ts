@@ -1,4 +1,6 @@
+import CircularProgress from "./lib/ui/circularProgress"
 import CircularRange from "./lib/ui/circularRange"
+import Progress from "./lib/ui/progress"
 import Range from "./lib/ui/range"
 
 export interface ConstructorParameters {
@@ -7,7 +9,16 @@ export interface ConstructorParameters {
     duration?: number | string
     debug?: boolean
     autoplay?: boolean
-    controls?: boolean
+    showNativeControls?: boolean
+    controls: {
+      playButton: boolean
+      muteButton: boolean
+      startTime: boolean
+      endTime: boolean
+      soundBar: boolean
+      timeBar: boolean
+      bufferBar: boolean
+    }
     muted?: boolean
     visualizer?: boolean
     playbackRate?: number
@@ -40,16 +51,16 @@ export interface Elements {
   controls: HTMLElement
   metadata?: HTMLElement
   buttons: {
-    play: HTMLElement
-    mute: HTMLElement
+    play: HTMLElement | null
+    mute: HTMLElement | null
   }
   progress: {
-    timeBar: any //HTMLInputElement
-    bufferBar: any //HTMLProgressElement
-    currentTime: HTMLElement
-    totalTime: HTMLElement
+    timeBar: Range | CircularRange | null
+    bufferBar: Progress | CircularProgress | null //HTMLProgressElement
+    currentTime: HTMLElement | null
+    totalTime: HTMLElement | null
   }
-  soundBar: Range | CircularRange
+  soundBar: Range | CircularRange | null
   visualizer: HTMLCanvasElement
   title?: HTMLElement
   author?: HTMLElement

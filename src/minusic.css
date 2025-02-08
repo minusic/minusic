@@ -120,8 +120,8 @@
 .minusic-circular-range-progress {
   cursor: pointer;
   fill: none;
-  stroke: #f44;
   stroke-linecap: round;
+  stroke: var(--minusic-color-theme);
 }
 .minusic-circular-range-thumb {
   fill: #fff;

@@ -18,7 +18,7 @@ export default class Minusic {
   private visualizer!: Visualizer
 
   private applyInitialSettings(options: ConstructorParameters["options"]) {
-    if (!options.controls) this.hideControls()
+    if (!options.showNativeControls) this.hideControls()
     if (options.autoplay) this.media.setAttribute("autoplay", "")
     if (this.muted || options.muted) this.mute()
     if (options.playbackRate) this.playbackRate = options.playbackRate
@@ -40,7 +40,18 @@ export default class Minusic {
   ) {
     this.media = document.querySelector(target) as HTMLMediaElement
     if (!this.validateMediaElement()) return
-    this.options = options
+    const defaultOptions = {
+      controls: {
+        muteButton: true,
+        playButton: true,
+        startTime: true,
+        endTIme: true,
+        soundBar: true,
+        timeBar: true,
+        bufferBar: true,
+      },
+    }
+    this.options = { ...defaultOptions, ...options }
 
     const { container, controls } = this.buildPlayerStructure()
     this.elements = this.createPlayerElements(container, controls)
@@ -84,36 +95,52 @@ export default class Minusic {
 
   private createPlayerElements(
     container: HTMLElement,
-    controls: HTMLElement,
+    controlsContainer: HTMLElement,
   ): Elements {
-    const progressContainer = this.createProgressContainer(controls)
-
+    const progressContainer = this.createProgressContainer(controlsContainer)
+    const { controls } = this.options
     return {
       container,
-      controls,
+      controls: controlsContainer,
       buttons: {
-        play: this.createButton(controls, "Play", CSSClass.PlayButton, () =>
-          this.togglePlay(),
-        ),
-        mute: this.createButton(controls, "Mute", CSSClass.MuteButton, () =>
-          this.toggleMute(),
-        ),
+        play: controls.playButton
+          ? this.createButton(
+              controlsContainer,
+              "Play",
+              CSSClass.PlayButton,
+              () => this.togglePlay(),
+            )
+          : null,
+        mute: controls.muteButton
+          ? this.createButton(
+              controlsContainer,
+              "Mute",
+              CSSClass.MuteButton,
+              () => this.toggleMute(),
+            )
+          : null,
       },
       progress: {
-        ...this.createProgressElements(progressContainer),
+        ...this.createTimeBar(progressContainer),
         bufferBar: this.createBufferBar(progressContainer),
-        currentTime: this.createTimeDisplay(
-          controls,
-          CSSClass.CurrentTime,
-          "Current time",
-        ),
-        totalTime: this.createTimeDisplay(
-          controls,
-          CSSClass.TotalTime,
-          "Total time",
-        ),
+        currentTime: controls.muteButton
+          ? this.createTimeDisplay(
+              controlsContainer,
+              CSSClass.CurrentTime,
+              "Current time",
+            )
+          : null,
+        totalTime: controls.muteButton
+          ? this.createTimeDisplay(
+              controlsContainer,
+              CSSClass.TotalTime,
+              "Total time",
+            )
+          : null,
       },
-      soundBar: this.createSoundBar(controls),
+      soundBar: controls.soundBar
+        ? this.createSoundBar(controlsContainer)
+        : null,
       visualizer: createElement(
         "canvas",
         { container },
@@ -182,7 +209,8 @@ export default class Minusic {
     )
   }
 
-  private createProgressElements(container: HTMLElement) {
+  private createTimeBar(container: HTMLElement) {
+    if (!this.options.controls.timeBar) return { timeBar: null }
     if (this.options.circularTimeBar) {
       return {
         timeBar: new CircularRange({
@@ -221,6 +249,7 @@ export default class Minusic {
   }
 
   private createBufferBar(container: HTMLElement) {
+    if (!this.options.controls.bufferBar) return null
     if (this.options.circularTimeBar) {
       return new CircularProgress({
         container,
@@ -314,10 +343,10 @@ export default class Minusic {
   private updateProgress() {
     const { timeBar, currentTime, totalTime, bufferBar } =
       this.elements.progress
-    bufferBar.value = this.buffer
-    timeBar.value = this.progress
-    currentTime.innerText = formatTime(this.currentTime)
-    totalTime.innerText = formatTime(this.duration)
+    if (bufferBar) bufferBar.value = this.buffer
+    if (timeBar) timeBar.value = this.progress
+    if (currentTime) currentTime.innerText = formatTime(this.currentTime)
+    if (totalTime) totalTime.innerText = formatTime(this.duration)
   }
 
   public play() {
@@ -349,13 +378,13 @@ export default class Minusic {
 
   public mute() {
     this.elements.container.dataset.muted = "true"
-    this.elements.soundBar.value = 0
+    if (this.elements.soundBar) this.elements.soundBar.value = 0
     this.media.muted = true
   }
 
   public unmute() {
     this.elements.container.dataset.muted = "false"
-    this.elements.soundBar.value = this.volume
+    if (this.elements.soundBar) this.elements.soundBar.value = this.volume
     this.media.muted = false
   }
 
@@ -415,7 +444,7 @@ export default class Minusic {
 
   set volume(value) {
     value = bound(value, 0, 1)
-    this.elements.soundBar.value = value
+    if (this.elements.soundBar) this.elements.soundBar.value = value
     if (this.media.volume !== value) {
       this.media.volume = value
       if (this.muted && this.volume) this.unmute()
