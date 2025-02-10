@@ -386,6 +386,7 @@ export default class Minusic {
     this.elements.container.dataset.muted = "false"
     if (this.elements.soundBar) this.elements.soundBar.value = this.volume
     this.media.muted = false
+    if (this.media.volume === 0) this.volume = 1
   }
 
   public showControls = () => this.media.setAttribute("controls", "")
