@@ -104,13 +104,12 @@ export default class Minusic {
       controls: controlsContainer,
       buttons: {
         play: controls.playButton
-          ? this.createButton(
-              controlsContainer,
-              "Play",
-              CSSClass.PlayButton,
-              () => this.togglePlay(),
-            )
-          : null,
+        ? this.createButton(
+          controlsContainer,
+          "Play",
+          CSSClass.PlayButton,
+          () => this.togglePlay(),
+        ): null,
         mute: controls.muteButton
           ? this.createButton(
               controlsContainer,
@@ -123,24 +122,18 @@ export default class Minusic {
       progress: {
         ...this.createTimeBar(progressContainer),
         bufferBar: this.createBufferBar(progressContainer),
-        currentTime: controls.muteButton
-          ? this.createTimeDisplay(
-              controlsContainer,
-              CSSClass.CurrentTime,
-              "Current time",
-            )
-          : null,
-        totalTime: controls.muteButton
-          ? this.createTimeDisplay(
-              controlsContainer,
-              CSSClass.TotalTime,
-              "Total time",
-            )
-          : null,
+        currentTime: controls.muteButton ? this.createTimeDisplay(
+          controlsContainer,
+          CSSClass.CurrentTime,
+          "Current time",
+        ) : null,
+        totalTime: controls.muteButton ? this.createTimeDisplay(
+          controlsContainer,
+          CSSClass.TotalTime,
+          "Total time",
+        ): null,
       },
-      soundBar: controls.soundBar
-        ? this.createSoundBar(controlsContainer)
-        : null,
+      soundBar: controls.soundBar ? this.createSoundBar(controlsContainer) : null,
       visualizer: createElement(
         "canvas",
         { container },
@@ -210,7 +203,7 @@ export default class Minusic {
   }
 
   private createTimeBar(container: HTMLElement) {
-    if (!this.options.controls.timeBar) return { timeBar: null }
+    if(!this.options.controls.timeBar) return {timeBar: null}
     if (this.options.circularTimeBar) {
       return {
         timeBar: new CircularRange({
@@ -249,7 +242,7 @@ export default class Minusic {
   }
 
   private createBufferBar(container: HTMLElement) {
-    if (!this.options.controls.bufferBar) return null
+    if(!this.options.controls.bufferBar) return null
     if (this.options.circularTimeBar) {
       return new CircularProgress({
         container,
@@ -343,10 +336,10 @@ export default class Minusic {
   private updateProgress() {
     const { timeBar, currentTime, totalTime, bufferBar } =
       this.elements.progress
-    if (bufferBar) bufferBar.value = this.buffer
-    if (timeBar) timeBar.value = this.progress
-    if (currentTime) currentTime.innerText = formatTime(this.currentTime)
-    if (totalTime) totalTime.innerText = formatTime(this.duration)
+    if(bufferBar) bufferBar.value = this.buffer
+    if(timeBar) timeBar.value = this.progress
+    if(currentTime) currentTime.innerText = formatTime(this.currentTime)
+    if(totalTime) totalTime.innerText = formatTime(this.duration)
   }
 
   public play() {
@@ -378,13 +371,13 @@ export default class Minusic {
 
   public mute() {
     this.elements.container.dataset.muted = "true"
-    if (this.elements.soundBar) this.elements.soundBar.value = 0
+    if(this.elements.soundBar) this.elements.soundBar.value = 0
     this.media.muted = true
   }
 
   public unmute() {
     this.elements.container.dataset.muted = "false"
-    if (this.elements.soundBar) this.elements.soundBar.value = this.volume
+    if(this.elements.soundBar) this.elements.soundBar.value = this.volume
     this.media.muted = false
   }
 
@@ -444,7 +437,7 @@ export default class Minusic {
 
   set volume(value) {
     value = bound(value, 0, 1)
-    if (this.elements.soundBar) this.elements.soundBar.value = value
+    if(this.elements.soundBar) this.elements.soundBar.value = value
     if (this.media.volume !== value) {
       this.media.volume = value
       if (this.muted && this.volume) this.unmute()
