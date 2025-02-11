@@ -58,6 +58,7 @@ export default class Minusic {
         backwardButton: true,
         forwardButton: true,
         playbackSpeedButton: true,
+        downloadButton: true,
       },
       skipDuration: 15,
     }
@@ -139,6 +140,18 @@ export default class Minusic {
               () => this.forward(),
             )
           : null,
+        downloadButton:
+          controls.downloadButton && this.audioSource
+            ? createElement(
+                "a",
+                { container: controlsContainer },
+                {
+                  class: [CSSClass.ControlButton, CSSClass.DownloadButton],
+                  href: this.audioSource,
+                  download: this.trackTitle || "",
+                },
+              )
+            : null,
         playbackSpeed: controls.forwardButton
           ? createMenu(
               controlsContainer,
@@ -488,5 +501,22 @@ export default class Minusic {
 
   get buffered() {
     return this.media.buffered.length ? this.media.buffered.end(0) : 0
+  }
+
+  get trackTitle() {
+    if (this.options.title) return this.options.title
+    else if (this.audioSource)
+      return decodeURI(this.audioSource.split("/").slice(-1)[0])
+    return null
+  }
+
+  get audioSource() {
+    if (this.media.src) return this.media.src
+
+    const sources = this.media.getElementsByTagName("source")
+    for (let source of sources) {
+      if (source.src) return source.src
+    }
+    return null
   }
 }

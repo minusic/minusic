@@ -13,6 +13,7 @@ export enum CSSClass {
   MuteButton = "minusic-controls-mute-button",
   BackwardButton = "minusic-controls-backward-button",
   ForwardButton = "minusic-controls-forward-button",
+  DownloadButton = "minusic-controls-download-button",
   PlaybackSpeedButton = "minusic-controls-playback-speed-button",
   Range = "minusic-range",
   RangeBackground = "minusic-range-background",

@@ -21,6 +21,7 @@ export interface ConstructorParameters {
       backwardButton: boolean
       forwardButton: boolean
       playbackSpeedButton: boolean
+      downloadButton: boolean
     }
     skipDuration: number
     muted?: boolean
@@ -60,6 +61,7 @@ export interface Elements {
     backward: HTMLElement | null
     forward: HTMLElement | null
     playbackSpeed: HTMLElement | null
+    downloadButton: HTMLElement | null
   }
   progress: {
     timeBar: Range | CircularRange | null
