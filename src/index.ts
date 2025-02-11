@@ -1,6 +1,12 @@
 import "./minusic.css"
 import { CSSClass } from "./enums"
-import { createElement, unwrapElement, wrapElement } from "./lib/elements"
+import {
+  createButton,
+  createElement,
+  createMenu,
+  unwrapElement,
+  wrapElement,
+} from "./lib/elements"
 import { bound, formatTime } from "./lib/utils"
 import Visualizer from "./lib/visualizer"
 import { ConstructorParameters, Elements } from "./types"
@@ -49,7 +55,11 @@ export default class Minusic {
         soundBar: true,
         timeBar: true,
         bufferBar: true,
+        backwardButton: true,
+        forwardButton: true,
+        playbackSpeedButton: true,
       },
+      skipDuration: 15,
     }
     this.options = { ...defaultOptions, ...options }
 
@@ -104,19 +114,41 @@ export default class Minusic {
       controls: controlsContainer,
       buttons: {
         play: controls.playButton
-          ? this.createButton(
-              controlsContainer,
-              "Play",
-              CSSClass.PlayButton,
-              () => this.togglePlay(),
+          ? createButton(controlsContainer, "Play", CSSClass.PlayButton, () =>
+              this.togglePlay(),
             )
           : null,
         mute: controls.muteButton
-          ? this.createButton(
+          ? createButton(controlsContainer, "Mute", CSSClass.MuteButton, () =>
+              this.toggleMute(),
+            )
+          : null,
+        backward: controls.backwardButton
+          ? createButton(
               controlsContainer,
-              "Mute",
-              CSSClass.MuteButton,
-              () => this.toggleMute(),
+              "Backward",
+              CSSClass.BackwardButton,
+              () => this.backward(),
+            )
+          : null,
+        forward: controls.forwardButton
+          ? createButton(
+              controlsContainer,
+              "Forward",
+              CSSClass.ForwardButton,
+              () => this.forward(),
+            )
+          : null,
+        playbackSpeed: controls.forwardButton
+          ? createMenu(
+              controlsContainer,
+              "Speed",
+              ["0.25", "0.5", "0.75", "1", "1.25", "1.5", "1.75", "2"],
+              "1",
+              CSSClass.PlaybackSpeedButton,
+              (value: string) => {
+                this.playbackRate = parseFloat(value)
+              },
             )
           : null,
       },
@@ -189,23 +221,6 @@ export default class Minusic {
       "div",
       { container: controls },
       { class: [CSSClass.ProgressContainer] },
-    )
-  }
-
-  private createButton(
-    container: HTMLElement,
-    label: string,
-    cssClass: CSSClass,
-    onClick: () => void,
-  ) {
-    return createElement(
-      "button",
-      { container },
-      {
-        class: [CSSClass.ControlButton, cssClass],
-        "aria-label": label,
-      },
-      { click: onClick },
     )
   }
 
@@ -401,6 +416,17 @@ export default class Minusic {
     this.media.getAttribute("controls")
       ? this.hideControls()
       : this.showControls()
+
+  public backward = () =>
+    (this.currentTime = Math.max(
+      0,
+      this.currentTime - this.options.skipDuration,
+    ))
+  public forward = () =>
+    (this.currentTime = Math.min(
+      this.currentTime + this.options.skipDuration,
+      this.duration,
+    ))
 
   get paused() {
     return this.media.paused

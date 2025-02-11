@@ -18,7 +18,11 @@ export interface ConstructorParameters {
       soundBar: boolean
       timeBar: boolean
       bufferBar: boolean
+      backwardButton: boolean
+      forwardButton: boolean
+      playbackSpeedButton: boolean
     }
+    skipDuration: number
     muted?: boolean
     visualizer?: boolean
     playbackRate?: number
@@ -53,6 +57,9 @@ export interface Elements {
   buttons: {
     play: HTMLElement | null
     mute: HTMLElement | null
+    backward: HTMLElement | null
+    forward: HTMLElement | null
+    playbackSpeed: HTMLElement | null
   }
   progress: {
     timeBar: Range | CircularRange | null

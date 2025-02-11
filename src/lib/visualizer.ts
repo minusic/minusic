@@ -26,18 +26,18 @@ export default class Visualizer {
   initialized = false
   options = {
     tick: 21,
-    width: 500,
-    height: 200, //220,
+    width: 800,
+    height: 600, //220,
     barAmplitude: 200, //220, // should default at max size
     outlineSize: 5,
     tickRadius: 1, //200,
     strokeWidth: 2, //3,
     frequencyRange: 0.75,
     frequencyMaxValue: 255,
-    circleRadius: 20,
+    circleRadius: 120,
     circleStartAngle: 0, // 0 by default
     circleEndAngle: 360, // 360 by default
-    shape: VisualizerShape.Line,
+    shape: VisualizerShape.Circle,
     mode: VisualizerMode.Waves,
     position: VisualizerPosition.End,
     direction: VisualizerDirection.LeftToRight,
