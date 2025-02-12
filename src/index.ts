@@ -18,6 +18,7 @@ import CircularProgress from "./lib/ui/circularProgress"
 export * from "./types"
 export default class Minusic {
   private media!: HTMLMediaElement
+  private container!: HTMLElement
   private options!: ConstructorParameters["options"]
   private elements!: Elements
   private animationHandler!: () => void
@@ -36,16 +37,29 @@ export default class Minusic {
       this.volume = options.defaultVolume
   }
 
-  constructor({ target, options }: ConstructorParameters) {
-    this.initializePlayer(target, options)
+  constructor({
+    media,
+    container: parentContainer,
+    options,
+  }: ConstructorParameters) {
+    this.initializePlayer({ media, parentContainer, options })
   }
 
-  private initializePlayer(
-    target: string,
-    options: ConstructorParameters["options"],
-  ) {
-    this.media = document.querySelector(target) as HTMLMediaElement
-    if (!this.validateMediaElement()) return
+  private initializePlayer({
+    media,
+    parentContainer,
+    options,
+  }: {
+    media: string
+    parentContainer: string
+    options: ConstructorParameters["options"]
+  }) {
+    this.media = document.querySelector(media) as HTMLMediaElement
+    if (!this.validateMediaElement()) {
+      if (!this.validateContainerElement(parentContainer)) return
+      this.createMediaElement()
+    }
+
     const defaultOptions = {
       controls: {
         muteButton: true,
@@ -92,6 +106,17 @@ export default class Minusic {
 
   private validateMediaElement() {
     return this.media?.nodeName === "AUDIO" && !!this.media.parentNode
+  }
+
+  private validateContainerElement(container: string) {
+    this.container = document.querySelector(container) as HTMLMediaElement
+    return this.container !== null
+  }
+
+  private createMediaElement() {
+    this.media = createElement("audio", {
+      container: this.container,
+    }) as HTMLMediaElement
   }
 
   private buildPlayerStructure() {

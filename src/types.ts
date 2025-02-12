@@ -4,7 +4,8 @@ import Progress from "./lib/ui/progress"
 import Range from "./lib/ui/range"
 
 export interface ConstructorParameters {
-  target: string
+  media: string
+  container: string
   options: {
     duration?: number | string
     debug?: boolean
