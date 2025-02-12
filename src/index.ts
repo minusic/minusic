@@ -89,6 +89,7 @@ export default class Minusic {
     ]
     events.forEach((event) => this.media.removeEventListener(event, () => {}))
     unwrapElement(this.elements.container, this.media)
+    if (this.container) this.container.removeChild(this.media)
   }
 
   private validateMediaElement() {
