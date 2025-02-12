@@ -24,19 +24,6 @@ export default class Minusic {
   private animationHandler!: () => void
   private visualizer!: Visualizer
 
-  private applyInitialSettings(options: ConstructorParameters["options"]) {
-    if (!options.showNativeControls) this.hideControls()
-    if (options.autoplay) this.media.setAttribute("autoplay", "")
-    if (this.muted || options.muted) this.mute()
-    if (options.playbackRate) this.playbackRate = options.playbackRate
-    if (typeof options.preservesPitch !== "undefined")
-      this.media.preservesPitch = options.preservesPitch
-    if (typeof options.startTime !== "undefined")
-      this.currentTime = options.startTime
-    if (typeof options.defaultVolume !== "undefined")
-      this.volume = options.defaultVolume
-  }
-
   constructor({
     media,
     container: parentContainer,
@@ -127,6 +114,19 @@ export default class Minusic {
       { class: CSSClass.Controls },
     )
     return { container, controls }
+  }
+
+  private applyInitialSettings(options: ConstructorParameters["options"]) {
+    if (!options.showNativeControls) this.hideControls()
+    if (options.autoplay) this.media.setAttribute("autoplay", "")
+    if (this.muted || options.muted) this.mute()
+    if (options.playbackRate) this.playbackRate = options.playbackRate
+    if (typeof options.preservesPitch !== "undefined")
+      this.media.preservesPitch = options.preservesPitch
+    if (typeof options.startTime !== "undefined")
+      this.currentTime = options.startTime
+    if (typeof options.defaultVolume !== "undefined")
+      this.volume = options.defaultVolume
   }
 
   private createPlayerElements(
