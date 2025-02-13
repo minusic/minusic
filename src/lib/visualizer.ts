@@ -32,7 +32,7 @@ export default class Visualizer {
     outlineSize: 5,
     tickRadius: 1, //200,
     strokeWidth: 2, //3,
-    frequencyRange: 0.75,
+    frequencyRange: 0.65,
     frequencyMaxValue: 255,
     circleRadius: 120,
     circleStartAngle: 0, // 0 by default

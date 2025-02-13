@@ -23,7 +23,17 @@ export interface ConstructorParameters {
       forwardButton: boolean
       playbackSpeedButton: boolean
       downloadButton: boolean
+      previousButton: boolean
+      nextButton: boolean
+      repeatButton: boolean
     }
+    tracks: {
+      source: string
+      title: string
+      author: string
+      thumbnail: string
+      album: string
+    }[]
     skipDuration: number
     muted?: boolean
     visualizer?: boolean
@@ -62,7 +72,10 @@ export interface Elements {
     backward: HTMLElement | null
     forward: HTMLElement | null
     playbackSpeed: HTMLElement | null
-    downloadButton: HTMLElement | null
+    download: HTMLElement | null
+    previous: HTMLElement | null
+    next: HTMLElement | null
+    repeat: HTMLElement | null
   }
   progress: {
     timeBar: Range | CircularRange | null

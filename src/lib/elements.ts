@@ -128,7 +128,11 @@ export function wrapElement(container: HTMLElement, target: HTMLElement) {
 export function unwrapElement(container: HTMLElement, target: HTMLElement) {
   if (!container.parentNode) return
   container.parentNode.insertBefore(target, container)
-  container.parentNode.removeChild(container)
+  remove(container)
+}
+
+export function remove(element: HTMLElement) {
+  if (element.parentNode !== null) element.parentNode.removeChild(element)
 }
 
 export function applyStyles(

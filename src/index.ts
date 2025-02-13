@@ -4,6 +4,7 @@ import {
   createButton,
   createElement,
   createMenu,
+  remove,
   unwrapElement,
   wrapElement,
 } from "./lib/elements"
@@ -23,6 +24,8 @@ export default class Minusic {
   private elements!: Elements
   private animationHandler!: () => void
   private visualizer!: Visualizer
+  private trackIndex: number = 0
+  private repeatState: number = 0
 
   constructor({
     media,
@@ -60,8 +63,12 @@ export default class Minusic {
         forwardButton: true,
         playbackSpeedButton: true,
         downloadButton: true,
+        previousButton: true,
+        nextButton: true,
+        repeatButton: true,
       },
       skipDuration: 15,
+      tracks: [],
     }
     this.options = { ...defaultOptions, ...options }
 
@@ -75,6 +82,7 @@ export default class Minusic {
     if (options.visualizer) {
       this.initializeVisualizer()
     }
+    if (!this.audioSource) this.loadTrack()
     this.updateProgress()
   }
 
@@ -150,6 +158,22 @@ export default class Minusic {
               this.toggleMute(),
             )
           : null,
+        previous: controls.previousButton
+          ? createButton(
+              controlsContainer,
+              "Previous track",
+              CSSClass.PreviousButton,
+              () => this.previousTrack(),
+            )
+          : null,
+        next: controls.nextButton
+          ? createButton(
+              controlsContainer,
+              "Next track",
+              CSSClass.NextButton,
+              () => this.nextTrack(),
+            )
+          : null,
         backward: controls.backwardButton
           ? createButton(
               controlsContainer,
@@ -166,7 +190,15 @@ export default class Minusic {
               () => this.forward(),
             )
           : null,
-        downloadButton:
+        repeat: controls.repeatButton
+          ? createButton(
+              controlsContainer,
+              "Repeat",
+              CSSClass.RepeatButton,
+              () => this.toggleRepeat(),
+            )
+          : null,
+        download:
           controls.downloadButton && this.audioSource
             ? createElement(
                 "a",
@@ -178,7 +210,7 @@ export default class Minusic {
                 },
               )
             : null,
-        playbackSpeed: controls.forwardButton
+        playbackSpeed: controls.playbackSpeedButton
           ? createMenu(
               controlsContainer,
               "Speed",
@@ -370,7 +402,9 @@ export default class Minusic {
       play: () => this.handlePlayState(),
       volumechange: () => this.handleVolumeChange(),
       ratechange: () => {},
-      ended: () => {},
+      ended: () => {
+        this.nextTrack(true)
+      },
     }
     Object.entries(events).forEach(([event, handler]) => {
       this.media.addEventListener(event, handler)
@@ -443,6 +477,10 @@ export default class Minusic {
     if (this.media.volume === 0) this.volume = 1
   }
 
+  public repeatOne() {}
+  public repeatAll() {}
+  public noRepeat() {}
+
   public showControls = () => this.media.setAttribute("controls", "")
   public hideControls = () => this.media.removeAttribute("controls")
 
@@ -451,21 +489,76 @@ export default class Minusic {
   public toggleMute = (state?: boolean) =>
     (state ?? this.media.muted) ? this.unmute() : this.mute()
 
+  public toggleRepeat = () => {
+    this.repeat = (this.repeat + 1) % 3
+    if (this.repeat === 0) this.noRepeat()
+    else if (this.repeat === 1) this.repeatOne()
+    else if (this.repeat === 2) this.repeatAll()
+
+    this.elements.container.dataset.repeat = `${this.repeat}`
+  }
+
+  get repeat() {
+    return this.repeatState
+  }
+  set repeat(value: number) {
+    this.repeatState = value
+  }
+
   public toggleControls = () =>
     this.media.getAttribute("controls")
       ? this.hideControls()
       : this.showControls()
 
-  public backward = () =>
-    (this.currentTime = Math.max(
-      0,
-      this.currentTime - this.options.skipDuration,
-    ))
-  public forward = () =>
-    (this.currentTime = Math.min(
+  public backward() {
+    this.currentTime = Math.max(0, this.currentTime - this.options.skipDuration)
+  }
+  public forward() {
+    this.currentTime = Math.min(
       this.currentTime + this.options.skipDuration,
       this.duration,
-    ))
+    )
+  }
+
+  public loadTrack(index = 0, autoplay = false) {
+    const playing = !this.paused || autoplay
+    if (this.options.tracks.length <= index || index < 0) return
+    //const trackSources = Array.isArray(this.options.tracks[index]) ? this.options.tracks[index] : [this.options.tracks[index]]
+    const trackSources = [this.options.tracks[index]]
+    this.removeSource()
+    this.addSource(trackSources)
+    this.trackIndex = index
+    this.media.load()
+    if (playing) this.play()
+  }
+
+  public previousTrack = (autoplay = false) =>
+    this.loadTrack(this.trackIndex - 1, autoplay)
+
+  public nextTrack = (autoplay = false) =>
+    this.loadTrack(this.trackIndex + 1, autoplay)
+
+  private addSource(
+    sources: {
+      source: string
+      title: string
+      author: string
+      thumbnail: string
+      album: string
+    }[],
+  ) {
+    sources.forEach((source) =>
+      createElement(
+        "source",
+        { container: this.media },
+        { src: source.source },
+      ),
+    )
+  }
+
+  private removeSource() {
+    this.media.querySelectorAll("source").forEach((element) => remove(element))
+  }
 
   get paused() {
     return this.media.paused
