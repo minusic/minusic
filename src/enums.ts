@@ -16,6 +16,7 @@ export enum CSSClass {
   BackwardButton = "minusic-controls-backward-button",
   ForwardButton = "minusic-controls-forward-button",
   RepeatButton = "minusic-controls-repeat-button",
+  RandomButton = "minusic-controls-random-button",
   DownloadButton = "minusic-controls-download-button",
   PlaybackSpeedButton = "minusic-controls-playback-speed-button",
   Range = "minusic-range",

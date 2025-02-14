@@ -8,7 +8,7 @@ import {
   unwrapElement,
   wrapElement,
 } from "./lib/elements"
-import { bound, formatTime } from "./lib/utils"
+import { bound, formatTime, randomNumber } from "./lib/utils"
 import Visualizer from "./lib/visualizer"
 import { ConstructorParameters, Elements } from "./types"
 import Range from "./lib/ui/range"
@@ -26,6 +26,7 @@ export default class Minusic {
   private visualizer!: Visualizer
   private trackIndex: number = 0
   private repeatState: number = 0
+  private randomState: boolean = false
 
   constructor({
     media,
@@ -66,6 +67,7 @@ export default class Minusic {
         previousButton: true,
         nextButton: true,
         repeatButton: true,
+        randomButton: true,
       },
       skipDuration: 15,
       tracks: [],
@@ -196,6 +198,14 @@ export default class Minusic {
               "Repeat",
               CSSClass.RepeatButton,
               () => this.toggleRepeat(),
+            )
+          : null,
+        random: controls.randomButton
+          ? createButton(
+              controlsContainer,
+              "Repeat",
+              CSSClass.RandomButton,
+              () => this.toggleRandom(),
             )
           : null,
         download:
@@ -403,7 +413,8 @@ export default class Minusic {
       volumechange: () => this.handleVolumeChange(),
       ratechange: () => {},
       ended: () => {
-        this.nextTrack(true)
+        if (this.repeat === 1) this.restart()
+        else this.nextTrack(true)
       },
     }
     Object.entries(events).forEach(([event, handler]) => {
@@ -505,6 +516,17 @@ export default class Minusic {
     this.repeatState = value
   }
 
+  public toggleRandom() {
+    this.random = !this.random
+    this.elements.container.dataset.random = `${this.random}`
+  }
+  get random() {
+    return this.randomState
+  }
+  set random(value: boolean) {
+    this.randomState = value
+  }
+
   public toggleControls = () =>
     this.media.getAttribute("controls")
       ? this.hideControls()
@@ -521,22 +543,40 @@ export default class Minusic {
   }
 
   public loadTrack(index = 0, autoplay = false) {
+    if (this.random)
+      index = randomNumber(0, this.options.tracks.length - 1, this.track)
     const playing = !this.paused || autoplay
-    if (this.options.tracks.length <= index || index < 0) return
+    if (this.options.tracks.length <= index || index < 0) {
+      if (this.repeat === 2) index = 0
+      else return
+    }
     //const trackSources = Array.isArray(this.options.tracks[index]) ? this.options.tracks[index] : [this.options.tracks[index]]
     const trackSources = [this.options.tracks[index]]
     this.removeSource()
     this.addSource(trackSources)
-    this.trackIndex = index
+    this.track = index
     this.media.load()
     if (playing) this.play()
   }
 
+  get track() {
+    return this.trackIndex
+  }
+
+  set track(value: number) {
+    this.trackIndex = value
+  }
+
   public previousTrack = (autoplay = false) =>
-    this.loadTrack(this.trackIndex - 1, autoplay)
+    this.loadTrack(this.track - 1, autoplay)
 
   public nextTrack = (autoplay = false) =>
-    this.loadTrack(this.trackIndex + 1, autoplay)
+    this.loadTrack(this.track + 1, autoplay)
+
+  public restart() {
+    this.currentTime = 0
+    this.play()
+  }
 
   private addSource(
     sources: {

@@ -26,6 +26,7 @@ export interface ConstructorParameters {
       previousButton: boolean
       nextButton: boolean
       repeatButton: boolean
+      randomButton: boolean
     }
     tracks: {
       source: string
@@ -76,6 +77,7 @@ export interface Elements {
     previous: HTMLElement | null
     next: HTMLElement | null
     repeat: HTMLElement | null
+    random: HTMLElement | null
   }
   progress: {
     timeBar: Range | CircularRange | null
