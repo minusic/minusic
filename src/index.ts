@@ -130,6 +130,7 @@ export default class Minusic {
   private applyInitialSettings(options: ConstructorParameters["options"]) {
     if (!options.showNativeControls) this.hideControls()
     if (options.autoplay) this.media.setAttribute("autoplay", "")
+    if(options.crossOrigin) this.media.setAttribute("crossorigin", "")
     if (this.muted || options.muted) this.mute()
     if (options.playbackRate) this.playbackRate = options.playbackRate
     if (typeof options.preservesPitch !== "undefined")
@@ -257,11 +258,6 @@ export default class Minusic {
       soundBar: controls.soundBar
         ? this.createSoundBar(controlsContainer)
         : null,
-      visualizer: createElement(
-        "canvas",
-        { container },
-        { class: CSSClass.Visualizer },
-      ) as HTMLCanvasElement,
       ...this.createMetadata(container),
     }
   }
@@ -428,8 +424,9 @@ export default class Minusic {
   private initializeVisualizer() {
     if (!this.options.visualizer) return
     this.visualizer = new Visualizer({
-      canvas: this.elements.visualizer,
+      container: this.elements.container,
       media: this.media,
+      options: this.options.visualizer
     })
     if (!this.visualizer.initialized) return
     this.animationHandler = this.updateVisualizer.bind(this)
@@ -552,10 +549,10 @@ export default class Minusic {
     thumbnail: string
   }) {
     if (!this.options.metadata) return {}
-    this.elements.title!.innerText = track.title
-    this.elements.author!.innerText = track.author
-    this.elements.album!.innerText = track.album
-    this.elements.thumbnail!.src = track.thumbnail
+    this.elements.title!.innerText = track.title || ""
+    this.elements.author!.innerText = track.author || ""
+    this.elements.album!.innerText = track.album || ""
+    this.elements.thumbnail!.src = track.thumbnail || ""
   }
 
   public loadTrack(index = 0, autoplay = false) {

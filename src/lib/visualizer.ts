@@ -1,4 +1,5 @@
 import {
+  CSSClass,
   VisualizerDirection,
   VisualizerMode,
   VisualizerPosition,
@@ -6,6 +7,7 @@ import {
   VisualizerStack,
   VisualizerSymmetry,
 } from "../enums"
+import { VisualizerOptions } from "../types"
 import {
   drawCurve,
   drawDrop,
@@ -14,7 +16,7 @@ import {
   drawRectangle,
   drawRoundedRectangle,
 } from "./canvas"
-import { applyStyles } from "./elements"
+import { applyStyles, createElement } from "./elements"
 
 export default class Visualizer {
   private media!: HTMLMediaElement
@@ -25,49 +27,56 @@ export default class Visualizer {
   private analyser!: AnalyserNode
   initialized = false
   options = {
-    tick: 21,
-    width: 800,
-    height: 600, //220,
-    barAmplitude: 200, //220, // should default at max size
-    outlineSize: 5,
-    tickRadius: 1, //200,
-    strokeWidth: 2, //3,
-    frequencyRange: 0.65,
+    tick: 0,
+    width: 0,
+    height: 0,
+    barAmplitude: 0,
+    outlineSize: 0,
+    tickRadius: 0,
+    strokeWidth: 0,
+    frequencyRange: 1,
     frequencyMaxValue: 255,
-    circleRadius: 120,
-    circleStartAngle: 0, // 0 by default
-    circleEndAngle: 360, // 360 by default
-    shape: VisualizerShape.Circle,
-    mode: VisualizerMode.Waves,
-    position: VisualizerPosition.End,
+    circleRadius: 0,
+    circleStartAngle: 0,
+    circleEndAngle: 360,
+    shape: VisualizerShape.Line,
+    mode: VisualizerMode.Bars,
+    position: VisualizerPosition.Center,
     direction: VisualizerDirection.LeftToRight,
     symmetry: VisualizerSymmetry.None,
-    canvasBackground: "transparent", //"#000",
-    fillColor: "#f000", // "#89E76F",
-    outlineColor: "#000",
+    canvasBackground: "transparent",
+    fillColor: "transparent",
+    outlineColor: "transparent",
     invertColors: false,
     showAxis: false,
-    shadowColor: "#f000",
+    shadowColor: "transparent",
     shadowBlur: 0,
-    shadowOffsetX: -10,
-    shadowOffsetY: 10,
+    shadowOffsetX: 0,
+    shadowOffsetY: 0,
     stack: VisualizerStack.Duplicate,
-    stackDepth: 8,
-    stackScale: 0.9,
+    stackDepth: 0,
+    stackScale: 0,
   }
 
   constructor({
-    canvas,
+    container,
     media,
+    options
   }: {
-    canvas: HTMLCanvasElement
+    container: HTMLElement
     media: HTMLMediaElement
+    options: VisualizerOptions
   }) {
-    if (canvas?.nodeName !== "CANVAS") return
+    this.canvas = createElement(
+      "canvas",
+      { container },
+      { class: CSSClass.Visualizer },
+    ) as HTMLCanvasElement
 
-    this.canvas = canvas
     this.media = media
-    this.context = canvas.getContext("2d") as CanvasRenderingContext2D
+    this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D
+
+    this.options = {...this.options, ...options}
 
     this.initializeCanvas()
     this.initialized = true

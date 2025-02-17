@@ -1,3 +1,4 @@
+import { VisualizerDirection, VisualizerMode, VisualizerPosition, VisualizerShape, VisualizerStack, VisualizerSymmetry } from "./enums"
 import CircularProgress from "./lib/ui/circularProgress"
 import CircularRange from "./lib/ui/circularRange"
 import Progress from "./lib/ui/progress"
@@ -10,6 +11,7 @@ export interface ConstructorParameters {
     duration?: number | string
     debug?: boolean
     autoplay?: boolean
+    crossOrigin?: boolean
     showNativeControls?: boolean
     controls: {
       playButton: boolean
@@ -37,12 +39,11 @@ export interface ConstructorParameters {
     }[]
     skipDuration: number
     muted?: boolean
-    visualizer?: boolean
+    visualizer?: VisualizerOptions
     playbackRate?: number
     preservesPitch?: boolean
     startTime?: number
     defaultVolume?: number
-    visualizerType?: string
     metadata?: boolean
     title?: string
     author?: string
@@ -86,9 +87,40 @@ export interface Elements {
     totalTime: HTMLElement | null
   }
   soundBar: Range | CircularRange | null
-  visualizer: HTMLCanvasElement
   title?: HTMLElement
   author?: HTMLElement
   album?: HTMLElement
   thumbnail?: HTMLImageElement
+}
+
+export interface VisualizerOptions {
+  tick: number
+  width: number
+  height: number
+  barAmplitude: number
+  outlineSize: number
+  tickRadius: number
+  strokeWidth: number
+  frequencyRange: number,
+  frequencyMaxValue: number,
+  circleRadius: number,
+  circleStartAngle: number
+  circleEndAngle: number
+  shape: VisualizerShape,
+  mode: VisualizerMode,
+  position: VisualizerPosition,
+  direction: VisualizerDirection,
+  symmetry: VisualizerSymmetry,
+  canvasBackground: string
+  fillColor: string
+  outlineColor: string
+  invertColors: boolean,
+  showAxis: boolean,
+  shadowColor: string
+  shadowBlur: number,
+  shadowOffsetX: number,
+  shadowOffsetY: number,
+  stack: VisualizerStack,
+  stackDepth: number,
+  stackScale: number,
 }
