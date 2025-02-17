@@ -165,7 +165,7 @@ export default class Minusic {
               controlsContainer,
               "Previous track",
               CSSClass.PreviousButton,
-              () => this.previousTrack(),
+              () => this.currentTime > 5 ? this.currentTime = 0 : this.previousTrack(),
             )
           : null,
         next: controls.nextButton
@@ -550,8 +550,7 @@ export default class Minusic {
       if (this.repeat === 2) index = 0
       else return
     }
-    //const trackSources = Array.isArray(this.options.tracks[index]) ? this.options.tracks[index] : [this.options.tracks[index]]
-    const trackSources = [this.options.tracks[index]]
+    const trackSources = Array.isArray(this.options.tracks[index].source) ? [...this.options.tracks[index].source] : [this.options.tracks[index].source]
     this.removeSource()
     this.addSource(trackSources)
     this.track = index
@@ -579,19 +578,13 @@ export default class Minusic {
   }
 
   private addSource(
-    sources: {
-      source: string
-      title: string
-      author: string
-      thumbnail: string
-      album: string
-    }[],
+    sources: string[],
   ) {
     sources.forEach((source) =>
       createElement(
         "source",
         { container: this.media },
-        { src: source.source },
+        { src: source },
       ),
     )
   }
