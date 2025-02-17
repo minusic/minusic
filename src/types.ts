@@ -90,5 +90,5 @@ export interface Elements {
   title?: HTMLElement
   author?: HTMLElement
   album?: HTMLElement
-  thumbnail?: HTMLElement
+  thumbnail?: HTMLImageElement
 }

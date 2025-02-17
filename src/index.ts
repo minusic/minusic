@@ -165,7 +165,10 @@ export default class Minusic {
               controlsContainer,
               "Previous track",
               CSSClass.PreviousButton,
-              () => this.currentTime > 5 ? this.currentTime = 0 : this.previousTrack(),
+              () =>
+                this.currentTime > 5
+                  ? (this.currentTime = 0)
+                  : this.previousTrack(),
             )
           : null,
         next: controls.nextButton
@@ -293,7 +296,7 @@ export default class Minusic {
           src: this.options.thumbnail ? this.options.thumbnail : "",
           class: CSSClass.Thumbnail,
         },
-      ),
+      ) as HTMLImageElement,
     }
   }
 
@@ -542,6 +545,19 @@ export default class Minusic {
     )
   }
 
+  public setMetadata(track: {
+    title: string
+    author: string
+    album: string
+    thumbnail: string
+  }) {
+    if (!this.options.metadata) return {}
+    this.elements.title!.innerText = track.title
+    this.elements.author!.innerText = track.author
+    this.elements.album!.innerText = track.album
+    this.elements.thumbnail!.src = track.thumbnail
+  }
+
   public loadTrack(index = 0, autoplay = false) {
     if (this.random)
       index = randomNumber(0, this.options.tracks.length - 1, this.track)
@@ -550,9 +566,13 @@ export default class Minusic {
       if (this.repeat === 2) index = 0
       else return
     }
-    const trackSources = Array.isArray(this.options.tracks[index].source) ? [...this.options.tracks[index].source] : [this.options.tracks[index].source]
+    const track = this.options.tracks[index]
+    const trackSources = Array.isArray(track.source)
+      ? [...track.source]
+      : [track.source]
     this.removeSource()
     this.addSource(trackSources)
+    this.setMetadata(track)
     this.track = index
     this.media.load()
     if (playing) this.play()
@@ -577,15 +597,9 @@ export default class Minusic {
     this.play()
   }
 
-  private addSource(
-    sources: string[],
-  ) {
+  private addSource(sources: string[]) {
     sources.forEach((source) =>
-      createElement(
-        "source",
-        { container: this.media },
-        { src: source },
-      ),
+      createElement("source", { container: this.media }, { src: source }),
     )
   }
 
