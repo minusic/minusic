@@ -1,4 +1,11 @@
-import { VisualizerDirection, VisualizerMode, VisualizerPosition, VisualizerShape, VisualizerStack, VisualizerSymmetry } from "./enums"
+import {
+  VisualizerDirection,
+  VisualizerMode,
+  VisualizerPosition,
+  VisualizerShape,
+  VisualizerStack,
+  VisualizerSymmetry,
+} from "./enums"
 import CircularProgress from "./lib/ui/circularProgress"
 import CircularRange from "./lib/ui/circularRange"
 import Progress from "./lib/ui/progress"
@@ -101,26 +108,28 @@ export interface VisualizerOptions {
   outlineSize: number
   tickRadius: number
   strokeWidth: number
-  frequencyRange: number,
-  frequencyMaxValue: number,
-  circleRadius: number,
+  frequencyRange: number
+  frequencyMaxValue: number
+  circleRadius: number
   circleStartAngle: number
   circleEndAngle: number
-  shape: VisualizerShape,
-  mode: VisualizerMode,
-  position: VisualizerPosition,
-  direction: VisualizerDirection,
-  symmetry: VisualizerSymmetry,
+  shape: VisualizerShape
+  mode: VisualizerMode
+  position: VisualizerPosition
+  direction: VisualizerDirection
+  symmetry: VisualizerSymmetry
   canvasBackground: string
-  fillColor: string
-  outlineColor: string
-  invertColors: boolean,
-  showAxis: boolean,
+  fillColor: VisualizerColor
+  outlineColor: VisualizerColor
+  invertColors: boolean
+  showAxis: boolean
   shadowColor: string
-  shadowBlur: number,
-  shadowOffsetX: number,
-  shadowOffsetY: number,
-  stack: VisualizerStack,
-  stackDepth: number,
-  stackScale: number,
+  shadowBlur: number
+  shadowOffsetX: number
+  shadowOffsetY: number
+  stack: VisualizerStack
+  stackDepth: number
+  stackScale: number
 }
+
+export type VisualizerColor = string | { [key: number]: string }

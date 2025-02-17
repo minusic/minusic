@@ -7,7 +7,7 @@ import {
   VisualizerStack,
   VisualizerSymmetry,
 } from "../enums"
-import { VisualizerOptions } from "../types"
+import { VisualizerColor, VisualizerOptions } from "../types"
 import {
   drawCurve,
   drawDrop,
@@ -26,7 +26,7 @@ export default class Visualizer {
   private audioSource!: MediaElementAudioSourceNode
   private analyser!: AnalyserNode
   initialized = false
-  options = {
+  options: VisualizerOptions = {
     tick: 0,
     width: 0,
     height: 0,
@@ -61,7 +61,7 @@ export default class Visualizer {
   constructor({
     container,
     media,
-    options
+    options,
   }: {
     container: HTMLElement
     media: HTMLMediaElement
@@ -76,7 +76,7 @@ export default class Visualizer {
     this.media = media
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D
 
-    this.options = {...this.options, ...options}
+    this.options = { ...this.options, ...options }
 
     this.initializeCanvas()
     this.initialized = true
@@ -87,7 +87,27 @@ export default class Visualizer {
     const { canvasBackground } = this.options
     this.updateCanvasSize()
     this.applyStyles()
-    if (canvasBackground) this.canvas.style.background = canvasBackground
+    if (canvasBackground) {
+      this.canvas.style.background = canvasBackground
+    }
+  }
+
+  private parseColor(color: VisualizerColor) {
+    if (typeof color === "string") {
+      return color
+    } else if (typeof color === "object") {
+      const gradient = this.context.createLinearGradient(
+        0,
+        0,
+        this.options.width,
+        this.options.height,
+      )
+      Object.entries(color).forEach(([key, value]) => {
+        gradient.addColorStop(parseFloat(key), value)
+      })
+      return gradient
+    }
+    return "transparent"
   }
 
   private initializeAudioContext() {
@@ -118,17 +138,13 @@ export default class Visualizer {
   }
 
   private applyStyles() {
-    const gradient = this.context.createLinearGradient(0, 0, 900, 130)
-    gradient.addColorStop(0, "#98067F")
-    gradient.addColorStop(0.5, "#685FEE")
-    gradient.addColorStop(1, "#98067F")
-    this.context.fillStyle = this.options.fillColor || "transparent"
-    this.context.strokeStyle = gradient //this.options.outlineColor
+    this.context.fillStyle = this.parseColor(this.options.fillColor)
+    this.context.strokeStyle = this.parseColor(this.options.outlineColor)
     this.context.lineWidth = this.options.strokeWidth
-    this.context.shadowColor = this.options.shadowColor || "transparent"
-    this.context.shadowBlur = this.options.shadowBlur || 0
-    this.context.shadowOffsetX = this.options.shadowOffsetX || 0
-    this.context.shadowOffsetY = this.options.shadowOffsetY || 0
+    this.context.shadowColor = this.options.shadowColor
+    this.context.shadowBlur = this.options.shadowBlur
+    this.context.shadowOffsetX = this.options.shadowOffsetX
+    this.context.shadowOffsetY = this.options.shadowOffsetY
   }
 
   update(paused: boolean) {

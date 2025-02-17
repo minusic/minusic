@@ -130,7 +130,7 @@ export default class Minusic {
   private applyInitialSettings(options: ConstructorParameters["options"]) {
     if (!options.showNativeControls) this.hideControls()
     if (options.autoplay) this.media.setAttribute("autoplay", "")
-    if(options.crossOrigin) this.media.setAttribute("crossorigin", "")
+    if (options.crossOrigin) this.media.setAttribute("crossorigin", "")
     if (this.muted || options.muted) this.mute()
     if (options.playbackRate) this.playbackRate = options.playbackRate
     if (typeof options.preservesPitch !== "undefined")
@@ -426,7 +426,7 @@ export default class Minusic {
     this.visualizer = new Visualizer({
       container: this.elements.container,
       media: this.media,
-      options: this.options.visualizer
+      options: this.options.visualizer,
     })
     if (!this.visualizer.initialized) return
     this.animationHandler = this.updateVisualizer.bind(this)
