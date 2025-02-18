@@ -130,6 +130,7 @@ export interface VisualizerOptions {
   stack: VisualizerStack
   stackDepth: number
   stackScale: number
+  stackShift: number
 }
 
 export type VisualizerColor =

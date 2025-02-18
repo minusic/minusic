@@ -57,9 +57,10 @@ export default class Visualizer {
     shadowBlur: 0,
     shadowOffsetX: 0,
     shadowOffsetY: 0,
-    stack: VisualizerStack.Duplicate,
+    stack: VisualizerStack.None,
     stackDepth: 0,
     stackScale: 0,
+    stackShift: 0,
   }
 
   constructor({
@@ -175,6 +176,9 @@ export default class Visualizer {
       case VisualizerStack.Divide:
         this.renderDividedStack(frequencies)
         break
+      case VisualizerStack.Shift:
+        this.renderShiftedStack(frequencies)
+        break
       default:
         this.renderVisualization(frequencies)
     }
@@ -246,6 +250,22 @@ export default class Visualizer {
       )
       this.setStackColors(i)
       this.renderVisualization(frequencyChunk)
+    }
+  }
+
+  private renderShiftedStack(frequencies: number[]): void {
+    const shift = this.options.stackShift
+
+    this.renderVisualization(frequencies)
+    let shiftFrequencies = [...frequencies]
+
+    for (let i = 0; i < this.options.stackDepth; i++) {
+      shiftFrequencies = [
+        ...shiftFrequencies.slice(shift),
+        ...shiftFrequencies.slice(0, shift),
+      ]
+      this.setStackColors(i)
+      this.renderVisualization(shiftFrequencies)
     }
   }
 

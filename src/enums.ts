@@ -81,6 +81,7 @@ export enum VisualizerMode {
 export enum VisualizerStack {
   Duplicate = "duplicate",
   Divide = "divide",
+  Shift = "shift",
   None = "none",
 }
 
