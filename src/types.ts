@@ -132,4 +132,6 @@ export interface VisualizerOptions {
   stackScale: number
 }
 
-export type VisualizerColor = string | { [key: number]: string }
+export type VisualizerColor =
+  | string
+  | { type?: string; angle?: number; values: { [key: number]: string } }

@@ -83,3 +83,9 @@ export enum VisualizerStack {
   Divide = "divide",
   None = "none",
 }
+
+export enum VisualizerGradient {
+  Linear = "linear",
+  Radial = "radial",
+  Conic = "conic",
+}

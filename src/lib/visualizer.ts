@@ -1,6 +1,7 @@
 import {
   CSSClass,
   VisualizerDirection,
+  VisualizerGradient,
   VisualizerMode,
   VisualizerPosition,
   VisualizerShape,
@@ -9,6 +10,9 @@ import {
 } from "../enums"
 import { VisualizerColor, VisualizerOptions } from "../types"
 import {
+  createConicGradient,
+  createLinearGradient,
+  createRadialGradient,
   drawCurve,
   drawDrop,
   drawLevels,
@@ -96,16 +100,18 @@ export default class Visualizer {
     if (typeof color === "string") {
       return color
     } else if (typeof color === "object") {
-      const gradient = this.context.createLinearGradient(
-        0,
-        0,
-        this.options.width,
-        this.options.height,
-      )
-      Object.entries(color).forEach(([key, value]) => {
-        gradient.addColorStop(parseFloat(key), value)
-      })
-      return gradient
+      const canvasProperties = {
+        context: this.context,
+        width: this.options.width,
+        height: this.options.height,
+      }
+      if (color.type === VisualizerGradient.Radial) {
+        return createRadialGradient(canvasProperties, color)
+      } else if (color.type === VisualizerGradient.Conic) {
+        createConicGradient(canvasProperties, color)
+      } else {
+        return createLinearGradient(canvasProperties, color)
+      }
     }
     return "transparent"
   }
