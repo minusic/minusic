@@ -52,7 +52,6 @@ export default class Visualizer {
     fillColor: "transparent",
     outlineColor: "transparent",
     invertColors: false,
-    showAxis: false,
     shadowColor: "transparent",
     shadowBlur: 0,
     shadowOffsetX: 0,
@@ -61,7 +60,12 @@ export default class Visualizer {
     stackDepth: 0,
     stackScale: 0,
     stackShift: 0,
+    debug: {
+      showAxis: false,
+      showFPS: false,
+    },
   }
+  private debugTimestamp: number = 0
 
   constructor({
     container,
@@ -160,10 +164,11 @@ export default class Visualizer {
     this.context.shadowOffsetY = this.options.shadowOffsetY
   }
 
-  update(paused: boolean) {
+  update(paused: boolean, timestamp?: number) {
     if (!paused && !this.audioContext) this.initializeAudioContext()
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-    if (this.options.showAxis) this.showAxis()
+    if (this.options.debug.showAxis) this.showAxis()
+    if (this.options.debug.showFPS) this.showFPS(timestamp)
     if (this.options.invertColors) this.invertCanvasColors()
 
     let frequencies = this.getProcessedFrequencies(paused)
@@ -559,5 +564,15 @@ export default class Visualizer {
     ])
     drawRectangle(this.context, 0, 0, w, h)
     this.applyStyles()
+  }
+
+  private showFPS(timestamp: number = 0) {
+    const timeDiff = (timestamp - this.debugTimestamp) / 1000
+    if (timeDiff === 0) return
+    const fps = Math.round(1 / timeDiff)
+    this.debugTimestamp = timestamp
+    this.context.font = "32px arial"
+    this.context.fillText(`FPS: ${fps}`, 20, 50)
+    this.context.strokeText(`FPS: ${fps}`, 20, 50)
   }
 }

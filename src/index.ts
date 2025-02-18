@@ -22,7 +22,7 @@ export default class Minusic {
   private container!: HTMLElement
   private options!: ConstructorParameters["options"]
   private elements!: Elements
-  private animationHandler!: () => void
+  private animationHandler!: (timestamp: number) => void
   private visualizer!: Visualizer
   private trackIndex: number = 0
   private repeatState: number = 0
@@ -432,9 +432,9 @@ export default class Minusic {
     this.animationHandler = this.updateVisualizer.bind(this)
   }
 
-  private updateVisualizer() {
+  private updateVisualizer(timestamp: number = 0) {
     if (!this.visualizer?.initialized) return
-    const frequencies = this.visualizer.update(this.paused)
+    const frequencies = this.visualizer.update(this.paused, timestamp)
     if (frequencies.some((value) => value > 0) || !this.paused)
       requestAnimationFrame(this.animationHandler)
   }

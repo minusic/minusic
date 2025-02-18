@@ -16,7 +16,6 @@ export interface ConstructorParameters {
   container: string
   options: {
     duration?: number | string
-    debug?: boolean
     autoplay?: boolean
     crossOrigin?: boolean
     showNativeControls?: boolean
@@ -122,7 +121,6 @@ export interface VisualizerOptions {
   fillColor: VisualizerColor
   outlineColor: VisualizerColor
   invertColors: boolean
-  showAxis: boolean
   shadowColor: string
   shadowBlur: number
   shadowOffsetX: number
@@ -131,6 +129,10 @@ export interface VisualizerOptions {
   stackDepth: number
   stackScale: number
   stackShift: number
+  debug: {
+    showAxis: boolean
+    showFPS: boolean
+  }
 }
 
 export type VisualizerColor =
