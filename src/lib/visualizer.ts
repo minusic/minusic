@@ -144,8 +144,14 @@ export default class Visualizer {
   }
 
   private applyStyles() {
-    this.context.fillStyle = this.parseColor(this.options.fillColor)
-    this.context.strokeStyle = this.parseColor(this.options.outlineColor)
+    this.context.fillStyle =
+      this.options.fillColor instanceof Array
+        ? this.parseColor(this.options.fillColor[0])
+        : this.parseColor(this.options.fillColor)
+    this.context.strokeStyle =
+      this.options.outlineColor instanceof Array
+        ? this.parseColor(this.options.outlineColor[0])
+        : this.parseColor(this.options.outlineColor)
     this.context.lineWidth = this.options.strokeWidth
     this.context.shadowColor = this.options.shadowColor
     this.context.shadowBlur = this.options.shadowBlur
@@ -204,6 +210,7 @@ export default class Visualizer {
     ) {
       return processedFreq.reverse()
     }
+
     return processedFreq
   }
 
@@ -224,6 +231,7 @@ export default class Visualizer {
       scaledFrequencies = scaledFrequencies.map(
         (value) => value * this.options.stackScale,
       )
+      this.setStackColors(i)
       this.renderVisualization(scaledFrequencies)
     }
   }
@@ -236,7 +244,20 @@ export default class Visualizer {
         i * chunkSize,
         (i + 1) * chunkSize,
       )
+      this.setStackColors(i)
       this.renderVisualization(frequencyChunk)
+    }
+  }
+
+  private setStackColors(index: number = 0) {
+    const { fillColor, outlineColor } = this.options
+    if (fillColor instanceof Array) {
+      index = index % fillColor.length
+      this.context.fillStyle = this.parseColor(fillColor[index])
+    }
+    if (outlineColor instanceof Array) {
+      index = index % outlineColor.length
+      this.context.strokeStyle = this.parseColor(outlineColor[index])
     }
   }
 
