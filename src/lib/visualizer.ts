@@ -277,11 +277,11 @@ export default class Visualizer {
   private setStackColors(index: number = 0) {
     const { fillColor, outlineColor } = this.options
     if (fillColor instanceof Array) {
-      index = index % fillColor.length
+      index = (index + 1) % fillColor.length
       this.context.fillStyle = this.parseColor(fillColor[index])
     }
     if (outlineColor instanceof Array) {
-      index = index % outlineColor.length
+      index = (index + 1) % outlineColor.length
       this.context.strokeStyle = this.parseColor(outlineColor[index])
     }
   }
