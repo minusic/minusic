@@ -58,7 +58,7 @@ export default class Visualizer {
     shadowOffsetY: 0,
     stack: VisualizerStack.None,
     stackDepth: 0,
-    stackScale: 0,
+    stackScale: 1,
     stackShift: 0,
     debug: {
       showAxis: false,
@@ -177,14 +177,13 @@ export default class Visualizer {
     switch (this.options.stack) {
       case VisualizerStack.Duplicate:
         this.renderDuplicateStack(frequencies)
-        break
       case VisualizerStack.Divide:
         this.renderDividedStack(frequencies)
         break
       case VisualizerStack.Shift:
         this.renderShiftedStack(frequencies)
-        break
       default:
+        this.setStackColors(0)
         this.renderVisualization(frequencies)
     }
     return frequencies
@@ -233,7 +232,6 @@ export default class Visualizer {
   }
 
   private renderDuplicateStack(frequencies: number[]) {
-    this.renderVisualization(frequencies)
     let scaledFrequencies = [...frequencies]
 
     for (let i = 0; i < this.options.stackDepth; i++) {
@@ -246,9 +244,10 @@ export default class Visualizer {
   }
 
   private renderDividedStack(frequencies: number[]): void {
-    const chunkSize = Math.floor(frequencies.length / this.options.stackDepth)
+    const chunks = this.options.stackDepth + 1
+    const chunkSize = Math.floor(frequencies.length / chunks)
 
-    for (let i = 0; i < this.options.stackDepth; i++) {
+    for (let i = 0; i < chunks; i++) {
       const frequencyChunk = frequencies.slice(
         i * chunkSize,
         (i + 1) * chunkSize,
@@ -260,8 +259,6 @@ export default class Visualizer {
 
   private renderShiftedStack(frequencies: number[]): void {
     const shift = this.options.stackShift
-
-    this.renderVisualization(frequencies)
     let shiftFrequencies = [...frequencies]
 
     for (let i = 0; i < this.options.stackDepth; i++) {
@@ -269,7 +266,7 @@ export default class Visualizer {
         ...shiftFrequencies.slice(shift),
         ...shiftFrequencies.slice(0, shift),
       ]
-      this.setStackColors(i)
+      this.setStackColors(i + 1)
       this.renderVisualization(shiftFrequencies)
     }
   }
@@ -277,11 +274,11 @@ export default class Visualizer {
   private setStackColors(index: number = 0) {
     const { fillColor, outlineColor } = this.options
     if (fillColor instanceof Array) {
-      index = (index + 1) % fillColor.length
+      index = index % fillColor.length
       this.context.fillStyle = this.parseColor(fillColor[index])
     }
     if (outlineColor instanceof Array) {
-      index = (index + 1) % outlineColor.length
+      index = index % outlineColor.length
       this.context.strokeStyle = this.parseColor(outlineColor[index])
     }
   }
