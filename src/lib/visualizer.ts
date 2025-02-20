@@ -568,7 +568,7 @@ export default class Visualizer {
 
   private showFPS(timestamp: number = 0) {
     const timeDiff = (timestamp - this.debugTimestamp) / 1000
-    if (timeDiff === 0) return
+    if (timeDiff <= 0) return
     const fps = Math.round(1 / timeDiff)
     this.debugTimestamp = timestamp
     this.context.font = "32px arial"

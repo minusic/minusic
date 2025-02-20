@@ -429,7 +429,8 @@ export default class Minusic {
       options: this.options.visualizer,
     })
     if (!this.visualizer.initialized) return
-    this.animationHandler = this.updateVisualizer.bind(this)
+    if (!this.animationHandler)
+      this.animationHandler = this.updateVisualizer.bind(this)
   }
 
   private updateVisualizer(timestamp: number = 0) {
@@ -571,8 +572,12 @@ export default class Minusic {
     this.addSource(trackSources)
     this.setMetadata(track)
     this.track = index
+    const callback = () => {
+      if (playing) this.play()
+      this.media.removeEventListener("canplay", callback)
+    }
+    this.media.addEventListener("canplay", callback)
     this.media.load()
-    if (playing) this.play()
   }
 
   get track() {
