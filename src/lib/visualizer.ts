@@ -17,7 +17,6 @@ import {
   drawDrop,
   drawLevels,
   drawLine,
-  drawRectangle,
   drawRoundedRectangle,
 } from "./canvas"
 import { applyStyles, createElement } from "./elements"
@@ -559,7 +558,7 @@ export default class Visualizer {
       [0, h / 2],
       [w, h / 2],
     ])
-    drawRectangle(this.context, 0, 0, w, h)
+    drawRoundedRectangle(this.context, 0, 0, w, h, 0)
     this.applyStyles()
   }
 

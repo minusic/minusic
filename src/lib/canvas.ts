@@ -64,7 +64,7 @@ export function drawRectangle(
   height: number,
 ) {
   context.strokeRect(x, y, width, height)
-  //context.fillRect(x, y , width, height)
+  context.fillRect(x, y, width, height)
 }
 
 export function drawRoundedRectangle(
@@ -83,11 +83,7 @@ export function drawRoundedRectangle(
   if (height < 2 * radius) radius = Math.round(height / 2)
 
   context.beginPath()
-  context.moveTo(x + radius, y)
-  context.arcTo(x + width, y, x + width, y + height, radius)
-  context.arcTo(x + width, y + height, x, y + height, radius)
-  context.arcTo(x, y + height, x, y, radius)
-  context.arcTo(x, y, x + width, y, radius)
+  context.roundRect(x, y, width, height, radius)
   context.closePath()
   context.fill()
   context.stroke()
