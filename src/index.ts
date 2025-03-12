@@ -129,6 +129,7 @@ export default class Minusic {
 
   private applyInitialSettings(options: ConstructorParameters["options"]) {
     if (!options.showNativeControls) this.hideControls()
+    else this.showControls()
     if (options.autoplay) this.media.setAttribute("autoplay", "")
     if (options.crossOrigin) this.media.setAttribute("crossorigin", "")
     if (this.muted || options.muted) this.mute()
