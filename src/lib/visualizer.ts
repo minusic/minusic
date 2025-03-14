@@ -176,6 +176,7 @@ export default class Visualizer {
     switch (this.options.stack) {
       case VisualizerStack.Duplicate:
         this.renderDuplicateStack(frequencies)
+        break
       case VisualizerStack.Divide:
         this.renderDividedStack(frequencies)
         break
@@ -233,12 +234,12 @@ export default class Visualizer {
   private renderDuplicateStack(frequencies: number[]) {
     let scaledFrequencies = [...frequencies]
 
-    for (let i = 0; i < this.options.stackDepth; i++) {
+    for (let i = 0; i < this.options.stackDepth + 1; i++) {
+      this.setStackColors(i)
+      this.renderVisualization(scaledFrequencies)
       scaledFrequencies = scaledFrequencies.map(
         (value) => value * this.options.stackScale,
       )
-      this.setStackColors(i)
-      this.renderVisualization(scaledFrequencies)
     }
   }
 

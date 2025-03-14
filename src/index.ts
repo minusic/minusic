@@ -305,7 +305,6 @@ export default class Minusic {
       { class: CSSClass.Playlist, role: "menu" },
     )
     if (!this.options.tracks) return { trackContainer, tracks: [] }
-    console.log(this.options.tracks)
     const tracks: HTMLElement[] = []
     for (const [index, track] of this.options.tracks.entries()) {
       const trackEntry = createElement(
