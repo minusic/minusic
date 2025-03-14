@@ -635,8 +635,6 @@ export default class Minusic {
   }
 
   public loadTrack(index = 0, autoplay = false) {
-    if (this.random)
-      index = randomNumber(0, this.options.tracks.length - 1, this.track)
     const playing = !this.paused || autoplay
     if (this.options.tracks.length <= index || index < 0) {
       if (this.repeat === 2) index = 0
@@ -678,7 +676,13 @@ export default class Minusic {
     this.loadTrack(this.track - 1, autoplay)
 
   public nextTrack = (autoplay = false) =>
-    this.loadTrack(this.track + 1, autoplay)
+    this.random ? this.randomTrack() : this.loadTrack(this.track + 1, autoplay)
+
+  public randomTrack = (autoplay = false) =>
+    this.loadTrack(
+      randomNumber(0, this.options.tracks.length - 1, this.track),
+      autoplay,
+    )
 
   public restart() {
     this.currentTime = 0
