@@ -44,6 +44,7 @@ export enum CSSClass {
   Author = "minusic-meta-author",
   Album = "minusic-meta-album",
   Thumbnail = "minusic-meta-thumbnail",
+  Livestream = "minusic-livestream",
   Playlist = "minusic-playlist",
   PlaylistItem = "minusic-playlist-item",
   PlaylistItemDetails = "minusic-playlist-item-details",

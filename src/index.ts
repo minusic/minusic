@@ -241,21 +241,29 @@ export default class Minusic {
       progress: {
         ...this.createTimeBar(progressContainer),
         bufferBar: this.createBufferBar(progressContainer),
-        currentTime: controls.muteButton
+        currentTime: controls.startTime
           ? this.createTimeDisplay(
               controlsContainer,
               CSSClass.CurrentTime,
               "Current time",
             )
           : null,
-        totalTime: controls.muteButton
-          ? this.createTimeDisplay(
-              controlsContainer,
-              CSSClass.TotalTime,
-              "Total time",
-            )
-          : null,
+        totalTime:
+          !this.options.livestream && controls.endTime
+            ? this.createTimeDisplay(
+                controlsContainer,
+                CSSClass.TotalTime,
+                "Total time",
+              )
+            : null,
       },
+      livestream: this.options.livestream
+        ? createElement(
+            "div",
+            { container: controlsContainer, text: "Live" },
+            { class: CSSClass.Livestream },
+          )
+        : null,
       playlist: this.createPlaylist(container),
       soundBar: controls.soundBar
         ? this.createSoundBar(controlsContainer)

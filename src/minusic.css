@@ -350,6 +350,24 @@
   grid-area: 1 / 1 / 4 / 2;
 }
 
+.minusic-livestream {
+  color: rgb(204, 93, 93);
+  border: 2px solid rgb(204, 93, 93);
+  border-radius: 12px;
+  padding: 3px 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.minusic-livestream:before {
+  content: "";
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgb(204, 93, 93);
+}
+
 .minusic-playlist {
   background: #fff;
   padding: 0;

@@ -19,6 +19,7 @@ export interface ConstructorParameters {
     autoplay?: boolean
     crossOrigin?: boolean
     showNativeControls?: boolean
+    livestream?: boolean
     controls: {
       playButton: boolean
       muteButton: boolean
@@ -93,6 +94,7 @@ export interface Elements {
     currentTime: HTMLElement | null
     totalTime: HTMLElement | null
   }
+  livestream?: HTMLElement | null
   soundBar: Range | CircularRange | null
   title?: HTMLElement
   author?: HTMLElement
