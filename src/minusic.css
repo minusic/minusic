@@ -6,9 +6,9 @@
   --minusic-bg-container: #3e4347;
   --minusic-text-primary: #fff;
   --minusic-text-secondary: #888;
-  --minusic-transition-speed: 0.1s --minusic-hover-filter: brightness(0)
-    saturate(100%) invert(58%) sepia(30%) saturate(2383%) hue-rotate(175deg)
-    brightness(103%) contrast(101%);
+  --minusic-transition-speed: 0.1s;
+  --minusic-hover-filter: brightness(0) saturate(100%) invert(58%) sepia(30%)
+    saturate(2383%) hue-rotate(175deg) brightness(103%) contrast(101%);
 }
 
 .minusic-container {
