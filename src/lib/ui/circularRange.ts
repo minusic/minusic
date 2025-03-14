@@ -96,7 +96,7 @@ export default class CircularRange {
     const thumb = createSVGElement("circle", {
       r: `7.5`,
       class: CSSClass.CircularRangeThumb,
-      tabindex: "1",
+      tabindex: "0",
     })
 
     svg.append(background, progress, thumb)

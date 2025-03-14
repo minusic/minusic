@@ -214,7 +214,7 @@ export default class Minusic {
             )
           : null,
         download:
-          controls.downloadButton && this.audioSource
+          controls.downloadButton && this.audioSource && !this.options.livestream
             ? createElement(
                 "a",
                 { container: controlsContainer },
@@ -327,7 +327,7 @@ export default class Minusic {
         { click: () => this.loadTrack(index, true) },
       )
       const thumbnail = createElement(
-        "img",
+        track.thumbnail ? "img" : "span",
         { container: trackDetails },
         { class: CSSClass.PlaylistItemThumbnail, src: track.thumbnail },
       )

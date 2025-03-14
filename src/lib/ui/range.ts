@@ -54,7 +54,7 @@ export default class Range {
       {
         class: [CSSClass.Range, ...cssClass],
         "aria-label": label,
-        tabIndex: "1",
+        tabIndex: "0",
       },
       {
         click: this.handleInteraction.bind(this),
