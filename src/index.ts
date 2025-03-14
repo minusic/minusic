@@ -329,7 +329,12 @@ export default class Minusic {
         "button",
         { container: trackEntry },
         { class: CSSClass.PlaylistItemDetails },
-        { click: () => this.loadTrack(index, true) },
+        {
+          click: () =>
+            this.track !== index
+              ? this.loadTrack(index, true)
+              : this.togglePlay(),
+        },
       )
       const thumbnail = createElement(
         track.thumbnail ? "img" : "span",
