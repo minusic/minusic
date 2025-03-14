@@ -63,7 +63,11 @@ export function createMenu(
   const menu = createElement(
     "div",
     { container },
-    { class: [CSSClass.Menu, cssClass], "aria-label": label, "aria-haspopup": "true"},
+    {
+      class: [CSSClass.Menu, cssClass],
+      "aria-label": label,
+      "aria-haspopup": "true",
+    },
     {
       click: (e) => (e.target.dataset.menuOpen = true),
     },
@@ -93,7 +97,7 @@ export function createMenu(
           option === defaultValue
             ? [CSSClass.MenuItem, CSSClass.MenuItemSelected]
             : [CSSClass.MenuItem],
-        role: "menuitem"
+        role: "menuitem",
       },
       {
         click: (e) => {

@@ -214,7 +214,9 @@ export default class Minusic {
             )
           : null,
         download:
-          controls.downloadButton && this.audioSource && !this.options.livestream
+          controls.downloadButton &&
+          this.audioSource &&
+          !this.options.livestream
             ? createElement(
                 "a",
                 { container: controlsContainer },

@@ -6,9 +6,9 @@
   --minusic-bg-container: #3e4347;
   --minusic-text-primary: #fff;
   --minusic-text-secondary: #888;
-  --minusic-transition-speed: .1s
-  --minusic-hover-filter: brightness(0) saturate(100%) invert(58%) sepia(30%)
-    saturate(2383%) hue-rotate(175deg) brightness(103%) contrast(101%);
+  --minusic-transition-speed: 0.1s --minusic-hover-filter: brightness(0)
+    saturate(100%) invert(58%) sepia(30%) saturate(2383%) hue-rotate(175deg)
+    brightness(103%) contrast(101%);
 }
 
 .minusic-container {
@@ -61,9 +61,9 @@
   justify-content: space-between;
   align-items: stretch;
   z-index: 10;
-  box-shadow:  0px 0px 5px 0px #5555551c;
+  box-shadow: 0px 0px 5px 0px #5555551c;
   margin-top: 0px;
-  transition: .5s;
+  transition: 0.5s;
   opacity: 0;
 }
 
@@ -78,14 +78,14 @@
 .minusic-menu-value:focus > .minusic-menu-content {
   display: flex;
   margin-top: 10px;
-  transition: .5s;
+  transition: 0.5s;
   opacity: 1;
 }
 
 .minusic-menu:focus-within .minusic-menu-content {
   display: flex;
   margin-top: 10px;
-  transition: .5s;
+  transition: 0.5s;
   opacity: 1;
 }
 
@@ -419,7 +419,7 @@
   height: 100%;
   width: 25px;
   border-radius: 4px;
-  background: #f1f1f1
+  background: #f1f1f1;
 }
 .minusic-playlist-item-title {
   flex: 1;
