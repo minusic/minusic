@@ -267,7 +267,7 @@
   background: transparent;
 }
 
-.minnusic-controls-total-time:before {
+.minusic-controls-total-time:before {
   content: "/";
   margin: 0 4px 0 2px;
 }
@@ -282,7 +282,7 @@
   align-items: center;
   min-width: 60px;
 }
-.minnusic-controls-current-time {
+.minusic-controls-current-time {
   order: 3;
   color: var(--minusic-text-primary);
   font-size: 12px;
@@ -290,7 +290,7 @@
   letter-spacing: -0.5px;
   user-select: none;
 }
-.minnusic-controls-total-time {
+.minusic-controls-total-time {
   order: 4;
   color: var(--minusic-text-secondary);
   font-size: 12px;
@@ -330,22 +330,73 @@
   margin: 0;
 }
 
-.minnusic-meta-title {
+.minusic-meta-title {
   grid-area: 1 / 2 / 2 / 3;
   font-size: 1.2rem;
   font-weight: 600;
   color: #101010;
 }
-.minnusic-meta-author {
+.minusic-meta-author {
   grid-area: 2 / 2 / 3 / 3;
   font-size: 1rem;
   color: var(--minusic-text-secondary);
 }
-.minnusic-meta-album {
+.minusic-meta-album {
   grid-area: 3 / 2 / 4 / 3;
 }
-.minnusic-meta-thumbnail {
+.minusic-meta-thumbnail {
   display: block;
   width: 100%;
   grid-area: 1 / 1 / 4 / 2;
+}
+
+.minusic-playlist {
+  background: #fff;
+  padding: 0;
+  order: 4;
+  margin-top: 10px;
+}
+.minusic-playlist-item {
+  list-style: none;
+  display: flex;
+  gap: 5px;
+  cursor: pointer;
+}
+.minusic-playlist-item:hover {
+  background-color: #f8f8f8;
+}
+.minusic-playlist-item[data-state="playing"] {
+  background: #f4f4f4;
+}
+.minusic-playlist-item-details {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  height: 45px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: left;
+  gap: 10px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.minusic-playlist-item-thumbnail {
+  height: 100%;
+  border-radius: 4px;
+}
+.minusic-playlist-item-title {
+  flex: 1;
+  font-weight: 500;
+  color: #101010;
+}
+
+.minusic-playlist-item-author {
+  color: var(--minusic-text-secondary);
+}
+
+.minusic-playlist-item-duration {
+  font-weight: 500;
+  color: var(--minusic-text-secondary);
 }

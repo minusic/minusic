@@ -256,6 +256,7 @@ export default class Minusic {
             )
           : null,
       },
+      playlist: this.createPlaylist(container),
       soundBar: controls.soundBar
         ? this.createSoundBar(controlsContainer)
         : null,
@@ -295,6 +296,65 @@ export default class Minusic {
         },
       ) as HTMLImageElement,
     }
+  }
+
+  private createPlaylist(container: HTMLElement) {
+    const trackContainer = createElement(
+      "menu",
+      { container },
+      { class: CSSClass.Playlist, role: "menu" },
+    )
+    if (!this.options.tracks) return { trackContainer, tracks: [] }
+    console.log(this.options.tracks)
+    const tracks: HTMLElement[] = []
+    for (const [index, track] of this.options.tracks.entries()) {
+      const trackEntry = createElement(
+        "li",
+        { container: trackContainer },
+        { class: CSSClass.PlaylistItem, role: "menuitem" },
+      )
+      const trackDetails = createElement(
+        "button",
+        { container: trackEntry },
+        { class: CSSClass.PlaylistItemDetails },
+        { click: () => this.loadTrack(index, true) },
+      )
+      const thumbnail = createElement(
+        "img",
+        { container: trackDetails },
+        { class: CSSClass.PlaylistItemThumbnail, src: track.thumbnail },
+      )
+      createElement(
+        "span",
+        { container: trackDetails, text: `${index + 1}.` },
+        { class: CSSClass.PlaylistItemIndex },
+      )
+      const title = createElement(
+        "span",
+        { container: trackDetails, text: track.title },
+        { class: CSSClass.PlaylistItemTitle },
+      )
+      const author = createElement(
+        "span",
+        { container: trackDetails, text: track.author },
+        { class: CSSClass.PlaylistItemAuthor },
+      )
+      const album = createElement(
+        "span",
+        { container: trackDetails, text: track.album },
+        { class: CSSClass.PlaylistItemAlbum },
+      )
+      const duration = createElement(
+        "span",
+        {
+          container: trackDetails,
+          text: track.duration ? `${track.duration}` : "",
+        },
+        { class: CSSClass.PlaylistItemDuration },
+      )
+      tracks.push(trackEntry)
+    }
+    return { trackContainer, tracks }
   }
 
   private createProgressContainer(controls: HTMLElement) {
@@ -579,6 +639,14 @@ export default class Minusic {
     }
     this.media.addEventListener("canplay", callback)
     this.media.load()
+    this.updatePlaylist(index)
+  }
+
+  updatePlaylist(currentTrack: number) {
+    this.elements.playlist.tracks.forEach((track, index) => {
+      if (index === currentTrack) track.dataset.state = "playing"
+      else track.dataset.state = ""
+    })
   }
 
   get track() {

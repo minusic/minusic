@@ -42,6 +42,7 @@ export interface ConstructorParameters {
       author: string
       thumbnail: string
       album: string
+      duration?: string | number
     }[]
     skipDuration: number
     muted?: boolean
@@ -97,6 +98,10 @@ export interface Elements {
   author?: HTMLElement
   album?: HTMLElement
   thumbnail?: HTMLImageElement
+  playlist: {
+    trackContainer: HTMLElement
+    tracks: HTMLElement[]
+  }
 }
 
 export interface VisualizerOptions {
