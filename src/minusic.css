@@ -29,6 +29,9 @@
   order: 2;
   border-radius: 3px;
 }
+.minusic-controls[data-hide] {
+  display: none;
+}
 
 .minusic-menu {
   font-size: 0.75rem;

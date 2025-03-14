@@ -18,6 +18,7 @@ export interface ConstructorParameters {
     duration?: number | string
     autoplay?: boolean
     crossOrigin?: boolean
+    showControls?: boolean
     showNativeControls?: boolean
     livestream?: boolean
     controls: {
@@ -76,7 +77,7 @@ export interface Elements {
   container: HTMLElement
   controls: HTMLElement
   metadata?: HTMLElement
-  buttons: {
+  buttons?: {
     play: HTMLElement | null
     mute: HTMLElement | null
     backward: HTMLElement | null

@@ -122,7 +122,10 @@ export default class Minusic {
     const controls = createElement(
       "div",
       { container },
-      { class: CSSClass.Controls },
+      {
+        class: CSSClass.Controls,
+        "data-hide": `${this.options.showControls === false}`,
+      },
     )
     return { container, controls }
   }
