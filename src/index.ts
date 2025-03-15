@@ -496,7 +496,7 @@ export default class Minusic {
       pause: () => this.handlePauseState(),
       play: () => this.handlePlayState(),
       volumechange: () => this.handleVolumeChange(),
-      ratechange: () => {},
+      ratechange: () => this.handleRateChange(),
       ended: () => {
         if (this.repeat === 1) this.restart()
         else this.nextTrack(true)
@@ -555,6 +555,12 @@ export default class Minusic {
   private handleVolumeChange() {
     this.volume = this.media.volume
     this.muted ? this.mute() : this.unmute()
+  }
+
+  private handleRateChange() {
+    if (this.elements.buttons.playbackSpeed) {
+      this.elements.buttons.playbackSpeed.update(this.playbackRate.toString())
+    }
   }
 
   public stop() {

@@ -83,7 +83,7 @@ export interface Elements {
     mute: HTMLElement | null
     backward: HTMLElement | null
     forward: HTMLElement | null
-    playbackSpeed: HTMLElement | null
+    playbackSpeed: { menu: HTMLElement; update: (value: string) => void } | null
     download: HTMLAnchorElement | null
     previous: HTMLElement | null
     next: HTMLElement | null

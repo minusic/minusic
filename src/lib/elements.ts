@@ -88,6 +88,20 @@ export function createMenu(
     { container: menuContent, text: label },
     { class: CSSClass.MenuTitle },
   )
+  const update = (value: string) => {
+    const previous = menu.querySelector(
+      `.${CSSClass.MenuItemSelected}`,
+    ) as HTMLElement
+    previous.className = CSSClass.MenuItem
+    previous.setAttribute("aria-selected", "false")
+
+    const current = menu.querySelector(`[data-value="${value}"]`) as HTMLElement
+    current.className = [CSSClass.MenuItem, CSSClass.MenuItemSelected].join(" ")
+    current.setAttribute("aria-selected", "true")
+
+    menuValue.innerText = value
+    onChange(value)
+  }
   options.forEach((option) => {
     createElement(
       "button",
@@ -97,31 +111,23 @@ export function createMenu(
           option === defaultValue
             ? [CSSClass.MenuItem, CSSClass.MenuItemSelected]
             : [CSSClass.MenuItem],
+        "aria-selected": option === defaultValue ? "true" : "false",
         role: "menuitem",
+        "data-value": option,
       },
       {
         click: (e) => {
           e.preventDefault()
-          const previous = menu.querySelector(
-            `.${CSSClass.MenuItemSelected}`,
-          ) as HTMLElement
-          previous.className = CSSClass.MenuItem
+          update(option)
 
-          const current = e.target as HTMLElement
-          current.className = [
-            CSSClass.MenuItem,
-            CSSClass.MenuItemSelected,
-          ].join(" ")
-
-          menuValue.innerText = option
-          onChange(option)
           document.activeElement instanceof HTMLElement &&
             document.activeElement.blur()
         },
       },
     )
   })
-  return menu
+
+  return { menu, update }
 }
 
 export function wrapElement(container: HTMLElement, target: HTMLElement) {
