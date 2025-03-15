@@ -211,7 +211,7 @@ export default class Minusic {
         random: controls.randomButton
           ? createButton(
               controlsContainer,
-              "Repeat",
+              "Random",
               CSSClass.RandomButton,
               () => this.toggleRandom(),
             )
@@ -657,11 +657,11 @@ export default class Minusic {
     this.updateDownloadButton()
     this.setMetadata(track)
     this.track = index
-    const callback = () => {
+    const handleCanPlay = () => {
       if (playing) this.play()
-      this.media.removeEventListener("canplay", callback)
+      this.media.removeEventListener("canplay", handleCanPlay)
     }
-    this.media.addEventListener("canplay", callback)
+    this.media.addEventListener("canplay", handleCanPlay)
     this.media.load()
     this.updatePlaylist(index)
   }
