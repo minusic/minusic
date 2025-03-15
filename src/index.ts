@@ -27,6 +27,7 @@ export default class Minusic {
   private trackIndex: number = 0
   private repeatState: number = 0
   private randomState: boolean = false
+  private playbackRateState: number = 1
 
   constructor({
     media,
@@ -559,6 +560,8 @@ export default class Minusic {
 
   private handleRateChange() {
     if (this.elements.buttons.playbackSpeed) {
+      if (this.playbackRateState !== this.playbackRate)
+        this.playbackRate = this.playbackRateState
       this.elements.buttons.playbackSpeed.update(this.playbackRate.toString())
     }
   }
@@ -778,6 +781,7 @@ export default class Minusic {
   }
 
   set playbackRate(rate) {
+    this.playbackRateState = rate
     this.media.playbackRate = rate
   }
 
