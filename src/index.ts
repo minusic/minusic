@@ -216,20 +216,17 @@ export default class Minusic {
               () => this.toggleRandom(),
             )
           : null,
-        download:
-          controls.downloadButton &&
-          this.audioSource &&
-          !this.options.livestream
-            ? createElement(
-                "a",
-                { container: controlsContainer },
-                {
-                  class: [CSSClass.ControlButton, CSSClass.DownloadButton],
-                  href: this.audioSource,
-                  download: this.trackTitle || "",
-                },
-              )
-            : null,
+        download: controls.downloadButton
+          ? (createElement(
+              "a",
+              { container: controlsContainer },
+              {
+                class: [CSSClass.ControlButton, CSSClass.DownloadButton],
+                href: "",
+                download: "",
+              },
+            ) as HTMLAnchorElement)
+          : null,
         playbackSpeed: controls.playbackSpeedButton
           ? createMenu(
               controlsContainer,
@@ -646,6 +643,7 @@ export default class Minusic {
       : [track.source]
     this.removeSource()
     this.addSource(trackSources)
+    this.updateDownloadButton()
     this.setMetadata(track)
     this.track = index
     const callback = () => {
@@ -655,6 +653,19 @@ export default class Minusic {
     this.media.addEventListener("canplay", callback)
     this.media.load()
     this.updatePlaylist(index)
+  }
+
+  private updateDownloadButton() {
+    const downloadButton = this.elements.buttons.download
+    if (!downloadButton) return
+
+    if (this.audioSource && !this.options.livestream) {
+      downloadButton.href = this.audioSource
+      downloadButton.download = this.trackTitle || ""
+      downloadButton.style.display = ""
+    } else {
+      downloadButton.style.display = "none"
+    }
   }
 
   updatePlaylist(currentTrack: number) {
