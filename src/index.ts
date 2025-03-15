@@ -358,6 +358,17 @@ export default class Minusic {
         { container: trackDetails, text: track.album },
         { class: CSSClass.PlaylistItemAlbum },
       )
+      if (track.download)
+        createElement(
+          "a",
+          { container: trackDetails, text: "Download" },
+          {
+            class: CSSClass.PlaylistItemDownload,
+            href: track.source,
+            download: track.title || "",
+            title: `Download track ${track.title || ""}`,
+          },
+        )
       const duration = createElement(
         "span",
         {

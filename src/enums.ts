@@ -54,6 +54,7 @@ export enum CSSClass {
   PlaylistItemAuthor = "minusic-playlist-item-author",
   PlaylistItemAlbum = "minusic-playlist-item-album",
   PlaylistItemDuration = "minusic-playlist-item-duration",
+  PlaylistItemDownload = "minusic-playlist-item-download",
 }
 
 export enum VisualizerShape {
