@@ -45,6 +45,7 @@ export interface ConstructorParameters {
       thumbnail: string
       album: string
       duration?: string | number
+      download?: boolean
     }[]
     skipDuration: number
     muted?: boolean
@@ -77,13 +78,13 @@ export interface Elements {
   container: HTMLElement
   controls: HTMLElement
   metadata?: HTMLElement
-  buttons?: {
+  buttons: {
     play: HTMLElement | null
     mute: HTMLElement | null
     backward: HTMLElement | null
     forward: HTMLElement | null
     playbackSpeed: HTMLElement | null
-    download: HTMLElement | null
+    download: HTMLAnchorElement | null
     previous: HTMLElement | null
     next: HTMLElement | null
     repeat: HTMLElement | null
