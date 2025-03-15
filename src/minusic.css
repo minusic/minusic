@@ -66,8 +66,7 @@
   z-index: 10;
   box-shadow: 0px 0px 5px 0px #5555551c;
   margin-top: 0px;
-  transition: 0.5s;
-  opacity: 0;
+  transition: 0.1s;
 }
 
 .minusic-menu-title {
@@ -81,15 +80,19 @@
 .minusic-menu-value:focus > .minusic-menu-content {
   display: flex;
   margin-top: 10px;
-  transition: 0.5s;
-  opacity: 1;
+  transition-property: margin-top;
+  @starting-style {
+    margin-top: 0px;
+  }
 }
 
 .minusic-menu:focus-within .minusic-menu-content {
   display: flex;
   margin-top: 10px;
-  transition: 0.5s;
-  opacity: 1;
+  transition-property: margin-top;
+  @starting-style {
+    margin-top: 0px;
+  }
 }
 
 .minusic-menu-item {
