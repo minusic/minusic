@@ -56,7 +56,7 @@ export default class Minusic {
         muteButton: true,
         playButton: true,
         startTime: true,
-        endTIme: true,
+        endTime: true,
         soundBar: true,
         timeBar: true,
         bufferBar: true,
