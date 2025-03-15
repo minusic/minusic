@@ -575,9 +575,9 @@ export default class Minusic {
     if (this.media.volume === 0) this.volume = 1
   }
 
-  public repeatOne() {}
-  public repeatAll() {}
-  public noRepeat() {}
+  public repeatOne = () => (this.repeat = 1)
+  public repeatAll = () => (this.repeat = 2)
+  public noRepeat = () => (this.repeat = 0)
 
   public showControls = () => this.media.setAttribute("controls", "")
   public hideControls = () => this.media.removeAttribute("controls")
@@ -589,11 +589,6 @@ export default class Minusic {
 
   public toggleRepeat = () => {
     this.repeat = (this.repeat + 1) % 3
-    if (this.repeat === 0) this.noRepeat()
-    else if (this.repeat === 1) this.repeatOne()
-    else if (this.repeat === 2) this.repeatAll()
-
-    this.elements.container.dataset.repeat = `${this.repeat}`
   }
 
   get repeat() {
@@ -601,6 +596,7 @@ export default class Minusic {
   }
   set repeat(value: number) {
     this.repeatState = value
+    this.elements.container.dataset.repeat = `${this.repeatState}`
   }
 
   public toggleRandom() {
