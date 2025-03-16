@@ -22,6 +22,7 @@ import {
 import { applyStyles, createElement } from "../elements"
 import { AudioProcessor } from "./core/AudioProcessor"
 import { CanvasManager } from "./core/CanvasManager"
+import { DebugUtils } from "./utils/DebugUtils"
 
 export default class Visualizer {
   private media!: HTMLMediaElement
@@ -31,6 +32,7 @@ export default class Visualizer {
   private audioSource!: MediaElementAudioSourceNode
   private canvasManager!: CanvasManager
   private audioProcessor!: AudioProcessor
+  private debugUtils!: DebugUtils
   private analyser!: AnalyserNode
   initialized = false
   options: VisualizerOptions = {
@@ -104,6 +106,7 @@ export default class Visualizer {
       this.options,
     )
     this.audioProcessor = new AudioProcessor(this.media)
+    this.debugUtils = new DebugUtils(this.context, this.options)
   }
 
   private parseColor(color: VisualizerColor) {
@@ -126,30 +129,14 @@ export default class Visualizer {
     return "transparent"
   }
 
-  private applyStyles() {
-    this.context.fillStyle =
-      this.options.fillColor instanceof Array
-        ? this.parseColor(this.options.fillColor[0])
-        : this.parseColor(this.options.fillColor)
-    this.context.strokeStyle =
-      this.options.outlineColor instanceof Array
-        ? this.parseColor(this.options.outlineColor[0])
-        : this.parseColor(this.options.outlineColor)
-    this.context.lineWidth = this.options.strokeWidth
-    this.context.shadowColor = this.options.shadowColor
-    this.context.shadowBlur = this.options.shadowBlur
-    this.context.shadowOffsetX = this.options.shadowOffsetX
-    this.context.shadowOffsetY = this.options.shadowOffsetY
-  }
-
   update(paused: boolean, timestamp?: number) {
     if (!paused && !this.audioProcessor.isInitialized()) {
       this.audioProcessor.initialize()
     }
 
     this.canvasManager.clearCanvas()
-    if (this.options.debug.showAxis) this.showAxis()
-    if (this.options.debug.showFPS) this.showFPS(timestamp)
+    if (this.options.debug.showAxis) this.debugUtils.showAxis()
+    if (this.options.debug.showFPS) this.debugUtils.showFPS(timestamp)
     if (this.options.invertColors) this.canvasManager.invertCanvasColors()
 
     let frequencies = this.getProcessedFrequencies(paused)
@@ -517,31 +504,5 @@ export default class Visualizer {
       VisualizerDirection.TopToBottom,
       VisualizerDirection.BottomToTop,
     ].includes(this.options.direction)
-  }
-
-  private showAxis() {
-    const { width: w, height: h } = this.options
-    this.context.lineWidth = 2
-    this.context.strokeStyle = "#f005"
-    drawLine(this.context, [
-      [w / 2, 0],
-      [w / 2, h],
-    ])
-    drawLine(this.context, [
-      [0, h / 2],
-      [w, h / 2],
-    ])
-    drawRoundedRectangle(this.context, 0, 0, w, h, 0)
-    this.applyStyles()
-  }
-
-  private showFPS(timestamp: number = 0) {
-    const timeDiff = (timestamp - this.debugTimestamp) / 1000
-    if (timeDiff <= 0) return
-    const fps = Math.round(1 / timeDiff)
-    this.debugTimestamp = timestamp
-    this.context.font = "32px arial"
-    this.context.fillText(`FPS: ${fps}`, 20, 50)
-    this.context.strokeText(`FPS: ${fps}`, 20, 50)
   }
 }
