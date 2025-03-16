@@ -30,6 +30,7 @@ export default class Minusic {
   private playbackRateState: number = 1
   private sources: string[] = []
   private sourceErrors = 0
+  private attemptedTracks: Set<unknown> = new Set()
 
   constructor({
     media,
@@ -650,11 +651,32 @@ export default class Minusic {
   }
 
   public loadTrack(index = 0, autoplay = false) {
+    this.sourceErrors = 0
     const playing = !this.paused || autoplay
-    if (this.options.tracks.length <= index || index < 0) {
-      if (this.repeat === 2) index = 0
-      else return
+
+    if (!this.options.tracks || this.options.tracks.length === 0) {
+      console.warn("No tracks available to load")
+      return
     }
+    if (this.options.tracks.length <= index || index < 0) {
+      if (this.repeat === 2) {
+        index = 0
+      } else {
+        return
+      }
+    }
+    if (!this.attemptedTracks) {
+      this.attemptedTracks = new Set()
+    }
+    if (this.attemptedTracks.has(index)) {
+      console.warn(
+        `Cannot load track at index ${index}: all tracks have invalid sources`,
+      )
+      this.attemptedTracks.clear()
+      return
+    }
+    this.attemptedTracks.add(index)
+
     const track = this.options.tracks[index]
     const trackSources = Array.isArray(track.source)
       ? [...track.source]
@@ -667,6 +689,7 @@ export default class Minusic {
     const handleCanPlay = () => {
       if (playing) this.play()
       this.media.removeEventListener("canplay", handleCanPlay)
+      this.attemptedTracks.clear()
     }
     this.media.addEventListener("canplay", handleCanPlay)
     this.media.load()
@@ -733,8 +756,14 @@ export default class Minusic {
   private sourceFailed() {
     this.sourceErrors++
     if (this.sourceErrors >= this.sources.length) {
-      if (this.track < this.options.tracks.length - 1)
+      if (this.track < this.options.tracks.length - 1) {
         this.nextTrack(!this.paused)
+      } else if (this.repeat === 2) {
+        this.loadTrack(0, !this.paused)
+      } else {
+        console.error("All audio sources failed to load")
+        this.attemptedTracks.clear()
+      }
     }
   }
 
