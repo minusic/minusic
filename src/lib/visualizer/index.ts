@@ -20,6 +20,7 @@ import {
   drawRoundedRectangle,
 } from "../canvas"
 import { applyStyles, createElement } from "../elements"
+import { AudioProcessor } from "./core/AudioProcessor"
 
 export default class Visualizer {
   private media!: HTMLMediaElement
@@ -27,6 +28,7 @@ export default class Visualizer {
   private context!: CanvasRenderingContext2D
   private audioContext!: AudioContext
   private audioSource!: MediaElementAudioSourceNode
+  private audioProcessor!: AudioProcessor
   private analyser!: AnalyserNode
   initialized = false
   options: VisualizerOptions = {
@@ -86,9 +88,15 @@ export default class Visualizer {
 
     this.options = { ...this.options, ...options }
 
+    this.initializeComponents()
+
     this.initializeCanvas()
     this.initialized = true
     this.update(true)
+  }
+
+  private initializeComponents() {
+    this.audioProcessor = new AudioProcessor(this.media)
   }
 
   private initializeCanvas() {
@@ -164,7 +172,10 @@ export default class Visualizer {
   }
 
   update(paused: boolean, timestamp?: number) {
-    if (!paused && !this.audioContext) this.initializeAudioContext()
+    if (!paused && !this.audioProcessor.isInitialized()) {
+      this.audioProcessor.initialize()
+    }
+
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     if (this.options.debug.showAxis) this.showAxis()
     if (this.options.debug.showFPS) this.showFPS(timestamp)
@@ -190,11 +201,7 @@ export default class Visualizer {
   }
 
   private getProcessedFrequencies(paused: boolean) {
-    const rawFrequencies = paused
-      ? new Uint8Array(256).fill(0)
-      : new Uint8Array(this.analyser.frequencyBinCount)
-
-    if (!paused) this.analyser?.getByteFrequencyData(rawFrequencies)
+    const rawFrequencies = this.audioProcessor.getFrequencyData(paused)
     return this.applySymmetryAndDirection(rawFrequencies)
   }
 
