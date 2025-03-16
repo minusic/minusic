@@ -5,11 +5,11 @@ import {
   VisualizerShape,
   VisualizerStack,
   VisualizerSymmetry,
-} from "./enums"
-import CircularProgress from "./lib/ui/circularProgress"
-import CircularRange from "./lib/ui/circularRange"
-import Progress from "./lib/ui/progress"
-import Range from "./lib/ui/range"
+} from "../enums"
+import CircularProgress from "../lib/ui/circularProgress"
+import CircularRange from "../lib/ui/circularRange"
+import Progress from "../lib/ui/progress"
+import Range from "../lib/ui/range"
 
 export interface ConstructorParameters {
   media: string
