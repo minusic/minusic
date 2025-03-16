@@ -7,8 +7,8 @@ import {
   VisualizerShape,
   VisualizerStack,
   VisualizerSymmetry,
-} from "../enums"
-import { VisualizerColor, VisualizerOptions } from "../types"
+} from "../../enums"
+import { VisualizerColor, VisualizerOptions } from "../../types"
 import {
   createConicGradient,
   createLinearGradient,
@@ -18,8 +18,8 @@ import {
   drawLevels,
   drawLine,
   drawRoundedRectangle,
-} from "./canvas"
-import { applyStyles, createElement } from "./elements"
+} from "../canvas"
+import { applyStyles, createElement } from "../elements"
 
 export default class Visualizer {
   private media!: HTMLMediaElement
