@@ -28,6 +28,8 @@ export default class Minusic {
   private repeatState: number = 0
   private randomState: boolean = false
   private playbackRateState: number = 1
+  private sources: string[] = []
+  private sourceErrors = 0
 
   constructor({
     media,
@@ -717,12 +719,27 @@ export default class Minusic {
   }
 
   private addSource(sources: string[]) {
+    this.sources = sources
     sources.forEach((source) =>
-      createElement("source", { container: this.media }, { src: source }),
+      createElement(
+        "source",
+        { container: this.media },
+        { src: source },
+        { error: () => this.sourceFailed() },
+      ),
     )
   }
 
+  private sourceFailed() {
+    this.sourceErrors++
+    if (this.sourceErrors >= this.sources.length) {
+      if (this.track < this.options.tracks.length - 1)
+        this.nextTrack(!this.paused)
+    }
+  }
+
   private removeSource() {
+    this.sources = []
     this.media.querySelectorAll("source").forEach((element) => remove(element))
   }
 
