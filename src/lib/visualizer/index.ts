@@ -21,6 +21,7 @@ import {
 } from "../canvas"
 import { applyStyles, createElement } from "../elements"
 import { AudioProcessor } from "./core/AudioProcessor"
+import { CanvasManager } from "./core/CanvasManager"
 
 export default class Visualizer {
   private media!: HTMLMediaElement
@@ -28,6 +29,7 @@ export default class Visualizer {
   private context!: CanvasRenderingContext2D
   private audioContext!: AudioContext
   private audioSource!: MediaElementAudioSourceNode
+  private canvasManager!: CanvasManager
   private audioProcessor!: AudioProcessor
   private analyser!: AnalyserNode
   initialized = false
@@ -90,22 +92,18 @@ export default class Visualizer {
 
     this.initializeComponents()
 
-    this.initializeCanvas()
+    this.canvasManager.initializeCanvas()
     this.initialized = true
     this.update(true)
   }
 
   private initializeComponents() {
+    this.canvasManager = new CanvasManager(
+      this.canvas,
+      this.context,
+      this.options,
+    )
     this.audioProcessor = new AudioProcessor(this.media)
-  }
-
-  private initializeCanvas() {
-    const { canvasBackground } = this.options
-    this.updateCanvasSize()
-    this.applyStyles()
-    if (canvasBackground) {
-      this.canvas.style.background = canvasBackground
-    }
   }
 
   private parseColor(color: VisualizerColor) {
@@ -126,33 +124,6 @@ export default class Visualizer {
       }
     }
     return "transparent"
-  }
-
-  private initializeAudioContext() {
-    this.audioContext = new (window.AudioContext || null)()
-    if (this.audioContext === null) {
-      this.initialized = false
-      return
-    }
-
-    this.audioSource = this.audioContext.createMediaElementSource(this.media)
-    this.analyser = this.audioContext.createAnalyser()
-
-    this.audioSource
-      .connect(this.analyser)
-      .connect(this.audioContext.destination)
-  }
-
-  private updateCanvasSize() {
-    const { width, height } = this.options
-    applyStyles(this.canvas, {
-      width: `${width}px`,
-      height: `${height}px`,
-    })
-    const scale = window.devicePixelRatio || 1
-    this.canvas.width = scale * width
-    this.canvas.height = scale * height
-    this.context.scale(scale, scale)
   }
 
   private applyStyles() {
@@ -176,10 +147,10 @@ export default class Visualizer {
       this.audioProcessor.initialize()
     }
 
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.canvasManager.clearCanvas()
     if (this.options.debug.showAxis) this.showAxis()
     if (this.options.debug.showFPS) this.showFPS(timestamp)
-    if (this.options.invertColors) this.invertCanvasColors()
+    if (this.options.invertColors) this.canvasManager.invertCanvasColors()
 
     let frequencies = this.getProcessedFrequencies(paused)
     if (!frequencies.length) return frequencies
@@ -546,12 +517,6 @@ export default class Visualizer {
       VisualizerDirection.TopToBottom,
       VisualizerDirection.BottomToTop,
     ].includes(this.options.direction)
-  }
-
-  private invertCanvasColors() {
-    this.context.globalCompositeOperation = "source-over"
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
-    this.context.globalCompositeOperation = "destination-out"
   }
 
   private showAxis() {
