@@ -1,4 +1,3 @@
-import "./minusic.css"
 import { CSSClass } from "./enums"
 import {
   createButton,
@@ -16,7 +15,6 @@ import CircularRange from "./lib/ui/circularRange"
 import Progress from "./lib/ui/progress"
 import CircularProgress from "./lib/ui/circularProgress"
 
-export * from "./types"
 export default class Minusic {
   private media!: HTMLMediaElement
   private container!: HTMLElement
