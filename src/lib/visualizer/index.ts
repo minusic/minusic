@@ -158,6 +158,7 @@ export default class Visualizer {
       paused,
       this.audioProcessor,
     )
+    if (!frequencies.length) return frequencies
 
     this.renderWithStackOption(frequencies)
     return frequencies
