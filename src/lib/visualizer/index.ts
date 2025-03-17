@@ -1,16 +1,9 @@
-import {
-  CSSClass,
-  VisualizerDirection,
-  VisualizerMode,
-  VisualizerPosition,
-  VisualizerShape,
-  VisualizerStack,
-  VisualizerSymmetry,
-} from "../../enums"
+import { CSSClass, VisualizerShape, VisualizerStack } from "../../enums"
 import { VisualizerOptions } from "../../types"
 import { createElement } from "../elements"
 import { AudioProcessor } from "./core/AudioProcessor"
 import { CanvasManager } from "./core/CanvasManager"
+import { OptionsHandler } from "./core/Options"
 import { CircleRenderer } from "./renderers/CircleRenderer"
 import { LineRenderer } from "./renderers/LineRenderer"
 import { DebugUtils } from "./utils/DebugUtils"
@@ -21,6 +14,7 @@ export default class Visualizer {
   private media!: HTMLMediaElement
   private canvas!: HTMLCanvasElement
   private context!: CanvasRenderingContext2D
+  private optionsHandler!: OptionsHandler
   private canvasManager!: CanvasManager
   private audioProcessor!: AudioProcessor
   private stackUtils!: StackUtils
@@ -28,42 +22,8 @@ export default class Visualizer {
   private debugUtils!: DebugUtils
   private lineRenderer!: LineRenderer
   private circleRenderer!: CircleRenderer
+  private options: VisualizerOptions
   initialized = false
-  options: VisualizerOptions = {
-    tick: 0,
-    width: 0,
-    height: 0,
-    barAmplitude: 0,
-    outlineSize: 0,
-    tickRadius: 0,
-    strokeWidth: 0,
-    frequencyRange: 1,
-    frequencyMaxValue: 255,
-    circleRadius: 0,
-    circleStartAngle: 0,
-    circleEndAngle: 360,
-    shape: VisualizerShape.Line,
-    mode: VisualizerMode.Bars,
-    position: VisualizerPosition.Center,
-    direction: VisualizerDirection.LeftToRight,
-    symmetry: VisualizerSymmetry.None,
-    canvasBackground: "transparent",
-    fillColor: "transparent",
-    outlineColor: "transparent",
-    invertColors: false,
-    shadowColor: "transparent",
-    shadowBlur: 0,
-    shadowOffsetX: 0,
-    shadowOffsetY: 0,
-    stack: VisualizerStack.None,
-    stackDepth: 0,
-    stackScale: 1,
-    stackShift: 0,
-    debug: {
-      showAxis: false,
-      showFPS: false,
-    },
-  }
 
   constructor({
     container,
@@ -74,8 +34,8 @@ export default class Visualizer {
     media: HTMLMediaElement
     options: VisualizerOptions
   }) {
-    this.options = this.getDefaultOptions()
-    this.options = { ...this.options, ...options }
+    this.optionsHandler = new OptionsHandler(options)
+    this.options = this.optionsHandler.options
 
     this.canvas = createElement(
       "canvas",
@@ -104,44 +64,6 @@ export default class Visualizer {
     this.stackUtils = new StackUtils(this.context, this.options)
     this.freqUtils = new FrequencyUtils(this.options)
     this.debugUtils = new DebugUtils(this.context, this.options)
-  }
-
-  private getDefaultOptions(): VisualizerOptions {
-    return {
-      tick: 0,
-      width: 0,
-      height: 0,
-      barAmplitude: 0,
-      outlineSize: 0,
-      tickRadius: 0,
-      strokeWidth: 0,
-      frequencyRange: 1,
-      frequencyMaxValue: 255,
-      circleRadius: 0,
-      circleStartAngle: 0,
-      circleEndAngle: 360,
-      shape: VisualizerShape.Line,
-      mode: VisualizerMode.Bars,
-      position: VisualizerPosition.Center,
-      direction: VisualizerDirection.LeftToRight,
-      symmetry: VisualizerSymmetry.None,
-      canvasBackground: "transparent",
-      fillColor: "transparent",
-      outlineColor: "transparent",
-      invertColors: false,
-      shadowColor: "transparent",
-      shadowBlur: 0,
-      shadowOffsetX: 0,
-      shadowOffsetY: 0,
-      stack: VisualizerStack.None,
-      stackDepth: 0,
-      stackScale: 1,
-      stackShift: 0,
-      debug: {
-        showAxis: false,
-        showFPS: false,
-      },
-    }
   }
 
   update(paused: boolean, timestamp?: number) {
