@@ -124,8 +124,6 @@ export class PolygonRenderer extends BaseRenderer {
         if (allPoints.length > 0) {
           points.length = 0
           points.push(...allPoints)
-          // Close the shape
-          points.push([...allPoints[0]])
         }
       }
     }

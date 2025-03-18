@@ -1,6 +1,6 @@
 import { BaseRenderer } from "./BaseRenderer"
 import { VisualizerMode, VisualizerPosition } from "../../../enums"
-import { drawLine, drawCurve, drawDrop } from "../../canvas"
+import { drawLine, drawCurve, drawDrop, drawLevels } from "../../canvas"
 
 export class LineRenderer extends BaseRenderer {
   render(frequencies: number[]): void {

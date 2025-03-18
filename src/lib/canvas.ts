@@ -126,12 +126,32 @@ export function drawLevels(
   y: number,
   width: number,
   height: number,
-  size: number,
+  size: number, // value between 0 and 1 representing sound level
   radius: number = 0,
+  maxLevels: number = 4, // maximum number of squares to draw at 100%
+  spacing: number = 0,
 ) {
-  //const size = Math.min(width, height)
+  const squareHeight = 16
+  const squaresToDraw = Math.round(height / squareHeight)
+  //width = 16
+  spacing = 0
 
-  drawRoundedRectangle(context, x, y - size, width, size, radius)
+  // Start drawing from the bottom up
+  for (let i = 0; i < squaresToDraw; i++) {
+    // Calculate position for this square
+    // We draw from bottom to top, so we start at (y + height) and move up
+    const squareY = y + height - (i + 1) * squareHeight - i * spacing
+
+    // Draw the square
+    drawRectangle(
+      context,
+      x,
+      squareY,
+      width,
+      squareHeight,
+      //radius
+    )
+  }
 }
 
 export function createLinearGradient(
