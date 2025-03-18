@@ -378,6 +378,7 @@ export default class Minusic {
 
   updatePlaylist(currentTrack: number) {
     this.elements.playlist.tracks.forEach((track, index) => {
+      if (!track) return
       if (index === currentTrack) track.dataset.state = "playing"
       else track.dataset.state = ""
     })
