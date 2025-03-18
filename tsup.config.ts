@@ -8,4 +8,8 @@ export default defineConfig({
   skipNodeModulesBundle: true,
   clean: true,
   outDir: "build",
+  // outExtension({ format }) {
+  //   return format === 'esm' ? { js: '.mjs' } : { js: '.cjs' };
+  // },
+  // minify: true,
 });
