@@ -75,9 +75,6 @@ export function drawRoundedRectangle(
   height: number,
   radius: number = 0,
 ) {
-  if (width === 0) width = 1
-  if (height === 0) height = 1
-
   if (radius < 0) radius = 0
   if (width < 2 * radius) radius = Math.round(width / 2)
   if (height < 2 * radius) radius = Math.round(height / 2)
