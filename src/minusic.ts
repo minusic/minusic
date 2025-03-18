@@ -234,10 +234,14 @@ export default class Minusic {
   public showControls = () => this.media.setAttribute("controls", "")
   public hideControls = () => this.media.removeAttribute("controls")
 
-  public togglePlay = (state?: boolean) =>
-    (state ?? this.paused) ? this.play() : this.pause()
-  public toggleMute = (state?: boolean) =>
-    (state ?? this.media.muted) ? this.unmute() : this.mute()
+  public togglePlay = (state?: boolean) => {
+    if (typeof state === "boolean") return state ? this.play() : this.pause()
+    return this.paused ? this.play() : this.pause()
+  }
+  public toggleMute = (state?: boolean) => {
+    if (typeof state === "boolean") return state ? this.unmute() : this.mute()
+    return this.muted ? this.unmute() : this.mute()
+  }
 
   public toggleRepeat = () => {
     this.repeat = (this.repeat + 1) % 3
