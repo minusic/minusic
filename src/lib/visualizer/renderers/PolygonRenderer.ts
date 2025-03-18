@@ -111,13 +111,13 @@ export class PolygonRenderer extends BaseRenderer {
                   break
 
                 case VisualizerPosition.Center:
-                  modifiedX = baseX + nx * (amplitude / 2)
-                  modifiedY = baseY + ny * (amplitude / 2)
-
-                  allPoints.push([
-                    baseX - nx * (amplitude / 2),
-                    baseY - ny * (amplitude / 2),
-                  ])
+                  if (j % 2) {
+                    modifiedX = baseX + nx * (amplitude / 2)
+                    modifiedY = baseY + ny * (amplitude / 2)
+                  } else {
+                    modifiedX = baseX - nx * (amplitude / 2)
+                    modifiedY = baseY - ny * (amplitude / 2)
+                  }
                   break
 
                 default:
