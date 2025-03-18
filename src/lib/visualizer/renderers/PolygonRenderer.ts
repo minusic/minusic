@@ -34,14 +34,8 @@ export class PolygonRenderer extends BaseRenderer {
   }
 
   private renderPolygonWaves(frequencies: number[]) {
-    const {
-      width,
-      height,
-      frequencyMaxValue,
-      polygonSides,
-      edgeRoundness,
-      position,
-    } = this.options
+    const { width, height, frequencyMaxValue, polygonSides, position } =
+      this.options
 
     const centerX = width / 2
     const centerY = height / 2
@@ -81,10 +75,7 @@ export class PolygonRenderer extends BaseRenderer {
                 (freq / frequencyMaxValue) * (Math.min(centerX, centerY) / 4)
 
               // Calculate position along the edge
-              const t = this.applyEdgeRoundness(
-                (j + 1) / (freqsPerSide + 1),
-                edgeRoundness,
-              )
+              const t = (j + 1) / (freqsPerSide + 1)
 
               // Linear interpolation between vertices
               const baseX = startVertex[0] + t * (endVertex[0] - startVertex[0])
@@ -212,21 +203,6 @@ export class PolygonRenderer extends BaseRenderer {
         this.context.restore()
       }
     }
-  }
-
-  private applyEdgeRoundness(t: number, roundness: number): number {
-    // When roundness is 0, we get a linear interpolation (straight edges)
-    // When roundness approaches 1, we get more curved edges
-    if (roundness <= 0) return t
-    if (roundness >= 1) roundness = 0.99
-
-    // Apply bezier-like curve to the interpolation
-    const bezierT =
-      t < 0.5
-        ? Math.pow(2 * t, 1 - roundness) / 2
-        : 1 - Math.pow(2 * (1 - t), 1 - roundness) / 2
-
-    return bezierT
   }
 
   private drawWaveform(points: number[][], isClosed = false) {

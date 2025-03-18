@@ -54,7 +54,6 @@ export class OptionsHandler {
       polygonRadius: 0,
       polygonSides: 0,
       polygonRotation: 0,
-      edgeRoundness: 0,
     }
   }
 

@@ -145,7 +145,6 @@ export interface VisualizerOptions {
   polygonRadius: number
   polygonSides: number
   polygonRotation: number
-  edgeRoundness: number
 }
 
 export type VisualizerColor =
