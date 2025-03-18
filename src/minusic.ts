@@ -105,7 +105,7 @@ export default class Minusic {
   }
 
   private validateMediaElement() {
-    return this.media?.nodeName === "AUDIO" && !!this.media.parentNode
+    return this.media?.nodeName === "AUDIO" && !!this.media?.parentNode
   }
 
   private validateContainerElement(container: string) {
