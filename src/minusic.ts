@@ -298,39 +298,62 @@ export default class Minusic {
       console.warn("No tracks available to load")
       return
     }
+
     if (this.options.tracks.length <= index || index < 0) {
-      if (this.repeat === 2) {
-        index = 0
-      } else {
-        return
-      }
+      if (this.repeat === 2) index = 0
+      else return
     }
-    if (!this.attemptedTracks) {
-      this.attemptedTracks = new Set()
-    }
-    if (this.attemptedTracks.has(index)) {
+
+    if (!this.attemptedTracks) this.attemptedTracks = new Set()
+    if (this.attemptedTracks.size >= this.options.tracks.length) {
       console.warn(
-        `Cannot load track at index ${index}: all tracks have invalid sources`,
+        "All tracks have invalid sources, stopping playback to prevent infinite loop",
       )
       this.attemptedTracks.clear()
       return
     }
-    this.attemptedTracks.add(index)
 
+    if (this.attemptedTracks.has(index)) {
+      console.warn(`Cannot load track at index ${index}: already attempted`)
+      if (this.repeat === 2) {
+        let nextIndex = (index + 1) % this.options.tracks.length
+        let originalIndex = index
+
+        while (
+          this.attemptedTracks.has(nextIndex) &&
+          nextIndex !== originalIndex
+        ) {
+          nextIndex = (nextIndex + 1) % this.options.tracks.length
+        }
+        if (nextIndex === originalIndex) {
+          console.warn("All tracks have invalid sources, stopping playback")
+          this.attemptedTracks.clear()
+          return
+        }
+        this.loadTrack(nextIndex, autoplay)
+      } else {
+        this.attemptedTracks.clear()
+      }
+    }
+
+    this.attemptedTracks.add(index)
     const track = this.options.tracks[index]
     const trackSources = Array.isArray(track.source)
       ? [...track.source]
       : [track.source]
+
     this.removeSource()
     this.addSource(trackSources)
     this.updateDownloadButton()
     this.setMetadata(track)
     this.track = index
+
     const handleCanPlay = () => {
       if (playing) this.play()
       this.media.removeEventListener("canplay", handleCanPlay)
       this.attemptedTracks.clear()
     }
+
     this.media.addEventListener("canplay", handleCanPlay)
     this.media.load()
     this.updatePlaylist(index)
