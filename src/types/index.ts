@@ -142,6 +142,10 @@ export interface VisualizerOptions {
     showAxis: boolean
     showFPS: boolean
   }
+  polygonRadius: number
+  polygonSides: number
+  polygonRotation: number
+  edgeRoundness: number
 }
 
 export type VisualizerColor =

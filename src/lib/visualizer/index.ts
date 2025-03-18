@@ -6,6 +6,7 @@ import { CanvasManager } from "./core/CanvasManager"
 import { OptionsHandler } from "./core/Options"
 import { CircleRenderer } from "./renderers/CircleRenderer"
 import { LineRenderer } from "./renderers/LineRenderer"
+import { PolygonRenderer } from "./renderers/PolygonRenderer"
 import { DebugUtils } from "./utils/DebugUtils"
 import { FrequencyUtils } from "./utils/FrequencyUtils"
 import { StackUtils } from "./utils/StackUtils"
@@ -22,6 +23,7 @@ export default class Visualizer {
   private debugUtils!: DebugUtils
   private lineRenderer!: LineRenderer
   private circleRenderer!: CircleRenderer
+  private polygonRenderer!: PolygonRenderer
   private options: VisualizerOptions
   initialized = false
 
@@ -61,6 +63,7 @@ export default class Visualizer {
     this.audioProcessor = new AudioProcessor(this.media)
     this.lineRenderer = new LineRenderer(this.context, this.options)
     this.circleRenderer = new CircleRenderer(this.context, this.options)
+    this.polygonRenderer = new PolygonRenderer(this.context, this.options)
     this.stackUtils = new StackUtils(this.context, this.options)
     this.freqUtils = new FrequencyUtils(this.options)
     this.debugUtils = new DebugUtils(this.context, this.options)
@@ -117,6 +120,8 @@ export default class Visualizer {
       this.lineRenderer.render(frequencies)
     } else if (this.options.shape === VisualizerShape.Circle) {
       this.circleRenderer.render(frequencies)
+    } else if (this.options.shape === VisualizerShape.Polygon) {
+      this.polygonRenderer.render(frequencies)
     }
   }
 }
