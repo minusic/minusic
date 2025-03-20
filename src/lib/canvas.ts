@@ -128,26 +128,17 @@ export function drawLevels(
   maxLevels: number = 4, // maximum number of squares to draw at 100%
   spacing: number = 0,
 ) {
-  const squareHeight = 16
-  const squaresToDraw = Math.round(height / squareHeight)
+  const squareHeight = size
+  const squaresToDraw = Math.ceil(height / squareHeight)
   //width = 16
   spacing = 0
 
-  // Start drawing from the bottom up
   for (let i = 0; i < squaresToDraw; i++) {
-    // Calculate position for this square
-    // We draw from bottom to top, so we start at (y + height) and move up
-    const squareY = y + height - (i + 1) * squareHeight - i * spacing
+    const squareY = y + height - (i + 1) * squareHeight
+    //const squareY = y + (squareHeight*squaresToDraw) - (i + 1) * squareHeight
 
     // Draw the square
-    drawRectangle(
-      context,
-      x,
-      squareY,
-      width,
-      squareHeight,
-      //radius
-    )
+    drawRoundedRectangle(context, x, squareY, width, squareHeight, radius)
   }
 }
 

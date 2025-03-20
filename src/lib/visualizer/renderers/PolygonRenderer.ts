@@ -1,6 +1,6 @@
 import { BaseRenderer } from "./BaseRenderer"
 import { VisualizerMode, VisualizerPosition } from "../../../enums"
-import { drawCurve, drawLine, drawDrop } from "../../canvas"
+import { drawCurve, drawLine, drawDrop, drawLevels } from "../../canvas"
 
 export class PolygonRenderer extends BaseRenderer {
   render(frequencies: number[]): void {

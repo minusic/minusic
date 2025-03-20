@@ -91,6 +91,8 @@ export class CircleRenderer extends BaseRenderer {
         this.drawBar(x, y, outlineSize, amplitude)
       } else if (mode === VisualizerMode.Drops) {
         this.drawDroplet(x, y, outlineSize, amplitude)
+      } else if (mode === VisualizerMode.Levels) {
+        this.drawLevels(x, y, outlineSize, amplitude)
       }
 
       this.context.restore()

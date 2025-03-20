@@ -42,7 +42,19 @@ export abstract class BaseRenderer {
   }
 
   protected drawLevels(x: number, y: number, w: number, h: number) {
-    const { outlineSize, tickRadius } = this.options
-    drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+    const { position, outlineSize, tickRadius } = this.options
+    if (position === VisualizerPosition.Start) {
+      const diff = Math.ceil(h % (2 * outlineSize) || 1)
+      //h-=diff
+      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+    } else if (position === VisualizerPosition.Center) {
+      const diff = Math.ceil(h % (2 * outlineSize) || 1)
+      y -= diff / 2
+      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+    } else if (position === VisualizerPosition.End) {
+      const diff = Math.ceil(h % outlineSize || 1)
+      h -= diff
+      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+    }
   }
 }
