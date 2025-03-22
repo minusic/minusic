@@ -125,7 +125,7 @@ export function drawLevels(
   height: number,
   size: number, // value between 0 and 1 representing sound level
   radius: number = 0,
-  vertical: boolean = true,
+  vertical: boolean = false,
 ) {
   if (vertical) {
     const squaresToDraw = Math.ceil(width / size)
