@@ -125,20 +125,20 @@ export function drawLevels(
   height: number,
   size: number, // value between 0 and 1 representing sound level
   radius: number = 0,
-  maxLevels: number = 4, // maximum number of squares to draw at 100%
-  spacing: number = 0,
+  vertical: boolean = true,
 ) {
-  const squareHeight = size
-  const squaresToDraw = Math.ceil(height / squareHeight)
-  //width = 16
-  spacing = 0
-
-  for (let i = 0; i < squaresToDraw; i++) {
-    const squareY = y + height - (i + 1) * squareHeight
-    //const squareY = y + (squareHeight*squaresToDraw) - (i + 1) * squareHeight
-
-    // Draw the square
-    drawRoundedRectangle(context, x, squareY, width, squareHeight, radius)
+  if (vertical) {
+    const squaresToDraw = Math.ceil(width / size)
+    for (let i = 0; i < squaresToDraw; i++) {
+      const squareX = x + width - (i + 1) * size
+      drawRoundedRectangle(context, squareX, y, size, height, radius)
+    }
+  } else {
+    const squaresToDraw = Math.ceil(height / size)
+    for (let i = 0; i < squaresToDraw; i++) {
+      const squareY = y + height - (i + 1) * size
+      drawRoundedRectangle(context, x, squareY, width, size, radius)
+    }
   }
 }
 

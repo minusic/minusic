@@ -62,16 +62,23 @@ export class LineRenderer extends BaseRenderer {
 
   protected drawLevels(x: number, y: number, w: number, h: number) {
     const { position, outlineSize, tickRadius } = this.options
+    const isVertical = this.isVertical()
     if (position === VisualizerPosition.Start) {
-      const diff = Math.ceil(h % (2 * outlineSize) || 1)
-      h -= diff
-      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+      const diff = isVertical
+        ? Math.ceil(w % (2 * outlineSize) || 1)
+        : Math.ceil(h % (2 * outlineSize) || 1)
+      if (isVertical) w -= diff
+      else h -= diff
+      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius, isVertical)
     } else if (position === VisualizerPosition.Center) {
-      const diff = Math.ceil(h % (2 * outlineSize) || 1)
-      y -= diff / 2
-      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+      const diff = isVertical
+        ? Math.ceil(w % (2 * outlineSize) || 1)
+        : Math.ceil(h % (2 * outlineSize) || 1)
+      if (isVertical) x -= diff / 2
+      else y -= diff / 2
+      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius, isVertical)
     } else if (position === VisualizerPosition.End) {
-      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius, isVertical)
     }
   }
 
