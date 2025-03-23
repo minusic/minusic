@@ -210,32 +210,26 @@ export class PolygonRenderer extends BaseRenderer {
   }
 
   private drawDroplet(x: number, y: number, w: number, h: number) {
-    const {
-      position,
-      outlineSize,
-      tickRadius,
-      width,
-      height,
-      strokeWidth,
-      mode,
-    } = this.options
+    const { position, outlineSize, tickRadius, width, height, strokeWidth } =
+      this.options
     const isVertical = this.isVertical()
     const canvasSize = isVertical ? width - strokeWidth : height - strokeWidth
 
-    const angleMap =
-      mode === VisualizerMode.Drops
-        ? {
-            [VisualizerPosition.Start]: isVertical ? 3 : 2,
-            [VisualizerPosition.End]: isVertical ? 1 : 0,
-            [VisualizerPosition.Center]: isVertical ? [1, 3] : [0, 2],
-          }
-        : {
-            [VisualizerPosition.Start]: isVertical ? 1 : 0,
-            [VisualizerPosition.End]: isVertical ? 3 : 2,
-            [VisualizerPosition.Center]: isVertical ? [1, 3] : [0, 2],
-          }
-
+    const angleMap = {
+      [VisualizerPosition.Start]: isVertical ? 1 : 2,
+      [VisualizerPosition.End]: isVertical ? 3 : 0,
+      [VisualizerPosition.Center]: isVertical ? [1, 3] : [0, 2],
+    }
     let angle = angleMap[position] ?? 0
+    if (isVertical) {
+      const circleAngleMap = {
+        [VisualizerPosition.Start]: 3,
+        [VisualizerPosition.End]: 0,
+        [VisualizerPosition.Center]: [0, 2],
+      }
+      if (position === VisualizerPosition.Start) [w, h] = [h, w]
+      angle = circleAngleMap[position]
+    }
 
     drawDrop(
       this.context,

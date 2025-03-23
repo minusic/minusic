@@ -104,15 +104,8 @@ export class CircleRenderer extends BaseRenderer {
     this.context.fill()
   }
   private drawDroplet(x: number, y: number, w: number, h: number) {
-    const {
-      position,
-      direction,
-      outlineSize,
-      tickRadius,
-      width,
-      height,
-      strokeWidth,
-    } = this.options
+    const { position, outlineSize, tickRadius, width, height, strokeWidth } =
+      this.options
     const isVertical = this.isVertical()
     const canvasSize = isVertical ? width - strokeWidth : height - strokeWidth
 
