@@ -1,10 +1,11 @@
 import { CSSClass } from "../enums"
 import CircularRange from "../lib/ui/circularRange"
 import Range from "../lib/ui/range"
+import { ConstructorParameters } from "../types"
 
 export function createSoundBar(
   container: HTMLElement,
-  options: any,
+  options: ConstructorParameters["options"],
   player: any,
 ) {
   if (options.circularSoundBar) {

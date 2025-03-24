@@ -1,9 +1,10 @@
 import { CSSClass } from "../enums"
 import { createElement } from "../lib/elements"
+import { ConstructorParameters } from "../types"
 
 export function createPlaylist(
   container: HTMLElement,
-  options: any,
+  tracks: ConstructorParameters["options"]["tracks"],
   player: any,
 ) {
   const trackContainer = createElement(
@@ -12,10 +13,10 @@ export function createPlaylist(
     { class: CSSClass.Playlist, role: "menu" },
   )
 
-  if (!options.tracks) return { trackContainer, tracks: [] }
+  if (!tracks) return { trackContainer, tracks: [] }
 
-  const tracks: HTMLElement[] = []
-  for (const [index, track] of options.tracks.entries()) {
+  const playlistTracks: HTMLElement[] = []
+  for (const [index, track] of tracks.entries()) {
     const trackEntry = createElement(
       "li",
       { container: trackContainer },
@@ -64,14 +65,15 @@ export function createPlaylist(
       { class: CSSClass.PlaylistItemAlbum },
     )
 
-    const waveform = createElement(
-      "span",
-      { container: trackDetails },
-      {
-        class: CSSClass.PlaylistItemWaveform,
-        style: `background-image: ${track.waveform ? `url("${track.waveform}")` : "none"}`,
-      },
-    )
+    if (track.waveform)
+      createElement(
+        "span",
+        { container: trackDetails },
+        {
+          class: CSSClass.PlaylistItemWaveform,
+          style: `background-image: ${track.waveform ? `url("${track.waveform}")` : "none"}`,
+        },
+      )
 
     if (track.download)
       createElement(
@@ -94,8 +96,8 @@ export function createPlaylist(
       { class: CSSClass.PlaylistItemDuration },
     )
 
-    tracks.push(trackEntry)
+    playlistTracks.push(trackEntry)
   }
 
-  return { trackContainer, tracks }
+  return { trackContainer, tracks: playlistTracks }
 }

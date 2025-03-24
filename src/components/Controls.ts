@@ -9,11 +9,12 @@ import CircularProgress from "../lib/ui/circularProgress"
 import Progress from "../lib/ui/progress"
 import CircularRange from "../lib/ui/circularRange"
 import Range from "../lib/ui/range"
+import { ConstructorParameters } from "../types"
 
 export function createPlayerElements(
   container: HTMLElement,
   controlsContainer: HTMLElement,
-  options: any,
+  options: ConstructorParameters["options"],
   player: any,
 ) {
   const progressContainer = createProgressContainer(controlsContainer)
@@ -49,7 +50,7 @@ export function createPlayerElements(
           { class: CSSClass.Livestream },
         )
       : null,
-    playlist: createPlaylist(container, options, player),
+    playlist: createPlaylist(container, options.tracks, player),
     soundBar: controls.soundBar
       ? createSoundBar(controlsContainer, options, player)
       : null,
@@ -138,7 +139,11 @@ function createControlButtons(
   }
 }
 
-function createTimeBar(container: HTMLElement, options: any, player: any) {
+function createTimeBar(
+  container: HTMLElement,
+  options: ConstructorParameters["options"],
+  player: any,
+) {
   if (!options.controls.timeBar) return { timeBar: null }
 
   if (options.circularTimeBar) {
@@ -178,7 +183,10 @@ function createTimeBar(container: HTMLElement, options: any, player: any) {
   }
 }
 
-function createBufferBar(container: HTMLElement, options: any) {
+function createBufferBar(
+  container: HTMLElement,
+  options: ConstructorParameters["options"],
+) {
   if (!options.controls.bufferBar) return null
 
   if (options.circularTimeBar) {
