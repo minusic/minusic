@@ -8,7 +8,7 @@ export function buildPlayerStructure(options: any) {
     { container },
     {
       class: CSSClass.Controls,
-      "data-hide": `${options.showControls === false}`,
+      "data-controls": `${options.showControls !== false}`,
     },
   )
   return { container, controls }
