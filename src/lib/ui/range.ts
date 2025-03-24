@@ -130,8 +130,14 @@ export default class Range {
     return Math.round(value / this.config.step) * this.config.step
   }
 
-  get element() {
-    return this.elements.range
+  set background(url: string | undefined) {
+    if (typeof url !== "undefined" && url.length) {
+      this.elements.range.style.backgroundImage = `url("${url}")`
+      this.elements.progress.style.backgroundImage = `url("${url}")`
+    } else {
+      this.elements.range.style.backgroundImage = `none`
+      this.elements.progress.style.backgroundImage = `none`
+    }
   }
 
   get value() {

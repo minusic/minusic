@@ -294,6 +294,12 @@ export default class Minusic {
     this.elements.thumbnail!.src = track.thumbnail || ""
   }
 
+  public setWaveform(track: { waveform?: string }) {
+    if (this.elements.progress?.timeBar) {
+      this.elements.progress.timeBar.background = track.waveform
+    }
+  }
+
   public loadTrack(index = 0, autoplay = false) {
     this.sourceErrors = 0
     const playing = !this.paused || autoplay
@@ -350,6 +356,7 @@ export default class Minusic {
     this.addSource(trackSources)
     this.updateDownloadButton()
     this.setMetadata(track)
+    this.setWaveform(track)
     this.track = index
 
     const handleCanPlay = () => {

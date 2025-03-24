@@ -17,7 +17,7 @@ export default class CircularRange {
     clockwise: boolean
   }
   private elements: {
-    svg: SVGElement
+    range: SVGElement
     progress: SVGElement
     background: SVGElement
     thumb: SVGElement
@@ -76,7 +76,7 @@ export default class CircularRange {
     cssClass: string[],
     label: string = "",
   ) {
-    const svg = createSVGElement("svg", {
+    const range = createSVGElement("svg", {
       width: `${this.radius * 2}`,
       height: `${this.radius * 2}`,
       class: [CSSClass.CircularRange, ...cssClass].join(" "),
@@ -99,10 +99,10 @@ export default class CircularRange {
       tabindex: "0",
     })
 
-    svg.append(background, progress, thumb)
-    container.appendChild(svg)
+    range.append(background, progress, thumb)
+    container.appendChild(range)
 
-    return { svg, progress, background, thumb }
+    return { range, progress, background, thumb }
   }
 
   private setupEventListeners() {
@@ -140,7 +140,7 @@ export default class CircularRange {
   private handleInteraction(event: MouseEvent | TouchEvent) {
     const { angleRange, min, max, clockwise, startAngle } = this.config
     const { left, width, top, height } =
-      this.elements.svg.getBoundingClientRect()
+      this.elements.range.getBoundingClientRect()
     const clientX =
       event instanceof MouseEvent ? event.clientX : event.touches[0].clientX
     const clientY =
@@ -253,6 +253,16 @@ export default class CircularRange {
       A ${radius} ${radius} ${rotation} ${largeArc} ${sweepFlag} ${end.x} ${end.y}
       ${closePath}
     `
+  }
+
+  set background(url: string | undefined) {
+    if (url) {
+      this.elements.range.style.backgroundImage = `url("${url}")`
+      this.elements.progress.style.backgroundImage = `url("${url}")`
+    } else {
+      this.elements.range.style.backgroundImage = `none`
+      this.elements.progress.style.backgroundImage = `none`
+    }
   }
 
   get value() {

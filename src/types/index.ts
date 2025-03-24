@@ -46,6 +46,7 @@ export interface ConstructorParameters {
       album: string
       duration?: string | number
       download?: boolean
+      waveform?: string
     }[]
     skipDuration: number
     muted?: boolean
