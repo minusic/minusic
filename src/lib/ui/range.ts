@@ -2,53 +2,63 @@ import { CSSClass } from "../../enums"
 import { createElement } from "../elements"
 import { bound } from "../utils"
 
+interface RangeConfig {
+  step?: number
+  min?: number
+  max?: number
+  value?: number
+}
+
+interface RangeOptions extends RangeConfig {
+  container: HTMLElement
+  label: string
+  handler: (value: number) => void
+  cssClass?: string[]
+}
+
 export default class Range {
-  private container: HTMLElement
-  private handler: (value: number) => void
-  private elements: {
+  private readonly container: HTMLElement
+  private readonly handler: (value: number) => void
+  private readonly config: Required<RangeConfig> & { isActive: boolean }
+  private readonly elements: {
     range: HTMLElement
     background: HTMLElement
     progress: HTMLElement
     thumb: HTMLElement
   }
-  private config: {
-    step: number
-    min: number
-    max: number
-    value: number
-    isActive: boolean
-  }
 
   constructor({
     container,
     label,
+    handler,
     step = 0.05,
     min = 0,
     max = 1,
-    handler,
     cssClass = [],
     value = 0,
-  }: {
-    container: HTMLElement
-    label: string
-    step?: number
-    min?: number
-    max?: number
-    handler: (value: number) => void
-    cssClass?: string[]
-    value?: number
-  }) {
+  }: RangeOptions) {
     this.container = container
     this.handler = handler
     this.config = { step, min, max, value, isActive: false }
-
     this.elements = this.createRangeElements(label, cssClass)
-    this.setupEventListeners()
+    this.setupGlobalEventListeners()
     this.value = value
   }
 
-  private createRangeElements(label: string, cssClass: string[]) {
-    const range = createElement(
+  private createRangeElements(
+    label: string,
+    cssClass: string[],
+  ): Range["elements"] {
+    const range = this.createRangeContainer(label, cssClass)
+    const background = this.createBackground(range)
+    const progress = this.createProgress(background)
+    const thumb = this.createThumb(background)
+
+    return { range, background, progress, thumb }
+  }
+
+  private createRangeContainer(label: string, cssClass: string[]): HTMLElement {
+    return createElement(
       "div",
       { container: this.container },
       {
@@ -58,45 +68,44 @@ export default class Range {
       },
       {
         click: this.handleInteraction.bind(this),
-        mousedown: (event) => {
-          this.config.isActive = true
-          this.handleInteraction(event)
-        },
-        touchstart: (event) => {
-          event.preventDefault()
-          this.config.isActive = true
-          this.handleInteraction(event)
-        },
+        mousedown: this.handleMouseDown.bind(this),
+        touchstart: this.handleTouchStart.bind(this),
         keydown: this.handleKeyDown.bind(this),
       },
     )
+  }
 
-    const background = createElement(
+  private createBackground(range: HTMLElement): HTMLElement {
+    return createElement(
       "div",
       { container: range },
       { class: [CSSClass.RangeBackground] },
     )
+  }
 
-    const progress = createElement(
+  private createProgress(background: HTMLElement): HTMLElement {
+    return createElement(
       "div",
       { container: background },
       { class: [CSSClass.RangeProgress] },
     )
+  }
 
-    const thumb = createElement(
+  private createThumb(background: HTMLElement): HTMLElement {
+    return createElement(
       "div",
       { container: background },
       { class: [CSSClass.RangeThumb] },
     )
-
-    return { range, background, progress, thumb }
   }
 
-  private setupEventListeners() {
+  private setupGlobalEventListeners(): void {
     const moveHandler = (event: MouseEvent | TouchEvent) => {
       if (this.config.isActive) this.handleInteraction(event)
     }
-    const upHandler = () => (this.config.isActive = false)
+    const upHandler = () => {
+      this.config.isActive = false
+    }
 
     document.addEventListener("mousemove", moveHandler)
     document.addEventListener("mouseup", upHandler)
@@ -104,10 +113,20 @@ export default class Range {
     document.addEventListener("touchend", upHandler)
   }
 
-  private handleInteraction(event: MouseEvent | TouchEvent) {
+  private handleMouseDown(event: MouseEvent): void {
+    this.config.isActive = true
+    this.handleInteraction(event)
+  }
+
+  private handleTouchStart(event: TouchEvent): void {
+    event.preventDefault()
+    this.config.isActive = true
+    this.handleInteraction(event)
+  }
+
+  private handleInteraction(event: MouseEvent | TouchEvent): void {
     const { left, width } = this.elements.background.getBoundingClientRect()
-    const clientX =
-      event instanceof MouseEvent ? event.clientX : event.touches[0].clientX
+    const clientX = this.getClientX(event)
     const newValue = ((clientX - left) / width) * this.config.max
 
     if (!isNaN(newValue)) {
@@ -116,7 +135,13 @@ export default class Range {
     }
   }
 
-  private handleKeyDown(event: KeyboardEvent) {
+  private getClientX(event: MouseEvent | TouchEvent): number {
+    return event instanceof MouseEvent
+      ? event.clientX
+      : event.touches[0].clientX
+  }
+
+  private handleKeyDown(event: KeyboardEvent): void {
     if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
       event.preventDefault()
       const adjustment =
@@ -126,27 +151,26 @@ export default class Range {
     }
   }
 
-  private normalize(value: number) {
+  private normalize(value: number): number {
     return Math.round(value / this.config.step) * this.config.step
   }
 
   set background(url: string | undefined) {
-    if (typeof url !== "undefined" && url.length) {
-      this.elements.range.style.backgroundImage = `url("${url}")`
-      this.elements.progress.style.backgroundImage = `url("${url}")`
-    } else {
-      this.elements.range.style.backgroundImage = `none`
-      this.elements.progress.style.backgroundImage = `none`
+    const applyBackground = (element: HTMLElement) => {
+      element.style.backgroundImage = url ? `url("${url}")` : "none"
     }
+
+    applyBackground(this.elements.range)
+    applyBackground(this.elements.progress)
   }
 
-  get value() {
+  get value(): number {
     return this.config.value
   }
 
   set value(newValue: number) {
-    newValue = this.normalize(newValue)
-    this.config.value = bound(newValue, this.config.min, this.config.max)
+    const normalizedValue = this.normalize(newValue)
+    this.config.value = bound(normalizedValue, this.config.min, this.config.max)
 
     const percentage = (this.config.value / this.config.max) * 100
     this.elements.progress.style.width = `${percentage}%`
