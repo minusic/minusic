@@ -64,6 +64,15 @@ export function createPlaylist(
       { class: CSSClass.PlaylistItemAlbum },
     )
 
+    const waveform = createElement(
+      "span",
+      { container: trackDetails },
+      {
+        class: CSSClass.PlaylistItemWaveform,
+        style: `background-image: ${track.waveform ? `url("${track.waveform}")` : "none"}`,
+      },
+    )
+
     if (track.download)
       createElement(
         "a",

@@ -53,6 +53,7 @@ export enum CSSClass {
   PlaylistItemTitle = "minusic-playlist-item-title",
   PlaylistItemAuthor = "minusic-playlist-item-author",
   PlaylistItemAlbum = "minusic-playlist-item-album",
+  PlaylistItemWaveform = "minusic-playlist-item-waveform",
   PlaylistItemDuration = "minusic-playlist-item-duration",
   PlaylistItemDownload = "minusic-playlist-item-download",
 }

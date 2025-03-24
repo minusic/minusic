@@ -437,6 +437,14 @@
   color: var(--minusic-text-secondary);
 }
 
+.minusic-playlist-item-waveform {
+  width: 160px;
+  height: 40px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
 .minusic-playlist-item-duration {
   font-weight: 500;
   color: var(--minusic-text-secondary);
