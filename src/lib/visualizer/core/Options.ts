@@ -6,7 +6,7 @@ import {
   VisualizerStack,
   VisualizerSymmetry,
 } from "../../../enums"
-import { VisualizerOptions } from "../../../types"
+import { VisualizerConfiguration, VisualizerOptions } from "../../../types"
 
 export class OptionsHandler {
   visualizerOptions: VisualizerOptions
@@ -16,7 +16,7 @@ export class OptionsHandler {
     this.update(options)
   }
 
-  private getDefaultOptions(): VisualizerOptions {
+  private getDefaultOptions(): VisualizerConfiguration {
     return {
       tick: 0,
       width: 0,
