@@ -379,6 +379,9 @@
   align-items: center;
   gap: 5px;
   user-select: none;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.6rem;
 }
 .minusic-livestream:before {
   content: "";
