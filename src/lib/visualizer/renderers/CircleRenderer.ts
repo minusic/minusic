@@ -14,14 +14,8 @@ export class CircleRenderer extends BaseRenderer {
   }
 
   private renderCircularWaves(frequencies: number[]) {
-    const {
-      width,
-      height,
-      frequencyMaxValue,
-      circleRadius,
-      circleStartAngle,
-      circleEndAngle,
-    } = this.options
+    const { width, height, frequencyMaxValue, shapeOptions } = this.options
+    const { circleRadius, circleStartAngle, circleEndAngle } = shapeOptions
 
     const centerX = width / 2
     const centerY = height / 2
@@ -55,11 +49,10 @@ export class CircleRenderer extends BaseRenderer {
       frequencyMaxValue,
       barAmplitude,
       position,
-      circleRadius,
-      circleStartAngle,
-      circleEndAngle,
+      shapeOptions,
       mode,
     } = this.options
+    const { circleRadius, circleStartAngle, circleEndAngle } = shapeOptions
 
     const angleSize = circleEndAngle - circleStartAngle
     const angle =
@@ -99,13 +92,19 @@ export class CircleRenderer extends BaseRenderer {
     })
   }
   private drawWaveform(points: number[][], isClosed = false) {
-    const { tickRadius } = this.options
+    const { tickRadius } = this.options.elementStyling
     ;(tickRadius > 0 ? drawCurve : drawLine)(this.context, points, isClosed)
     this.context.fill()
   }
   private drawDroplet(x: number, y: number, w: number, h: number) {
-    const { position, outlineSize, tickRadius, width, height, strokeWidth } =
-      this.options
+    const {
+      position,
+      outlineSize,
+      elementStyling,
+      width,
+      height,
+      strokeWidth,
+    } = this.options
     const isVertical = this.isVertical()
     const canvasSize = isVertical ? width - strokeWidth : height - strokeWidth
 
@@ -133,7 +132,7 @@ export class CircleRenderer extends BaseRenderer {
       h,
       outlineSize,
       angle,
-      tickRadius,
+      elementStyling.tickRadius,
       canvasSize,
     )
   }

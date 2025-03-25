@@ -14,8 +14,8 @@ export class PolygonRenderer extends BaseRenderer {
   }
 
   private calculatePolygonVertices(): number[][] {
-    const { width, height, polygonRadius, polygonSides, polygonRotation } =
-      this.options
+    const { width, height, shapeOptions } = this.options
+    const { polygonRadius, polygonSides, polygonRotation } = shapeOptions
 
     const centerX = width / 2
     const centerY = height / 2
@@ -34,8 +34,9 @@ export class PolygonRenderer extends BaseRenderer {
   }
 
   private renderPolygonWaves(frequencies: number[]) {
-    const { width, height, frequencyMaxValue, polygonSides, position } =
+    const { width, height, frequencyMaxValue, shapeOptions, position } =
       this.options
+    const { polygonSides } = shapeOptions
 
     const centerX = width / 2
     const centerY = height / 2
@@ -140,8 +141,9 @@ export class PolygonRenderer extends BaseRenderer {
       mode,
       width,
       height,
-      polygonSides,
+      shapeOptions,
     } = this.options
+    const { polygonSides } = shapeOptions
 
     const vertices = this.calculatePolygonVertices()
 
@@ -204,14 +206,21 @@ export class PolygonRenderer extends BaseRenderer {
   }
 
   private drawWaveform(points: number[][], isClosed = false) {
-    const { tickRadius } = this.options
+    const { tickRadius } = this.options.elementStyling
     ;(tickRadius > 0 ? drawCurve : drawLine)(this.context, points, isClosed)
     this.context.fill()
   }
 
   private drawDroplet(x: number, y: number, w: number, h: number) {
-    const { position, outlineSize, tickRadius, width, height, strokeWidth } =
-      this.options
+    const {
+      position,
+      outlineSize,
+      elementStyling,
+      width,
+      height,
+      strokeWidth,
+    } = this.options
+    const { tickRadius } = elementStyling
     const isVertical = this.isVertical()
     const canvasSize = isVertical ? width - strokeWidth : height - strokeWidth
 

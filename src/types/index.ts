@@ -172,6 +172,15 @@ export interface VisualizerConfiguration extends VisualizerOptions {
   elementStyling: {
     tickRadius: number
   }
+  shapeOptions: {
+    circleRadius: number
+    circleStartAngle: number
+    circleEndAngle: number
+
+    polygonRadius: number
+    polygonSides: number
+    polygonRotation: number
+  }
 }
 
 export interface VisualizerOptions {

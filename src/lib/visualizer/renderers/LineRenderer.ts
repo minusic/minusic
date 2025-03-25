@@ -55,13 +55,14 @@ export class LineRenderer extends BaseRenderer {
   }
 
   private drawWaveform(points: number[][], isClosed = false) {
-    const { tickRadius } = this.options
+    const { tickRadius } = this.options.elementStyling
     ;(tickRadius > 0 ? drawCurve : drawLine)(this.context, points, isClosed)
     this.context.fill()
   }
 
   protected drawLevels(x: number, y: number, w: number, h: number) {
-    const { position, outlineSize, tickRadius } = this.options
+    const { position, outlineSize, elementStyling } = this.options
+    const { tickRadius } = elementStyling
     const isVertical = this.isVertical()
     if (position === VisualizerPosition.Start) {
       const diff = isVertical
@@ -87,12 +88,13 @@ export class LineRenderer extends BaseRenderer {
       position,
       direction,
       outlineSize,
-      tickRadius,
+      elementStyling,
       width,
       height,
       strokeWidth,
       shape,
     } = this.options
+    const { tickRadius } = elementStyling
 
     const isVertical = this.isVertical()
     const canvasSize = isVertical ? width - strokeWidth : height - strokeWidth
