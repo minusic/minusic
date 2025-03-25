@@ -1,4 +1,5 @@
 import {
+  RangeShape,
   VisualizerDirection,
   VisualizerMode,
   VisualizerPosition,
@@ -96,8 +97,8 @@ export interface Controls {
 export interface DisplayOptions {
   showControls?: boolean
   showNativeControls?: boolean
-  circularTimeBar?: CircularBarConfig
-  circularSoundBar?: CircularBarConfig
+  timeBar?: RangeConfiguration
+  soundBar?: RangeConfiguration
 }
 
 export interface TrackConfig {
@@ -111,7 +112,8 @@ export interface TrackConfig {
   waveform?: string
 }
 
-interface CircularBarConfig {
+interface RangeConfiguration {
+  shape?: RangeShape
   radius?: number
   startAngle?: number
   endAngle?: number

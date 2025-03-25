@@ -1,4 +1,4 @@
-import { CSSClass } from "../enums"
+import { CSSClass, RangeShape } from "../enums"
 import { createButton, createElement, createMenu } from "../lib/elements"
 import { createProgressContainer } from "./ProgressBar"
 import { createSoundBar } from "./SoundBar"
@@ -17,7 +17,10 @@ export function createPlayerElements(
   options: PlayerConfiguration,
   player: any,
 ) {
-  const progressContainer = createProgressContainer(controlsContainer)
+  const progressContainer =
+    options.controls.timeBar || options.controls.bufferBar
+      ? createProgressContainer(controlsContainer)
+      : null
   const { controls } = options
 
   return {
@@ -140,13 +143,13 @@ function createControlButtons(
 }
 
 function createTimeBar(
-  container: HTMLElement,
+  container: HTMLElement | null,
   options: PlayerConfiguration,
   player: any,
 ) {
-  if (!options.controls.timeBar) return { timeBar: null }
+  if (!container || !options.controls.timeBar) return { timeBar: null }
 
-  if (options.displayOptions.circularTimeBar) {
+  if (options.displayOptions.timeBar?.shape === RangeShape.Circle) {
     return {
       timeBar: new CircularRange({
         container,
@@ -159,10 +162,10 @@ function createTimeBar(
         step: 0.01,
         value: player.volume,
         cssClass: [CSSClass.TimeBar],
-        radius: options.displayOptions.circularTimeBar.radius,
-        startAngle: options.displayOptions.circularTimeBar.startAngle,
-        endAngle: options.displayOptions.circularTimeBar.endAngle,
-        clockwise: options.displayOptions.circularTimeBar.clockwise,
+        radius: options.displayOptions.timeBar.radius,
+        startAngle: options.displayOptions.timeBar.startAngle,
+        endAngle: options.displayOptions.timeBar.endAngle,
+        clockwise: options.displayOptions.timeBar.clockwise,
       }),
     }
   } else {
@@ -183,17 +186,20 @@ function createTimeBar(
   }
 }
 
-function createBufferBar(container: HTMLElement, options: PlayerConfiguration) {
-  if (!options.controls.bufferBar) return null
+function createBufferBar(
+  container: HTMLElement | null,
+  options: PlayerConfiguration,
+) {
+  if (!container || !options.controls.bufferBar) return null
 
-  if (options.displayOptions.circularTimeBar) {
+  if (options.displayOptions.timeBar?.shape === RangeShape.Circle) {
     return new CircularProgress({
       container,
       cssClass: [CSSClass.BufferBar],
-      radius: options.displayOptions.circularTimeBar.radius,
-      startAngle: options.displayOptions.circularTimeBar.startAngle,
-      endAngle: options.displayOptions.circularTimeBar.endAngle,
-      clockwise: options.displayOptions.circularTimeBar.clockwise,
+      radius: options.displayOptions.timeBar.radius,
+      startAngle: options.displayOptions.timeBar.startAngle,
+      endAngle: options.displayOptions.timeBar.endAngle,
+      clockwise: options.displayOptions.timeBar.clockwise,
     })
   }
   return new Progress({

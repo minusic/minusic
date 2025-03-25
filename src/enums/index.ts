@@ -102,3 +102,8 @@ export enum VisualizerGradient {
   Radial = "radial",
   Conic = "conic",
 }
+
+export enum RangeShape {
+  Line = "line",
+  Circle = "circle",
+}

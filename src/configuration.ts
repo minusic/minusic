@@ -1,3 +1,4 @@
+import { RangeShape } from "./enums"
 import { ConstructorParameters } from "./types"
 
 export function createConstructorParameters(
@@ -41,14 +42,16 @@ export function createConstructorParameters(
   const defaultDisplayOptions = {
     showControls: true,
     showNativeControls: false,
-    circularTimeBar: {
-      radius: 50,
+    timeBar: {
+      shape: RangeShape.Line,
+      radius: 0,
       startAngle: 0,
       endAngle: 360,
       clockwise: true,
     },
-    circularSoundBar: {
-      radius: 50,
+    soundBar: {
+      shape: RangeShape.Line,
+      radius: 0,
       startAngle: 0,
       endAngle: 360,
       clockwise: true,
@@ -65,7 +68,7 @@ export function createConstructorParameters(
     muted: false,
     playbackRate: 1,
     preservesPitch: true,
-    defaultVolume: 0.7,
+    defaultVolume: 1,
     skipDuration: 15,
 
     // Merge default controls
@@ -78,14 +81,13 @@ export function createConstructorParameters(
     displayOptions: {
       ...defaultDisplayOptions,
       ...options.displayOptions,
-      // Ensure circular bars are properly merged
-      circularTimeBar: {
-        ...defaultDisplayOptions.circularTimeBar,
-        ...options.displayOptions?.circularTimeBar,
+      timeBar: {
+        ...defaultDisplayOptions.timeBar,
+        ...options.displayOptions?.timeBar,
       },
-      circularSoundBar: {
-        ...defaultDisplayOptions.circularSoundBar,
-        ...options.displayOptions?.circularSoundBar,
+      soundBar: {
+        ...defaultDisplayOptions.soundBar,
+        ...options.displayOptions?.soundBar,
       },
     },
 
@@ -105,13 +107,13 @@ export function createConstructorParameters(
     displayOptions: {
       ...defaultConfig.displayOptions,
       ...options.displayOptions,
-      circularTimeBar: {
-        ...defaultConfig.displayOptions?.circularTimeBar,
-        ...options.displayOptions?.circularTimeBar,
+      timeBar: {
+        ...defaultConfig.displayOptions?.timeBar,
+        ...options.displayOptions?.timeBar,
       },
-      circularSoundBar: {
-        ...defaultConfig.displayOptions?.circularSoundBar,
-        ...options.displayOptions?.circularSoundBar,
+      soundBar: {
+        ...defaultConfig.displayOptions?.soundBar,
+        ...options.displayOptions?.soundBar,
       },
     },
   }
