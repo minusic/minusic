@@ -92,6 +92,11 @@ export interface Controls {
   repeatButton?: boolean
   randomButton?: boolean
   downloadButton?: boolean
+
+  //
+  metadata?: boolean
+  playlist?: boolean
+  visualizer?: boolean
 }
 
 export interface DisplayOptions {

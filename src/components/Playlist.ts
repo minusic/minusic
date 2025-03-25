@@ -4,7 +4,7 @@ import { ConstructorParameters, PlayerConfiguration } from "../types"
 
 export function createPlaylist(
   container: HTMLElement,
-  tracks: PlayerConfiguration["tracks"],
+  options: PlayerConfiguration,
   player: any,
 ) {
   const trackContainer = createElement(
@@ -12,8 +12,10 @@ export function createPlaylist(
     { container },
     { class: CSSClass.Playlist, role: "menu" },
   )
+  const { tracks } = options
 
-  if (!tracks) return { trackContainer, tracks: [] }
+  if (!tracks || !options.controls.metadata)
+    return { trackContainer, tracks: [] }
 
   const playlistTracks: HTMLElement[] = []
   for (const [index, track] of tracks.entries()) {

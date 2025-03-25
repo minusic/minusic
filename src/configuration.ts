@@ -28,6 +28,11 @@ export function createConstructorParameters(
     repeatButton: false,
     randomButton: false,
     downloadButton: false,
+
+    //
+    metadata: false,
+    playlist: false,
+    visualizer: false,
   }
 
   // Default metadata configuration

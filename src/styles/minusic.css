@@ -12,7 +12,7 @@
 }
 
 .minusic-container {
-  width: 100%;
+  /* width: 100%; */
   max-width: 800px;
   display: flex;
   flex-direction: column;

@@ -56,7 +56,7 @@ export default class Minusic {
     this.bindMediaEvents()
     wrapElement(container, this.media)
 
-    if (options.visualizer) {
+    if (options.controls?.visualizer) {
       this.initializeVisualizer()
     }
     if (!this.audioSource) this.loadTrack()
@@ -255,7 +255,7 @@ export default class Minusic {
   }
 
   public setMetadata(track: TrackConfig) {
-    if (!this.options.metadata) return {}
+    if (!this.options.controls.metadata) return {}
     this.elements.title!.innerText = track.title || ""
     this.elements.author!.innerText = track.author || ""
     this.elements.album!.innerText = track.album || ""
@@ -328,6 +328,7 @@ export default class Minusic {
     this.track = index
 
     const handleCanPlay = () => {
+      this.updateProgress()
       if (playing) this.play()
       this.media.removeEventListener("canplay", handleCanPlay)
       this.attemptedTracks.clear()
@@ -442,9 +443,10 @@ export default class Minusic {
     ) {
       return this.media.duration
     }
-    const optionsDuration = this.options?.duration
-    return optionsDuration && !Number.isNaN(parseInt(`${optionsDuration}`))
-      ? parseInt(`${optionsDuration}`)
+    const defaultDuration =
+      this.options.tracks[this.track] || this.options?.duration
+    return defaultDuration && !Number.isNaN(parseInt(`${defaultDuration}`))
+      ? parseInt(`${defaultDuration}`)
       : 0
   }
 

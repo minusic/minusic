@@ -53,7 +53,7 @@ export function createPlayerElements(
           { class: CSSClass.Livestream },
         )
       : null,
-    playlist: createPlaylist(container, options.tracks, player),
+    playlist: createPlaylist(container, options, player),
     soundBar: controls.soundBar
       ? createSoundBar(controlsContainer, options, player)
       : null,

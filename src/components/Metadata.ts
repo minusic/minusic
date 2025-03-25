@@ -6,7 +6,7 @@ export function createMetadata(
   container: HTMLElement,
   options: PlayerConfiguration,
 ) {
-  if (!options.metadata) return {}
+  if (!options.controls.metadata) return {}
 
   const metadata = createElement(
     "div",
