@@ -6,14 +6,20 @@ import {
 } from "./lib/elements"
 import { bound, formatTime, randomNumber } from "./lib/utils"
 import Visualizer from "./lib/visualizer"
-import { ConstructorParameters, Elements } from "./types"
+import {
+  ConstructorParameters,
+  Elements,
+  PlayerConfiguration,
+  TrackConfig,
+} from "./types"
 import { buildPlayerStructure } from "./components/Structure"
 import { createPlayerElements } from "./components/Controls"
+import { createConstructorParameters } from "./configuration"
 
 export default class Minusic {
   private media!: HTMLMediaElement
   private container!: HTMLElement
-  private options!: ConstructorParameters["options"]
+  private options!: PlayerConfiguration
   private elements!: Elements
   private animationHandler!: (timestamp: number) => void
   private visualizer!: Visualizer
@@ -25,26 +31,14 @@ export default class Minusic {
   private sourceErrors = 0
   private attemptedTracks: Set<unknown> = new Set()
 
-  constructor({
-    media,
-    container: parentContainer,
-    options,
-  }: ConstructorParameters) {
-    this.initializePlayer({ media, parentContainer, options })
+  constructor(options: ConstructorParameters) {
+    this.initializePlayer(options)
   }
 
-  private initializePlayer({
-    media,
-    parentContainer,
-    options,
-  }: {
-    media: string
-    parentContainer: string
-    options: ConstructorParameters["options"]
-  }) {
-    this.media = document.querySelector(media) as HTMLMediaElement
+  private initializePlayer(options: ConstructorParameters) {
+    this.media = document.querySelector(options.media) as HTMLMediaElement
     if (!this.validateMediaElement()) {
-      if (!this.validateContainerElement(parentContainer)) return
+      if (!this.validateContainerElement(options.container)) return
       this.createMediaElement()
     }
 
@@ -69,7 +63,8 @@ export default class Minusic {
       skipDuration: 15,
       tracks: [],
     }
-    this.options = { ...defaultOptions, ...options }
+    //this.options = { ...defaultOptions, ...options }
+    this.options = createConstructorParameters(options) as PlayerConfiguration
 
     const { container, controls } = buildPlayerStructure(this.options)
     this.elements = createPlayerElements(
@@ -119,9 +114,9 @@ export default class Minusic {
     }) as HTMLMediaElement
   }
 
-  private applyInitialSettings(options: ConstructorParameters["options"]) {
-    if (!options.showNativeControls) this.hideControls()
-    else this.showControls()
+  private applyInitialSettings(options: ConstructorParameters) {
+    if (options.displayOptions?.showNativeControls === true) this.showControls()
+    else this.hideControls()
     if (options.autoplay) this.media.setAttribute("autoplay", "")
     if (options.crossOrigin) this.media.setAttribute("crossorigin", "")
     if (this.muted || options.muted) this.mute()
@@ -281,12 +276,7 @@ export default class Minusic {
     )
   }
 
-  public setMetadata(track: {
-    title: string
-    author: string
-    album: string
-    thumbnail: string
-  }) {
+  public setMetadata(track: TrackConfig) {
     if (!this.options.metadata) return {}
     this.elements.title!.innerText = track.title || ""
     this.elements.author!.innerText = track.author || ""
@@ -511,7 +501,7 @@ export default class Minusic {
   }
 
   get trackTitle() {
-    if (this.options.title) return this.options.title
+    if (this.options.metadata.title) return this.options.metadata.title
     else if (this.audioSource)
       return decodeURI(this.audioSource.split("/").slice(-1)[0])
     return null

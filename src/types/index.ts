@@ -11,68 +11,171 @@ import CircularRange from "../lib/ui/circularRange"
 import Progress from "../lib/ui/progress"
 import Range from "../lib/ui/range"
 
+export interface PlayerConfiguration extends ConstructorParameters {
+  skipDuration: number
+  tracks: TrackConfig[]
+  metadata: {
+    title: string
+    author: string
+    album: string
+    thumbnail: string
+  }
+  controls: {
+    [Key in keyof Controls]: Controls[Key]
+  }
+  displayOptions: {
+    [Key in keyof DisplayOptions]: DisplayOptions[Key]
+  }
+}
+
 export interface ConstructorParameters {
+  // Media source configuration
   media: string
   container: string
-  options: {
-    duration?: number | string
-    autoplay?: boolean
-    crossOrigin?: boolean
-    showControls?: boolean
-    showNativeControls?: boolean
-    livestream?: boolean
-    controls: {
-      playButton: boolean
-      muteButton: boolean
-      startTime: boolean
-      endTime: boolean
-      soundBar: boolean
-      timeBar: boolean
-      bufferBar: boolean
-      backwardButton: boolean
-      forwardButton: boolean
-      playbackSpeedButton: boolean
-      downloadButton: boolean
-      previousButton: boolean
-      nextButton: boolean
-      repeatButton: boolean
-      randomButton: boolean
-    }
-    tracks: {
-      source: string
-      title: string
-      author: string
-      thumbnail: string
-      album: string
-      duration?: string | number
-      download?: boolean
-      waveform?: string
-    }[]
-    skipDuration: number
-    muted?: boolean
-    visualizer?: VisualizerOptions
-    playbackRate?: number
-    preservesPitch?: boolean
-    startTime?: number
-    defaultVolume?: number
-    metadata?: boolean
+
+  // Playback core settings
+  autoplay?: boolean
+  duration?: number | string
+  startTime?: number
+  endTime?: number
+  muted?: boolean
+  playbackRate?: number
+  preservesPitch?: boolean
+  defaultVolume?: number
+  skipDuration?: number
+
+  // Content metadata
+  metadata?: {
     title?: string
     author?: string
     album?: string
     thumbnail?: string
-    circularTimeBar?: {
-      radius?: number
-      startAngle?: number
-      endAngle?: number
-      clockwise?: boolean
-    }
-    circularSoundBar?: {
-      radius?: number
-      startAngle?: number
-      endAngle?: number
-      clockwise?: boolean
-    }
   }
+
+  // Tracks configuration
+  tracks?: TrackConfig[]
+
+  // Playback environment settings
+  crossOrigin?: boolean
+  livestream?: boolean
+
+  // Display and interaction controls
+  displayOptions?: DisplayOptions
+
+  controls?: Controls
+
+  // Optional visualization
+  visualizer?: VisualizerOptions
+
+  // options: {
+  //   autoplay?: boolean
+  //   duration?: number | string
+  //   crossOrigin?: boolean
+  //   showControls?: boolean
+  //   showNativeControls?: boolean
+  //   livestream?: boolean
+  //   controls: {
+  //     playButton: boolean
+  //     muteButton: boolean
+  //     startTime: boolean
+  //     endTime: boolean
+  //     soundBar: boolean
+  //     timeBar: boolean
+  //     bufferBar: boolean
+  //     backwardButton: boolean
+  //     forwardButton: boolean
+  //     playbackSpeedButton: boolean
+  //     downloadButton: boolean
+  //     previousButton: boolean
+  //     nextButton: boolean
+  //     repeatButton: boolean
+  //     randomButton: boolean
+  //   }
+  //   tracks: {
+  //     source: string
+  //     title: string
+  //     author: string
+  //     thumbnail: string
+  //     album: string
+  //     duration?: string | number
+  //     download?: boolean
+  //     waveform?: string
+  //   }[]
+  //   skipDuration: number
+  //   muted?: boolean
+  //   visualizer?: VisualizerOptions
+  //   playbackRate?: number
+  //   preservesPitch?: boolean
+  //   startTime?: number
+  //   defaultVolume?: number
+  //   metadata?: boolean
+  //   title?: string
+  //   author?: string
+  //   album?: string
+  //   thumbnail?: string
+  //   circularTimeBar?: {
+  //     radius?: number
+  //     startAngle?: number
+  //     endAngle?: number
+  //     clockwise?: boolean
+  //   }
+  //   circularSoundBar?: {
+  //     radius?: number
+  //     startAngle?: number
+  //     endAngle?: number
+  //     clockwise?: boolean
+  //   }
+  // }
+}
+
+export interface Controls {
+  // Playback controls
+  playButton?: boolean
+  muteButton?: boolean
+  backwardButton?: boolean
+  forwardButton?: boolean
+  playbackSpeedButton?: boolean
+
+  // Time and progress controls
+  startTime?: boolean
+  endTime?: boolean
+  timeBar?: boolean
+  bufferBar?: boolean
+
+  // Sound controls
+  soundBar?: boolean
+
+  // Playlist and navigation controls
+  previousButton?: boolean
+  nextButton?: boolean
+  repeatButton?: boolean
+  randomButton?: boolean
+  downloadButton?: boolean
+}
+
+export interface DisplayOptions {
+  showControls?: boolean
+  showNativeControls?: boolean
+  circularTimeBar?: CircularBarConfig
+  circularSoundBar?: CircularBarConfig
+}
+
+export interface TrackConfig {
+  source: string
+  title: string
+  author: string
+  thumbnail?: string
+  album?: string
+  duration?: string | number
+  download?: boolean
+  waveform?: string
+}
+
+interface CircularBarConfig {
+  radius?: number
+  startAngle?: number
+  endAngle?: number
+  clockwise?: boolean
 }
 
 export interface Elements {

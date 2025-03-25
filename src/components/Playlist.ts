@@ -1,10 +1,10 @@
 import { CSSClass } from "../enums"
 import { createElement } from "../lib/elements"
-import { ConstructorParameters } from "../types"
+import { ConstructorParameters, PlayerConfiguration } from "../types"
 
 export function createPlaylist(
   container: HTMLElement,
-  tracks: ConstructorParameters["options"]["tracks"],
+  tracks: PlayerConfiguration["tracks"],
   player: any,
 ) {
   const trackContainer = createElement(
@@ -35,11 +35,19 @@ export function createPlaylist(
       },
     )
 
-    const thumbnail = createElement(
-      track.thumbnail ? "img" : "span",
-      { container: trackDetails },
-      { class: CSSClass.PlaylistItemThumbnail, src: track.thumbnail },
-    )
+    if (track.thumbnail) {
+      createElement(
+        "img",
+        { container: trackDetails },
+        { class: CSSClass.PlaylistItemThumbnail, src: track.thumbnail },
+      )
+    } else {
+      createElement(
+        "span",
+        { container: trackDetails },
+        { class: CSSClass.PlaylistItemThumbnail },
+      )
+    }
 
     createElement(
       "span",

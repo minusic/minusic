@@ -9,12 +9,12 @@ import CircularProgress from "../lib/ui/circularProgress"
 import Progress from "../lib/ui/progress"
 import CircularRange from "../lib/ui/circularRange"
 import Range from "../lib/ui/range"
-import { ConstructorParameters } from "../types"
+import { PlayerConfiguration } from "../types"
 
 export function createPlayerElements(
   container: HTMLElement,
   controlsContainer: HTMLElement,
-  options: ConstructorParameters["options"],
+  options: PlayerConfiguration,
   player: any,
 ) {
   const progressContainer = createProgressContainer(controlsContainer)
@@ -141,12 +141,12 @@ function createControlButtons(
 
 function createTimeBar(
   container: HTMLElement,
-  options: ConstructorParameters["options"],
+  options: PlayerConfiguration,
   player: any,
 ) {
   if (!options.controls.timeBar) return { timeBar: null }
 
-  if (options.circularTimeBar) {
+  if (options.displayOptions.circularTimeBar) {
     return {
       timeBar: new CircularRange({
         container,
@@ -159,10 +159,10 @@ function createTimeBar(
         step: 0.01,
         value: player.volume,
         cssClass: [CSSClass.TimeBar],
-        radius: options.circularTimeBar.radius,
-        startAngle: options.circularTimeBar.startAngle,
-        endAngle: options.circularTimeBar.endAngle,
-        clockwise: options.circularTimeBar.clockwise,
+        radius: options.displayOptions.circularTimeBar.radius,
+        startAngle: options.displayOptions.circularTimeBar.startAngle,
+        endAngle: options.displayOptions.circularTimeBar.endAngle,
+        clockwise: options.displayOptions.circularTimeBar.clockwise,
       }),
     }
   } else {
@@ -183,20 +183,17 @@ function createTimeBar(
   }
 }
 
-function createBufferBar(
-  container: HTMLElement,
-  options: ConstructorParameters["options"],
-) {
+function createBufferBar(container: HTMLElement, options: PlayerConfiguration) {
   if (!options.controls.bufferBar) return null
 
-  if (options.circularTimeBar) {
+  if (options.displayOptions.circularTimeBar) {
     return new CircularProgress({
       container,
       cssClass: [CSSClass.BufferBar],
-      radius: options.circularTimeBar.radius,
-      startAngle: options.circularTimeBar.startAngle,
-      endAngle: options.circularTimeBar.endAngle,
-      clockwise: options.circularTimeBar.clockwise,
+      radius: options.displayOptions.circularTimeBar.radius,
+      startAngle: options.displayOptions.circularTimeBar.startAngle,
+      endAngle: options.displayOptions.circularTimeBar.endAngle,
+      clockwise: options.displayOptions.circularTimeBar.clockwise,
     })
   }
   return new Progress({

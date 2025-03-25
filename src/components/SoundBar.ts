@@ -1,14 +1,14 @@
 import { CSSClass } from "../enums"
 import CircularRange from "../lib/ui/circularRange"
 import Range from "../lib/ui/range"
-import { ConstructorParameters } from "../types"
+import { PlayerConfiguration } from "../types"
 
 export function createSoundBar(
   container: HTMLElement,
-  options: ConstructorParameters["options"],
+  options: PlayerConfiguration,
   player: any,
 ) {
-  if (options.circularSoundBar) {
+  if (options.displayOptions.circularSoundBar) {
     return new CircularRange({
       container,
       label: "Sound bar",
@@ -17,10 +17,10 @@ export function createSoundBar(
       },
       value: player.volume,
       cssClass: [CSSClass.SoundBar],
-      radius: options.circularSoundBar.radius,
-      startAngle: options.circularSoundBar.startAngle,
-      endAngle: options.circularSoundBar.endAngle,
-      clockwise: options.circularSoundBar.clockwise,
+      radius: options.displayOptions.circularSoundBar.radius,
+      startAngle: options.displayOptions.circularSoundBar.startAngle,
+      endAngle: options.displayOptions.circularSoundBar.endAngle,
+      clockwise: options.displayOptions.circularSoundBar.clockwise,
     })
   } else {
     return new Range({

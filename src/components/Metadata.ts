@@ -1,10 +1,10 @@
 import { CSSClass } from "../enums"
 import { createElement } from "../lib/elements"
-import { ConstructorParameters } from "../types"
+import { PlayerConfiguration } from "../types"
 
 export function createMetadata(
   container: HTMLElement,
-  options: ConstructorParameters["options"],
+  options: PlayerConfiguration,
 ) {
   if (!options.metadata) return {}
 
@@ -17,24 +17,24 @@ export function createMetadata(
   return {
     title: createElement(
       "p",
-      { text: options.title, container: metadata },
+      { text: options.metadata.title, container: metadata },
       { class: CSSClass.Title },
     ),
     author: createElement(
       "p",
-      { text: options.author, container: metadata },
+      { text: options.metadata.author, container: metadata },
       { class: CSSClass.Author },
     ),
     album: createElement(
       "p",
-      { text: options.album, container: metadata },
+      { text: options.metadata.album, container: metadata },
       { class: CSSClass.Album },
     ),
     thumbnail: createElement(
       "img",
       { container: metadata },
       {
-        src: options.thumbnail ? options.thumbnail : "",
+        src: options.metadata.thumbnail ? options.metadata.thumbnail : "",
         class: CSSClass.Thumbnail,
       },
     ) as HTMLImageElement,
