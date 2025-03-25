@@ -1,12 +1,15 @@
-import { VisualizerOptions } from "../../../types"
+import { VisualizerConfiguration } from "../../../types"
 import { VisualizerDirection, VisualizerPosition } from "../../../enums"
 import { drawLevels, drawRoundedRectangle } from "../../canvas"
 
 export abstract class BaseRenderer {
   protected context: CanvasRenderingContext2D
-  protected options: VisualizerOptions
+  protected options: VisualizerConfiguration
 
-  constructor(context: CanvasRenderingContext2D, options: VisualizerOptions) {
+  constructor(
+    context: CanvasRenderingContext2D,
+    options: VisualizerConfiguration,
+  ) {
     this.context = context
     this.options = options
   }
@@ -38,23 +41,52 @@ export abstract class BaseRenderer {
   }
 
   protected drawBar(x: number, y: number, w: number, h: number) {
-    drawRoundedRectangle(this.context, x, y, w, h, this.options.tickRadius)
+    drawRoundedRectangle(
+      this.context,
+      x,
+      y,
+      w,
+      h,
+      this.options.elementStyling.tickRadius,
+    )
   }
 
   protected drawLevels(x: number, y: number, w: number, h: number) {
-    const { position, outlineSize, tickRadius } = this.options
+    const { position, outlineSize, elementStyling } = this.options
     if (position === VisualizerPosition.Start) {
-      const diff = Math.ceil(h % (2 * outlineSize) || 1)
-      //h-=diff
-      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+      drawLevels(
+        this.context,
+        x,
+        y,
+        w,
+        h,
+        outlineSize,
+        elementStyling.tickRadius,
+      )
     } else if (position === VisualizerPosition.Center) {
       const diff = Math.ceil(h % (2 * outlineSize) || 1)
       y -= diff / 2
-      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+      drawLevels(
+        this.context,
+        x,
+        y,
+        w,
+        h,
+        outlineSize,
+        elementStyling.tickRadius,
+      )
     } else if (position === VisualizerPosition.End) {
       const diff = Math.ceil(h % outlineSize || 1)
       h -= diff
-      drawLevels(this.context, x, y, w, h, outlineSize, tickRadius)
+      drawLevels(
+        this.context,
+        x,
+        y,
+        w,
+        h,
+        outlineSize,
+        elementStyling.tickRadius,
+      )
     }
   }
 }

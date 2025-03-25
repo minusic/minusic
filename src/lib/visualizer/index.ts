@@ -1,5 +1,5 @@
 import { CSSClass, VisualizerShape, VisualizerStack } from "../../enums"
-import { VisualizerOptions } from "../../types"
+import { VisualizerConfiguration, VisualizerOptions } from "../../types"
 import { createElement } from "../elements"
 import { AudioProcessor } from "./core/AudioProcessor"
 import { CanvasManager } from "./core/CanvasManager"
@@ -24,7 +24,7 @@ export default class Visualizer {
   private lineRenderer!: LineRenderer
   private circleRenderer!: CircleRenderer
   private polygonRenderer!: PolygonRenderer
-  private options: VisualizerOptions
+  private options: VisualizerConfiguration
   initialized = false
 
   constructor({
@@ -37,7 +37,7 @@ export default class Visualizer {
     options: VisualizerOptions
   }) {
     this.optionsHandler = new OptionsHandler(options)
-    this.options = this.optionsHandler.options
+    this.options = this.optionsHandler.options as VisualizerConfiguration
 
     this.canvas = createElement(
       "canvas",
@@ -90,7 +90,7 @@ export default class Visualizer {
   }
 
   private renderWithStackOption(frequencies: number[]) {
-    switch (this.options.stack) {
+    switch (this.options.stack.type) {
       case VisualizerStack.Duplicate:
         this.stackUtils.renderDuplicateStack(
           frequencies,

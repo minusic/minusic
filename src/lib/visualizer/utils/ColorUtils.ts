@@ -1,4 +1,4 @@
-import { VisualizerColor, VisualizerOptions } from "../../../types"
+import { VisualizerColor, VisualizerConfiguration } from "../../../types"
 import { VisualizerGradient } from "../../../enums"
 import {
   createConicGradient,
@@ -8,9 +8,12 @@ import {
 
 export class ColorUtils {
   private context: CanvasRenderingContext2D
-  private options: VisualizerOptions
+  private options: VisualizerConfiguration
 
-  constructor(context: CanvasRenderingContext2D, options: VisualizerOptions) {
+  constructor(
+    context: CanvasRenderingContext2D,
+    options: VisualizerConfiguration,
+  ) {
     this.context = context
     this.options = options
   }

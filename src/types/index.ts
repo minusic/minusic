@@ -66,66 +66,6 @@ export interface ConstructorParameters {
 
   // Optional visualization
   visualizer?: VisualizerOptions
-
-  // options: {
-  //   autoplay?: boolean
-  //   duration?: number | string
-  //   crossOrigin?: boolean
-  //   showControls?: boolean
-  //   showNativeControls?: boolean
-  //   livestream?: boolean
-  //   controls: {
-  //     playButton: boolean
-  //     muteButton: boolean
-  //     startTime: boolean
-  //     endTime: boolean
-  //     soundBar: boolean
-  //     timeBar: boolean
-  //     bufferBar: boolean
-  //     backwardButton: boolean
-  //     forwardButton: boolean
-  //     playbackSpeedButton: boolean
-  //     downloadButton: boolean
-  //     previousButton: boolean
-  //     nextButton: boolean
-  //     repeatButton: boolean
-  //     randomButton: boolean
-  //   }
-  //   tracks: {
-  //     source: string
-  //     title: string
-  //     author: string
-  //     thumbnail: string
-  //     album: string
-  //     duration?: string | number
-  //     download?: boolean
-  //     waveform?: string
-  //   }[]
-  //   skipDuration: number
-  //   muted?: boolean
-  //   visualizer?: VisualizerOptions
-  //   playbackRate?: number
-  //   preservesPitch?: boolean
-  //   startTime?: number
-  //   defaultVolume?: number
-  //   metadata?: boolean
-  //   title?: string
-  //   author?: string
-  //   album?: string
-  //   thumbnail?: string
-  //   circularTimeBar?: {
-  //     radius?: number
-  //     startAngle?: number
-  //     endAngle?: number
-  //     clockwise?: boolean
-  //   }
-  //   circularSoundBar?: {
-  //     radius?: number
-  //     startAngle?: number
-  //     endAngle?: number
-  //     clockwise?: boolean
-  //   }
-  // }
 }
 
 export interface Controls {
@@ -196,7 +136,7 @@ export interface Elements {
   }
   progress: {
     timeBar: Range | CircularRange | null
-    bufferBar: Progress | CircularProgress | null //HTMLProgressElement
+    bufferBar: Progress | CircularProgress | null
     currentTime: HTMLElement | null
     totalTime: HTMLElement | null
   }
@@ -212,43 +152,92 @@ export interface Elements {
   }
 }
 
+export interface VisualizerConfiguration extends VisualizerOptions {
+  stack: {
+    type: VisualizerStack
+    depth: number
+    scale: number
+    shift: number
+  }
+  shadow: {
+    color: string
+    blur: number
+    offsetX: number
+    offsetY: number
+  }
+  debug: {
+    showAxis: boolean
+    showFPS: boolean
+  }
+  elementStyling: {
+    tickRadius: number
+  }
+}
+
 export interface VisualizerOptions {
-  tick: number
-  width: number
-  height: number
-  barAmplitude: number
-  outlineSize: number
-  tickRadius: number
-  strokeWidth: number
-  frequencyRange: number
-  frequencyMaxValue: number
-  circleRadius: number
-  circleStartAngle: number
-  circleEndAngle: number
+  // Core Visualization Parameters
   shape: VisualizerShape
   mode: VisualizerMode
   position: VisualizerPosition
   direction: VisualizerDirection
   symmetry: VisualizerSymmetry
+
+  // Canvas and Rendering Dimensions
+  width: number
+  height: number
   canvasBackground: string
+
+  // Visualization Detail and Precision
+  tick: number
+  barAmplitude: number
+  frequencyRange: number
+  frequencyMaxValue: number
+
+  // Styling Parameters
   fillColor: VisualizerColor
   outlineColor: VisualizerColor
+  outlineSize: number
+  strokeWidth: number
   invertColors: boolean
-  shadowColor: string
-  shadowBlur: number
-  shadowOffsetX: number
-  shadowOffsetY: number
-  stack: VisualizerStack
-  stackDepth: number
-  stackScale: number
-  stackShift: number
-  debug: {
-    showAxis: boolean
-    showFPS: boolean
+
+  // Shape-Specific Parameters
+  shapeOptions?: {
+    // Circular Shape Options
+    circleRadius: number
+    circleStartAngle: number
+    circleEndAngle: number
+
+    // Polygon Shape Options
+    polygonRadius: number
+    polygonSides: number
+    polygonRotation: number
   }
-  polygonRadius: number
-  polygonSides: number
-  polygonRotation: number
+
+  // Visualization Element Styling
+  elementStyling?: {
+    tickRadius: number
+  }
+
+  shadow: {
+    color?: string
+    blur?: number
+    offsetX?: number
+    offsetY?: number
+  }
+
+  // Visualization Stacking and Duplication
+  stack?: {
+    type: VisualizerStack
+    depth: number
+    scale: number
+    shift: number
+  }
+
+  // Debug Options
+  debug?: {
+    showAxis?: boolean
+    showFPS?: boolean
+  }
 }
 
 export type VisualizerColor =

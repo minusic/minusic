@@ -66,7 +66,7 @@ export function createConstructorParameters(
     playbackRate: 1,
     preservesPitch: true,
     defaultVolume: 0.7,
-    skipDuration: 10,
+    skipDuration: 15,
 
     // Merge default controls
     controls: { ...defaultControls, ...options.controls },

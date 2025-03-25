@@ -1,11 +1,11 @@
-import { VisualizerOptions } from "../../../types"
+import { VisualizerConfiguration } from "../../../types"
 import { VisualizerDirection, VisualizerSymmetry } from "../../../enums"
 import { AudioProcessor } from "../core/AudioProcessor"
 
 export class FrequencyUtils {
-  private options: VisualizerOptions
+  private options: VisualizerConfiguration
 
-  constructor(options: VisualizerOptions) {
+  constructor(options: VisualizerConfiguration) {
     this.options = options
   }
 

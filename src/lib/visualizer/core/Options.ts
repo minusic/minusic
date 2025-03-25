@@ -23,13 +23,28 @@ export class OptionsHandler {
       height: 0,
       barAmplitude: 0,
       outlineSize: 0,
-      tickRadius: 0,
+
       strokeWidth: 0,
       frequencyRange: 1,
       frequencyMaxValue: 255,
-      circleRadius: 0,
-      circleStartAngle: 0,
-      circleEndAngle: 360,
+      shapeOptions: {
+        circleRadius: 0,
+        circleStartAngle: 0,
+        circleEndAngle: 360,
+        polygonRadius: 0,
+        polygonSides: 0,
+        polygonRotation: 0,
+      },
+      elementStyling: {
+        tickRadius: 0,
+      },
+
+      shadow: {
+        color: "transparent",
+        blur: 0,
+        offsetX: 0,
+        offsetY: 0,
+      },
       shape: VisualizerShape.Line,
       mode: VisualizerMode.Bars,
       position: VisualizerPosition.Center,
@@ -39,21 +54,18 @@ export class OptionsHandler {
       fillColor: "transparent",
       outlineColor: "transparent",
       invertColors: false,
-      shadowColor: "transparent",
-      shadowBlur: 0,
-      shadowOffsetX: 0,
-      shadowOffsetY: 0,
-      stack: VisualizerStack.None,
-      stackDepth: 0,
-      stackScale: 1,
-      stackShift: 0,
+
+      stack: {
+        type: VisualizerStack.None,
+        depth: 0,
+        scale: 1,
+        shift: 0,
+      },
+
       debug: {
         showAxis: false,
         showFPS: false,
       },
-      polygonRadius: 0,
-      polygonSides: 0,
-      polygonRotation: 0,
     }
   }
 

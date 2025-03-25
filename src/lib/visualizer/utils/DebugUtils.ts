@@ -1,12 +1,15 @@
-import { VisualizerOptions } from "../../../types"
+import { VisualizerConfiguration } from "../../../types"
 import { drawLine, drawRoundedRectangle } from "../../canvas"
 
 export class DebugUtils {
   private context: CanvasRenderingContext2D
-  private options: VisualizerOptions
+  private options: VisualizerConfiguration
   private debugTimestamp: number = 0
 
-  constructor(context: CanvasRenderingContext2D, options: VisualizerOptions) {
+  constructor(
+    context: CanvasRenderingContext2D,
+    options: VisualizerConfiguration,
+  ) {
     this.context = context
     this.options = options
   }

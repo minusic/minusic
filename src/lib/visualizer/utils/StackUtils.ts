@@ -1,12 +1,15 @@
-import { VisualizerOptions, VisualizerColor } from "../../../types"
+import { VisualizerConfiguration } from "../../../types"
 import { ColorUtils } from "./ColorUtils"
 
 export class StackUtils {
   private context: CanvasRenderingContext2D
-  private options: VisualizerOptions
+  private options: VisualizerConfiguration
   private colorUtils: ColorUtils
 
-  constructor(context: CanvasRenderingContext2D, options: VisualizerOptions) {
+  constructor(
+    context: CanvasRenderingContext2D,
+    options: VisualizerConfiguration,
+  ) {
     this.context = context
     this.options = options
     this.colorUtils = new ColorUtils(context, options)
@@ -32,12 +35,12 @@ export class StackUtils {
   ) {
     let scaledFrequencies = [...frequencies]
 
-    for (let i = 0; i < this.options.stackDepth + 1; i++) {
+    for (let i = 0; i < this.options.stack.depth + 1; i++) {
       this.setStackColors(i)
       renderCallback(scaledFrequencies)
 
       scaledFrequencies = scaledFrequencies.map(
-        (value) => value * this.options.stackScale,
+        (value) => value * this.options.stack.scale,
       )
     }
   }
@@ -46,7 +49,7 @@ export class StackUtils {
     frequencies: number[],
     renderCallback: (freq: number[]) => void,
   ) {
-    const chunks = this.options.stackDepth + 1
+    const chunks = this.options.stack.depth + 1
     const chunkSize = Math.floor(frequencies.length / chunks)
 
     for (let i = 0; i < chunks; i++) {
@@ -63,14 +66,14 @@ export class StackUtils {
     frequencies: number[],
     renderCallback: (freq: number[]) => void,
   ) {
-    const shift = this.options.stackShift
+    const shift = this.options.stack.shift
     let shiftFrequencies = [...frequencies]
 
     // Always render the base layer
     this.setStackColors(0)
     renderCallback(shiftFrequencies)
 
-    for (let i = 0; i < this.options.stackDepth; i++) {
+    for (let i = 0; i < this.options.stack.depth; i++) {
       shiftFrequencies = [
         ...shiftFrequencies.slice(shift),
         ...shiftFrequencies.slice(0, shift),

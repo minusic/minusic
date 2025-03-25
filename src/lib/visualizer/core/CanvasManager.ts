@@ -1,17 +1,17 @@
-import { VisualizerOptions, VisualizerColor } from "../../../types"
+import { VisualizerConfiguration } from "../../../types"
 import { applyStyles } from "../../elements"
 import { ColorUtils } from "../utils/ColorUtils"
 
 export class CanvasManager {
   private canvas: HTMLCanvasElement
   private context: CanvasRenderingContext2D
-  private options: VisualizerOptions
+  private options: VisualizerConfiguration
   private colorUtils: ColorUtils
 
   constructor(
     canvas: HTMLCanvasElement,
     context: CanvasRenderingContext2D,
-    options: VisualizerOptions,
+    options: VisualizerConfiguration,
   ) {
     this.canvas = canvas
     this.context = context
@@ -43,15 +43,7 @@ export class CanvasManager {
   }
 
   applyStyles() {
-    const {
-      fillColor,
-      outlineColor,
-      strokeWidth,
-      shadowColor,
-      shadowBlur,
-      shadowOffsetX,
-      shadowOffsetY,
-    } = this.options
+    const { fillColor, outlineColor, strokeWidth, shadow } = this.options
 
     this.context.fillStyle =
       fillColor instanceof Array
@@ -64,10 +56,14 @@ export class CanvasManager {
         : this.colorUtils.parseColor(outlineColor)
 
     this.context.lineWidth = strokeWidth
-    this.context.shadowColor = shadowColor
-    this.context.shadowBlur = shadowBlur
-    this.context.shadowOffsetX = shadowOffsetX
-    this.context.shadowOffsetY = shadowOffsetY
+
+    const { color, blur, offsetX, offsetY } = shadow
+    if (color) {
+      this.context.shadowColor = color
+      this.context.shadowBlur = blur
+      this.context.shadowOffsetX = offsetX
+      this.context.shadowOffsetY = offsetY
+    }
   }
 
   clearCanvas() {

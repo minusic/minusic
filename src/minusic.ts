@@ -42,28 +42,6 @@ export default class Minusic {
       this.createMediaElement()
     }
 
-    const defaultOptions = {
-      controls: {
-        muteButton: true,
-        playButton: true,
-        startTime: true,
-        endTime: true,
-        soundBar: true,
-        timeBar: true,
-        bufferBar: true,
-        backwardButton: true,
-        forwardButton: true,
-        playbackSpeedButton: true,
-        downloadButton: true,
-        previousButton: true,
-        nextButton: true,
-        repeatButton: true,
-        randomButton: true,
-      },
-      skipDuration: 15,
-      tracks: [],
-    }
-    //this.options = { ...defaultOptions, ...options }
     this.options = createConstructorParameters(options) as PlayerConfiguration
 
     const { container, controls } = buildPlayerStructure(this.options)
