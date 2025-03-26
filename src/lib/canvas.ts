@@ -6,7 +6,8 @@ export function drawLine(
 ) {
   context.beginPath()
   points.forEach(([x, y], index) => {
-    index === 0 ? context.moveTo(x, y) : context.lineTo(x, y)
+    if (index === 0) context.moveTo(x, y)
+    else context.lineTo(x, y)
   })
   if (loop) context.lineTo(points[0][0], points[0][1])
   if (closePath) context.closePath()

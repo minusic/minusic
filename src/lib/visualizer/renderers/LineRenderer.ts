@@ -39,8 +39,7 @@ export class LineRenderer extends BaseRenderer {
 
     switch (mode) {
       case VisualizerMode.Waves:
-        const boundedPoints = this.boundWaveFrequencies(points)
-        this.drawWaveform(boundedPoints)
+        this.drawWaveform(this.boundWaveFrequencies(points))
         break
       case VisualizerMode.Bars:
         points.forEach(([x, y, w, h]) => this.drawBar(x, y, w, h))
@@ -86,13 +85,11 @@ export class LineRenderer extends BaseRenderer {
   private drawDroplet(x: number, y: number, w: number, h: number) {
     const {
       position,
-      direction,
       outlineSize,
       elementStyling,
       width,
       height,
       strokeWidth,
-      shape,
     } = this.options
     const { tickRadius } = elementStyling
 
@@ -105,7 +102,7 @@ export class LineRenderer extends BaseRenderer {
       [VisualizerPosition.Center]: isVertical ? [1, 3] : [0, 2],
     }
 
-    let angle = angleMap[position] ?? 0
+    const angle = angleMap[position] ?? 0
 
     drawDrop(
       this.context,

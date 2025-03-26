@@ -1,6 +1,5 @@
 import { CSSClass } from "../../enums"
 import { createSVGElement } from "../elements"
-import { bound } from "../utils"
 
 export default class CircularProgress {
   private container: HTMLElement

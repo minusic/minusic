@@ -1,11 +1,12 @@
 import { CSSClass } from "../enums"
 import { createElement } from "../lib/elements"
-import { ConstructorParameters, PlayerConfiguration } from "../types"
+import Minusic from "../minusic"
+import { PlayerConfiguration } from "../types"
 
 export function createPlaylist(
   container: HTMLElement,
   options: PlayerConfiguration,
-  player: any,
+  player: Minusic,
 ) {
   const trackContainer = createElement(
     "menu",
@@ -57,19 +58,22 @@ export function createPlaylist(
       { class: CSSClass.PlaylistItemIndex },
     )
 
-    const title = createElement(
+    // Title
+    createElement(
       "span",
       { container: trackDetails, text: track.title },
       { class: CSSClass.PlaylistItemTitle },
     )
 
-    const author = createElement(
+    // Author
+    createElement(
       "span",
       { container: trackDetails, text: track.author },
       { class: CSSClass.PlaylistItemAuthor },
     )
 
-    const album = createElement(
+    // Album
+    createElement(
       "span",
       { container: trackDetails, text: track.album },
       { class: CSSClass.PlaylistItemAlbum },
@@ -97,7 +101,8 @@ export function createPlaylist(
         },
       )
 
-    const duration = createElement(
+    // Duration
+    createElement(
       "span",
       {
         container: trackDetails,

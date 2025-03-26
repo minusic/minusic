@@ -63,7 +63,7 @@ export class CircleRenderer extends BaseRenderer {
 
     frequencies.forEach((freq, i) => {
       const amplitude = ((freq / frequencyMaxValue) * barAmplitude) / 2
-      let y =
+      const y =
         position === VisualizerPosition.Start
           ? circleRadius - amplitude
           : position === VisualizerPosition.Center

@@ -1,6 +1,6 @@
 import { BaseRenderer } from "./BaseRenderer"
 import { VisualizerMode, VisualizerPosition } from "../../../enums"
-import { drawCurve, drawLine, drawDrop, drawLevels } from "../../canvas"
+import { drawCurve, drawLine, drawDrop } from "../../canvas"
 
 export class PolygonRenderer extends BaseRenderer {
   render(frequencies: number[]): void {
@@ -139,8 +139,6 @@ export class PolygonRenderer extends BaseRenderer {
       barAmplitude,
       position,
       mode,
-      width,
-      height,
       shapeOptions,
     } = this.options
     const { polygonSides } = shapeOptions

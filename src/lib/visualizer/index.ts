@@ -79,7 +79,7 @@ export default class Visualizer {
     if (this.options.debug.showFPS) this.debugUtils.showFPS(timestamp)
     if (this.options.invertColors) this.canvasManager.invertCanvasColors()
 
-    let frequencies = this.freqUtils.getProcessedFrequencies(
+    const frequencies = this.freqUtils.getProcessedFrequencies(
       paused,
       this.audioProcessor,
     )

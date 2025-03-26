@@ -9,9 +9,12 @@ export function createElement(
     container?: HTMLElement
   } = {},
   attributes: { [key: string]: string | string[] } = {},
-  events: { [key: string]: (event: any) => void } = {},
+  events: {
+    [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K]) => void
+  } = {},
 ) {
   const element = document.createElement(type)
+
   if (properties.text) element.innerText = properties.text
   if (properties.container) properties.container.appendChild(element)
 
@@ -19,7 +22,9 @@ export function createElement(
     element.setAttribute(key, Array.isArray(value) ? value.join(" ") : value),
   )
   Object.entries(events).forEach(([type, handler]) =>
-    element.addEventListener(type, (event) => handler(event)),
+    element.addEventListener(type as keyof HTMLElementEventMap, (event) =>
+      handler(event as HTMLElementEventMap[keyof HTMLElementEventMap]),
+    ),
   )
   return element
 }
@@ -69,7 +74,9 @@ export function createMenu(
       "aria-haspopup": "true",
     },
     {
-      click: (e) => (e.target.dataset.menuOpen = true),
+      click: (e) => {
+        if (e.target instanceof HTMLElement) e.target.dataset.menuOpen = `true`
+      },
     },
   )
   const menuValue = createElement(
@@ -120,7 +127,7 @@ export function createMenu(
           e.preventDefault()
           update(option)
 
-          document.activeElement instanceof HTMLElement &&
+          if (document.activeElement instanceof HTMLElement)
             document.activeElement.blur()
         },
       },

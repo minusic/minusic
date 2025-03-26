@@ -171,7 +171,11 @@ export default class Minusic {
 
   private handleVolumeChange() {
     this.volume = this.media.volume
-    this.muted ? this.mute() : this.unmute()
+    if (this.muted) {
+      this.mute()
+    } else {
+      this.unmute()
+    }
   }
 
   private handleRateChange() {
@@ -295,7 +299,7 @@ export default class Minusic {
       console.warn(`Cannot load track at index ${index}: already attempted`)
       if (this.repeat === 2) {
         let nextIndex = (index + 1) % this.options.tracks.length
-        let originalIndex = index
+        const originalIndex = index
 
         while (
           this.attemptedTracks.has(nextIndex) &&
@@ -491,7 +495,7 @@ export default class Minusic {
     if (this.media.src) return this.media.src
 
     const sources = this.media.getElementsByTagName("source")
-    for (let source of sources) {
+    for (const source of sources) {
       if (source.src) return source.src
     }
     return null

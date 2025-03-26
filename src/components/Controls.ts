@@ -10,12 +10,13 @@ import Progress from "../lib/ui/progress"
 import CircularRange from "../lib/ui/circularRange"
 import Range from "../lib/ui/range"
 import { PlayerConfiguration } from "../types"
+import Minusic from "../minusic"
 
 export function createPlayerElements(
   container: HTMLElement,
   controlsContainer: HTMLElement,
   options: PlayerConfiguration,
-  player: any,
+  player: Minusic,
 ) {
   const progressContainer =
     options.controls.timeBar || options.controls.bufferBar
@@ -63,8 +64,8 @@ export function createPlayerElements(
 
 function createControlButtons(
   controlsContainer: HTMLElement,
-  controls: any,
-  player: any,
+  controls: PlayerConfiguration["controls"],
+  player: Minusic,
 ) {
   return {
     play: controls.playButton
@@ -145,7 +146,7 @@ function createControlButtons(
 function createTimeBar(
   container: HTMLElement | null,
   options: PlayerConfiguration,
-  player: any,
+  player: Minusic,
 ) {
   if (!container || !options.controls.timeBar) return { timeBar: null }
 
