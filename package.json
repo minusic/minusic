@@ -9,7 +9,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "format": "prettier --write \"./{demo,src}/**/*.{ts,html,js,css}\""
+    "format": "prettier --write \"./{demo,src}/**/*.{ts,html,js,css}\"",
+    "lint": "eslint ."
   },
   "keywords": [
     "Music Player",
@@ -45,5 +46,10 @@
     "arrowParens": "always",
     "htmlWhitespaceSensitivity": "strict",
     "semi": false
+  },
+  "dependencies": {
+    "@eslint/js": "^9.23.0",
+    "eslint": "^9.23.0",
+    "typescript-eslint": "^8.28.0"
   }
 }
