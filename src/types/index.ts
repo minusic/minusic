@@ -107,7 +107,7 @@ export interface DisplayOptions {
 }
 
 export interface TrackConfig {
-  source: string
+  source: string | string[] | TrackSource
   title: string
   author: string
   thumbnail?: string
@@ -115,6 +115,11 @@ export interface TrackConfig {
   duration?: string | number
   download?: boolean
   waveform?: string
+}
+
+export interface TrackSource {
+  source: string
+  type: string
 }
 
 interface RangeConfiguration {

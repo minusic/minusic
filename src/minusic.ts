@@ -11,6 +11,7 @@ import {
   Elements,
   PlayerConfiguration,
   TrackConfig,
+  TrackSource,
 } from "./types"
 import { buildPlayerStructure } from "./components/Structure"
 import { createPlayerElements } from "./components/Controls"
@@ -27,7 +28,7 @@ export default class Minusic {
   private repeatState: number = 0
   private randomState: boolean = false
   private playbackRateState: number = 1
-  private sources: string[] = []
+  private sources: (string | TrackSource)[] = []
   private sourceErrors = 0
   private attemptedTracks: Set<unknown> = new Set()
 
@@ -389,13 +390,16 @@ export default class Minusic {
     this.play()
   }
 
-  private addSource(sources: string[]) {
+  private addSource(sources: (string | TrackSource)[]) {
     this.sources = sources
     sources.forEach((source) =>
       createElement(
         "source",
         { container: this.media },
-        { src: source },
+        {
+          src: typeof source === "string" ? source : source.source,
+          type: typeof source === "string" ? "" : source.type,
+        },
         { error: () => this.sourceFailed() },
       ),
     )
