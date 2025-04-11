@@ -134,6 +134,12 @@
 .minusic-range-thumb:hover {
   filter: var(--minusic-hover-filter);
 }
+.minusic-controls-button:focus {
+  outline: solid var(--minusic-color-theme);
+  outline-offset: 2px;
+  outline-width: 3px;
+  border-radius: 2px;
+}
 
 .minusic-controls-range {
   appearance: none;
@@ -421,6 +427,12 @@
   gap: 10px;
   cursor: pointer;
   padding: 10px;
+}
+.minusic-playlist-item-details:focus {
+  outline: solid var(--minusic-color-theme);
+  outline-offset: 2px;
+  outline-width: 3px;
+  border-radius: 2px;
 }
 
 .minusic-playlist-item-thumbnail {
