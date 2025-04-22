@@ -320,6 +320,7 @@
   color: var(--minusic-text-secondary);
   font-size: 12px;
   user-select: none;
+  padding: 0 12px 0 0;
 }
 .minusic-controls-mute-button {
   order: 5;
