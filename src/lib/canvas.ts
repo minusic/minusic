@@ -75,16 +75,28 @@ export function drawRoundedRectangle(
   width: number,
   height: number,
   radius: number = 0,
+  alpha: number = 1,
+  angle = 0,
 ) {
+  if (alpha !== context.globalAlpha) context.globalAlpha = alpha
   if (radius < 0) radius = 0
   if (width < 2 * radius) radius = Math.round(width / 2)
   if (height < 2 * radius) radius = Math.round(height / 2)
 
+  if (angle) {
+    context.save()
+    context.translate(x + width / 2, y + height / 2)
+    context.rotate(angle * (Math.PI / 180))
+    context.translate(-(x + width / 2), -(y + height / 2))
+  }
   context.beginPath()
   context.roundRect(x, y, width, height, radius)
   context.closePath()
   context.fill()
   context.stroke()
+  if (angle) {
+    context.restore()
+  }
 }
 
 export function drawDrop(

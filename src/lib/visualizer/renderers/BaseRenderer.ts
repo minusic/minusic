@@ -5,6 +5,7 @@ import { drawLevels, drawRoundedRectangle } from "../../canvas"
 export abstract class BaseRenderer {
   protected context: CanvasRenderingContext2D
   protected options: VisualizerConfiguration
+  protected particles: any[] = []
 
   constructor(
     context: CanvasRenderingContext2D,

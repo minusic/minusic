@@ -1,6 +1,16 @@
 import { BaseRenderer } from "./BaseRenderer"
-import { VisualizerMode, VisualizerPosition } from "../../../enums"
-import { drawLine, drawCurve, drawDrop, drawLevels } from "../../canvas"
+import {
+  VisualizerDirection,
+  VisualizerMode,
+  VisualizerPosition,
+} from "../../../enums"
+import {
+  drawLine,
+  drawCurve,
+  drawDrop,
+  drawLevels,
+  drawRoundedRectangle,
+} from "../../canvas"
 
 export class LineRenderer extends BaseRenderer {
   render(frequencies: number[]): void {
@@ -49,6 +59,11 @@ export class LineRenderer extends BaseRenderer {
         break
       case VisualizerMode.Levels:
         points.forEach(([x, y, w, h]) => this.drawLevels(x, y, w, h))
+        break
+      case VisualizerMode.Particles:
+        if (this.particles.length !== points.length)
+          this.createParticles(points.length)
+        this.drawParticles(points)
         break
     }
   }
@@ -115,6 +130,105 @@ export class LineRenderer extends BaseRenderer {
       tickRadius,
       canvasSize,
     )
+  }
+
+  protected createParticles(tick: number) {
+    this.particles = []
+    for (let i = 0; i < tick; i++) {
+      this.particles.push({
+        x: Math.random(),
+        y: Math.random(),
+        size: Math.random() * 20 + 1,
+        speed: Math.random() * 2 + 0.5,
+        frequency: Math.floor(Math.random() * 255),
+        opacity: Math.random() * 0.6 + 0.4,
+        currentSize: 0,
+        angle: Math.round(Math.random() * 360),
+      })
+    }
+  }
+
+  protected drawParticles(points: number[][]) {
+    const isVertical = this.isVertical()
+    const {
+      position,
+      elementStyling,
+      fillColor,
+      outlineColor,
+      width,
+      height,
+      direction,
+    } = this.options
+
+    this.particles.forEach((particle, i) => {
+      const [, , w, h] = points[i]
+      particle.currentSize = isVertical ? w : h
+    })
+
+    const getDirectionSign = (isVertical: boolean, i: number): number => {
+      const isStart = position === VisualizerPosition.Start
+      const isEnd = position === VisualizerPosition.End
+      const isCenterAlt = position === VisualizerPosition.Center && i % 2
+
+      if (isVertical) {
+        const topToBottom =
+          (direction !== VisualizerDirection.BottomToTop && isStart) ||
+          (direction === VisualizerDirection.BottomToTop && isEnd)
+        return topToBottom || isCenterAlt ? 1 : -1
+      } else {
+        const leftToRight =
+          (direction !== VisualizerDirection.RightToLeft && isStart) ||
+          (direction === VisualizerDirection.RightToLeft && isEnd)
+        return leftToRight || isCenterAlt ? 1 : -1
+      }
+    }
+
+    this.particles.forEach((particle, i) => {
+      const sizeRatio = particle.currentSize / 255
+      const size = Math.round(particle.size * sizeRatio)
+      const halfSize = size / 2
+
+      const x = particle.x * width - halfSize
+      const y = particle.y * height - halfSize
+
+      this.context.fillStyle = Array.isArray(fillColor)
+        ? fillColor[i % fillColor.length]
+        : fillColor
+
+      this.context.strokeStyle = Array.isArray(outlineColor)
+        ? outlineColor[i % outlineColor.length]
+        : fillColor
+
+      const axis = isVertical ? "y" : "x"
+
+      drawRoundedRectangle(
+        this.context,
+        x,
+        y,
+        size,
+        size,
+        elementStyling.tickRadius,
+        particle.opacity,
+        (particle.angle + 360 * particle[axis]) % 360,
+      )
+      this.context.fill()
+
+      const sign = getDirectionSign(isVertical, i)
+      const dimension = isVertical ? height : width
+      const pos = particle[axis]
+      const speed = particle.speed / dimension
+
+      particle[axis] += sign * speed
+
+      const boundary =
+        sign > 0
+          ? pos - size / dimension > 1
+          : pos + particle.size / dimension < 0
+
+      if (boundary) {
+        particle[axis] = sign > 0 ? 0 : 1
+      }
+    })
   }
 
   private boundWaveFrequencies(points: number[][]) {

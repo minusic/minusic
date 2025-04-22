@@ -88,6 +88,7 @@ export enum VisualizerMode {
   Levels = "levels",
   Drops = "drops",
   Waves = "waves",
+  Particles = "particles",
 }
 
 export enum VisualizerStack {
