@@ -37,7 +37,6 @@ export interface ConstructorParameters {
   // Playback core settings
   autoplay?: boolean
   duration?: number | string
-  startTime?: number
   endTime?: number
   muted?: boolean
   playbackRate?: number
@@ -78,7 +77,7 @@ export interface Controls {
   playbackSpeedButton?: boolean
 
   // Time and progress controls
-  startTime?: boolean
+  currentTime?: boolean
   endTime?: boolean
   timeBar?: boolean
   bufferBar?: boolean

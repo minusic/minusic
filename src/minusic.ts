@@ -102,8 +102,6 @@ export default class Minusic {
     if (options.playbackRate) this.playbackRate = options.playbackRate
     if (typeof options.preservesPitch !== "undefined")
       this.media.preservesPitch = options.preservesPitch
-    if (typeof options.startTime !== "undefined")
-      this.currentTime = options.startTime
     if (typeof options.defaultVolume !== "undefined")
       this.volume = options.defaultVolume
   }

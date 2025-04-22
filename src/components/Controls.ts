@@ -31,7 +31,7 @@ export function createPlayerElements(
     progress: {
       ...createTimeBar(progressContainer, options, player),
       bufferBar: createBufferBar(progressContainer, options),
-      currentTime: controls.startTime
+      currentTime: controls.currentTime
         ? createTimeDisplay(
             controlsContainer,
             CSSClass.CurrentTime,

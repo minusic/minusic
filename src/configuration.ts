@@ -14,7 +14,7 @@ export function createConstructorParameters(
     playbackSpeedButton: false,
 
     // Time and progress controls
-    startTime: true,
+    currentTime: true,
     endTime: true,
     timeBar: true,
     bufferBar: true,
