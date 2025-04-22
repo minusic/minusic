@@ -1,6 +1,11 @@
 import { BaseRenderer } from "./BaseRenderer"
 import { VisualizerMode, VisualizerPosition } from "../../../enums"
-import { drawCurve, drawLine, drawDrop } from "../../canvas"
+import {
+  drawCurve,
+  drawLine,
+  drawDrop,
+  drawRoundedRectangle,
+} from "../../canvas"
 
 export class PolygonRenderer extends BaseRenderer {
   render(frequencies: number[]): void {
@@ -8,6 +13,8 @@ export class PolygonRenderer extends BaseRenderer {
 
     if (mode === VisualizerMode.Waves) {
       this.renderPolygonWaves(frequencies)
+    } else if (mode === VisualizerMode.Particles) {
+      this.renderPolygonParticles(frequencies)
     } else {
       this.renderPolygonBarsOrDrops(frequencies)
     }
@@ -249,5 +256,127 @@ export class PolygonRenderer extends BaseRenderer {
       tickRadius,
       canvasSize,
     )
+  }
+
+  public renderPolygonParticles(frequencies: number[]) {
+    const {
+      width,
+      height,
+      frequencyMaxValue,
+      fillColor,
+      outlineColor,
+      elementStyling,
+      shapeOptions,
+    } = this.options
+
+    const centerX = width / 2
+    const centerY = height / 2
+
+    const vertices = this.calculatePolygonVertices()
+
+    if (this.particles.length !== frequencies.length) {
+      this.createPolygonParticles(
+        frequencies.length,
+        vertices,
+        centerX,
+        centerY,
+      )
+    }
+
+    this.particles.forEach((particle, i) => {
+      const freq = frequencies[i]
+      const sizeRatio = freq / frequencyMaxValue
+      const size = particle.baseSize * sizeRatio
+      const halfSize = size / 2
+
+      particle.x += particle.vx
+      particle.y += particle.vy
+
+      if (
+        particle.x < -halfSize ||
+        particle.x > width + halfSize ||
+        particle.y < -halfSize ||
+        particle.y > height + halfSize
+      ) {
+        this.resetPolygonParticle(particle, vertices, centerX, centerY)
+      }
+
+      this.context.fillStyle = Array.isArray(fillColor)
+        ? fillColor[i % fillColor.length]
+        : fillColor
+      this.context.strokeStyle = Array.isArray(outlineColor)
+        ? outlineColor[i % outlineColor.length]
+        : outlineColor
+
+      drawRoundedRectangle(
+        this.context,
+        particle.x - halfSize,
+        particle.y - halfSize,
+        size,
+        size,
+        elementStyling.tickRadius,
+        particle.opacity,
+        particle.angle,
+      )
+      this.context.fill()
+    })
+  }
+
+  private createPolygonParticles(
+    count: number,
+    vertices: number[][],
+    centerX: number,
+    centerY: number,
+  ) {
+    this.particles = []
+    for (let i = 0; i < count; i++) {
+      this.particles.push(this.spawnPolygonParticle(vertices, centerX, centerY))
+    }
+  }
+
+  private resetPolygonParticle(
+    particle: any,
+    vertices: number[][],
+    centerX: number,
+    centerY: number,
+  ) {
+    Object.assign(
+      particle,
+      this.spawnPolygonParticle(vertices, centerX, centerY),
+    )
+  }
+
+  private spawnPolygonParticle(
+    vertices: number[][],
+    centerX: number,
+    centerY: number,
+  ) {
+    const sideIndex = Math.floor(Math.random() * vertices.length)
+    const nextIndex = (sideIndex + 1) % vertices.length
+
+    const v1 = vertices[sideIndex]
+    const v2 = vertices[nextIndex]
+
+    const t = Math.random()
+    const x = v1[0] + t * (v2[0] - v1[0])
+    const y = v1[1] + t * (v2[1] - v1[1])
+
+    const dx = x - centerX
+    const dy = y - centerY
+    const len = Math.sqrt(dx * dx + dy * dy)
+    const dirX = dx / len
+    const dirY = dy / len
+
+    const speed = Math.random() * 2 + 1.5
+
+    return {
+      x,
+      y,
+      baseSize: Math.random() * 40,
+      vx: dirX * speed,
+      vy: dirY * speed,
+      opacity: Math.random() * 0.6 + 0.4,
+      angle: Math.atan2(dirY, dirX),
+    }
   }
 }

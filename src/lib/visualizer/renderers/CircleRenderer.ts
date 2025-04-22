@@ -1,6 +1,15 @@
 import { BaseRenderer } from "./BaseRenderer"
-import { VisualizerMode, VisualizerPosition } from "../../../enums"
-import { drawCurve, drawLine, drawDrop } from "../../canvas"
+import {
+  VisualizerDirection,
+  VisualizerMode,
+  VisualizerPosition,
+} from "../../../enums"
+import {
+  drawCurve,
+  drawLine,
+  drawDrop,
+  drawRoundedRectangle,
+} from "../../canvas"
 
 export class CircleRenderer extends BaseRenderer {
   render(frequencies: number[]): void {
@@ -8,6 +17,8 @@ export class CircleRenderer extends BaseRenderer {
 
     if (mode === VisualizerMode.Waves) {
       this.renderCircularWaves(frequencies)
+    } else if (mode === VisualizerMode.Particles) {
+      this.renderCircularParticles(frequencies)
     } else {
       this.renderCircularBarsOrDrops(frequencies)
     }
@@ -135,5 +146,164 @@ export class CircleRenderer extends BaseRenderer {
       elementStyling.tickRadius,
       canvasSize,
     )
+  }
+
+  private renderCircularParticles(frequencies: number[]) {
+    const isVertical = this.isVertical()
+    const {
+      width,
+      height,
+      position,
+      frequencyMaxValue,
+      shapeOptions,
+      fillColor,
+      outlineColor,
+      elementStyling,
+      direction,
+    } = this.options
+
+    const getDirectionSign = (isVertical: boolean, i: number): number => {
+      const isStart = position === VisualizerPosition.Start
+      const isEnd = position === VisualizerPosition.End
+      const isCenterAlt = position === VisualizerPosition.Center && i % 2
+
+      if (isVertical) {
+        const topToBottom =
+          (direction !== VisualizerDirection.BottomToTop && isStart) ||
+          (direction === VisualizerDirection.BottomToTop && isEnd)
+        return topToBottom || isCenterAlt ? 1 : -1
+      } else {
+        const leftToRight =
+          (direction !== VisualizerDirection.RightToLeft && isStart) ||
+          (direction === VisualizerDirection.RightToLeft && isEnd)
+        return leftToRight || isCenterAlt ? 1 : -1
+      }
+    }
+
+    const { circleRadius, circleStartAngle, circleEndAngle } = shapeOptions
+    const centerX = width / 2
+    const centerY = height / 2
+    const angleSize = circleEndAngle - circleStartAngle
+
+    if (this.particles.length !== frequencies.length) {
+      this.createParticles(
+        frequencies.length,
+        centerX,
+        centerY,
+        circleRadius,
+        angleSize,
+        circleStartAngle,
+      )
+    }
+
+    this.particles.forEach((particle, i) => {
+      const freq = frequencies[i]
+      const sizeRatio = freq / frequencyMaxValue
+      const size = particle.baseSize * sizeRatio
+      const halfSize = size / 2
+
+      const sign = getDirectionSign(isVertical, i)
+
+      if (sign > 0) {
+        particle.x += particle.vx
+        particle.y += particle.vy
+      } else {
+        particle.x -= particle.vx
+        particle.y -= particle.vy
+      }
+
+      if (
+        particle.x < -halfSize ||
+        particle.x > width + halfSize ||
+        particle.y < -halfSize ||
+        particle.y > height + halfSize
+      ) {
+        this.resetParticle(
+          particle,
+          centerX,
+          centerY,
+          circleRadius,
+          angleSize,
+          circleStartAngle,
+        )
+      }
+
+      this.context.fillStyle = Array.isArray(fillColor)
+        ? fillColor[i % fillColor.length]
+        : fillColor
+
+      this.context.strokeStyle = Array.isArray(outlineColor)
+        ? outlineColor[i % outlineColor.length]
+        : outlineColor
+
+      drawRoundedRectangle(
+        this.context,
+        particle.x - halfSize,
+        particle.y - halfSize,
+        size,
+        size,
+        elementStyling.tickRadius,
+        particle.opacity,
+        particle.angle,
+      )
+      this.context.fill()
+    })
+  }
+
+  private createParticles(
+    count: number,
+    cx: number,
+    cy: number,
+    r: number,
+    angleSize: number,
+    angleStart: number,
+  ) {
+    this.particles = []
+    for (let i = 0; i < count; i++) {
+      const particle = this.spawnParticle(cx, cy, r, angleSize, angleStart)
+      this.particles.push(particle)
+    }
+  }
+
+  private resetParticle(
+    particle: any,
+    cx: number,
+    cy: number,
+    r: number,
+    angleSize: number,
+    angleStart: number,
+  ) {
+    Object.assign(
+      particle,
+      this.spawnParticle(cx, cy, r, angleSize, angleStart),
+    )
+  }
+
+  private spawnParticle(
+    cx: number,
+    cy: number,
+    r: number,
+    angleSize: number,
+    angleStart: number,
+  ) {
+    const angleDeg =
+      angleSize === 360
+        ? Math.random() * 360
+        : angleStart + Math.random() * angleSize
+    const angle = (angleDeg - 90) * (Math.PI / 180)
+
+    const speed = Math.random() * 2 + 1.5
+    const x = cx + r * Math.cos(angle)
+    const y = cy + r * Math.sin(angle)
+
+    return {
+      x,
+      y,
+      baseSize: Math.random() * 40 + 1,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      opacity: Math.random() * 0.6 + 0.4,
+      angle: angleDeg,
+    }
   }
 }
