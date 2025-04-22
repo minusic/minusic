@@ -1,0 +1,103 @@
+.minusic-controls-range {
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  height: 19px;
+  padding: 5px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-width: 0;
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+}
+
+.minusic-range {
+  box-sizing: border-box;
+  height: 19px;
+  padding: 5px 8px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-width: 0;
+  width: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.minusic-range:focus {
+  appearance: none;
+  box-shadow: none;
+  outline: solid var(--minusic-color-theme);
+  outline-offset: 2px;
+  outline-width: 3px;
+  border: none;
+}
+
+.minusic-range-background {
+  height: 100%;
+  border-radius: 10px;
+  position: relative;
+  background-color: var(--minusic-bg-range);
+  transition: var(--minusic-transition-speed);
+}
+
+.minusic-range-progress {
+  background-color: var(--minusic-color-theme);
+  height: 100%;
+  border-radius: 10px;
+  width: 50%;
+  transition: var(--minusic-transition-speed);
+}
+
+.minusic-range-thumb {
+  background-color: #fff;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  position: absolute;
+  inset: 0 0 0 50%;
+  margin: auto auto auto -9px;
+  transition: var(--minusic-transition-speed);
+}
+
+.minusic-progress {
+  width: 100%;
+  box-sizing: border-box;
+  height: 9px;
+  margin: 0 8px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: var(--minusic-bg-range);
+}
+
+.minusic-progress-bar {
+  background-color: var(--minusic-color-buffer);
+  width: 0%;
+  height: 100%;
+  position: relative;
+  border-radius: 10px;
+}
+
+.minusic-progress-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 2.2rem;
+}
+
+.minusic-controls-buffer-bar {
+}
+
+.minusic-controls-seek-bar {
+  position: absolute;
+  inset: 0 0;
+  z-index: 1;
+  margin: auto;
+}
+
+.minusic-controls-seek-bar .minusic-range-background {
+  background: transparent;
+}

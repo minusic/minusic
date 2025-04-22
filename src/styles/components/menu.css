@@ -1,0 +1,85 @@
+.minusic-menu {
+  font-size: 0.75rem;
+  position: relative;
+}
+
+.minusic-menu-value {
+  background-color: transparent;
+  border: none;
+  padding: 5px 8px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.minusic-menu-value::before {
+  content: "x";
+}
+
+.minusic-menu-content {
+  position: absolute;
+  right: 0;
+  padding: 5px 0;
+  background-color: #fffffffa;
+  color: #222;
+  border-radius: 0.375rem;
+  display: none;
+  cursor: default;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  z-index: 10;
+  box-shadow: 0px 0px 5px 0px #5555551c;
+  margin-top: 0px;
+  transition: 0.1s;
+}
+
+.minusic-menu-title {
+  padding: 8px 10px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: #777;
+}
+
+.minusic-menu:focus .minusic-menu-content,
+.minusic-menu-value:focus > .minusic-menu-content {
+  display: flex;
+  margin-top: 10px;
+  transition-property: margin-top;
+  @starting-style {
+    margin-top: 0px;
+  }
+}
+
+.minusic-menu:focus-within .minusic-menu-content {
+  display: flex;
+  margin-top: 10px;
+  transition-property: margin-top;
+  @starting-style {
+    margin-top: 0px;
+  }
+}
+
+.minusic-menu-item {
+  padding: 12px 42px;
+  background-color: transparent;
+  border: none;
+  display: block;
+  cursor: pointer;
+  text-align: left;
+}
+
+.minusic-menu-item:hover {
+  /* background: #fafafa; */
+}
+
+.minusic-menu-value:focus,
+.minusic-menu-item:focus {
+  outline: solid var(--minusic-color-theme);
+  outline-offset: 2px;
+  outline-width: 3px;
+  border-radius: 2px;
+}
+
+.minusic-menu-item-selected:hover {
+  background-color: transparent;
+}

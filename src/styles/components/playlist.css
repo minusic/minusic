@@ -1,0 +1,78 @@
+.minusic-playlist {
+  background: #fff;
+  padding: 0;
+  order: 4;
+  margin-top: 10px;
+}
+
+.minusic-playlist-item {
+  list-style: none;
+  display: flex;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.minusic-playlist-item:hover {
+  background-color: #f8f8f8;
+}
+
+.minusic-playlist-item[data-state="playing"] {
+  background: #f4f4f4;
+}
+
+.minusic-playlist-item-details {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  height: 45px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: left;
+  gap: 10px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.minusic-playlist-item-details:focus {
+  outline: solid var(--minusic-color-theme);
+  outline-offset: 2px;
+  outline-width: 3px;
+  border-radius: 2px;
+}
+
+.minusic-playlist-item-thumbnail {
+  height: 100%;
+  width: 25px;
+  border-radius: 4px;
+  background: #f1f1f1;
+}
+
+.minusic-playlist-item-title {
+  flex: 1;
+  font-weight: 500;
+  color: #101010;
+}
+
+.minusic-playlist-item-author {
+  color: var(--minusic-text-secondary);
+}
+
+.minusic-playlist-item-waveform {
+  width: 160px;
+  height: 40px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.minusic-playlist-item-duration {
+  font-weight: 500;
+  color: var(--minusic-text-secondary);
+}
+
+.minusic-playlist-item-download {
+  font-size: 0;
+  width: 25px;
+  height: 25px;
+}

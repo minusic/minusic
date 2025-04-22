@@ -1,0 +1,55 @@
+.minusic-circular-range {
+  position: absolute;
+  right: 50px;
+  bottom: 10px;
+  max-width: 240px !important;
+}
+
+.minusic-circular-range-background {
+  fill: none;
+  stroke: transparent;
+  stroke-linecap: round;
+}
+
+.minusic-circular-range-progress {
+  cursor: pointer;
+  fill: none;
+  stroke-linecap: round;
+  stroke: var(--minusic-color-theme);
+}
+
+.minusic-circular-range-thumb {
+  fill: #fff;
+  stroke: none;
+}
+
+.minusic-circular-range-thumb:focus {
+  appearance: none;
+  box-shadow: none;
+  outline: solid var(--minusic-color-theme);
+  outline-offset: 2px;
+  outline-width: 3px;
+  border: none;
+  border-radius: 100%;
+}
+
+.minusic-circular-progress {
+  position: absolute;
+  right: 50px;
+  bottom: 10px;
+  max-width: 240px !important;
+  inset: 0;
+  margin: auto;
+}
+
+.minusic-circular-progress-background {
+  fill: none;
+  stroke: var(--minusic-bg-range);
+  stroke-linecap: round;
+}
+
+.minusic-circular-progress-bar {
+  stroke: var(--minusic-color-buffer);
+  fill: none;
+  stroke-linecap: round;
+}

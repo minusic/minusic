@@ -1,0 +1,39 @@
+.minusic-metadata {
+  display: grid;
+  grid-template-columns: 90px 3fr;
+  grid-template-rows: repeat(3, 1fr);
+  grid-column-gap: 10px;
+  grid-row-gap: 0px;
+  order: 3;
+  padding: 20px;
+  background: #fff;
+  margin-top: 20px;
+  border-radius: 3px;
+}
+
+.minusic-metadata p {
+  margin: 0;
+}
+
+.minusic-meta-title {
+  grid-area: 1 / 2 / 2 / 3;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #101010;
+}
+
+.minusic-meta-author {
+  grid-area: 2 / 2 / 3 / 3;
+  font-size: 1rem;
+  color: var(--minusic-text-secondary);
+}
+
+.minusic-meta-album {
+  grid-area: 3 / 2 / 4 / 3;
+}
+
+.minusic-meta-thumbnail {
+  display: block;
+  width: 100%;
+  grid-area: 1 / 1 / 4 / 2;
+}
