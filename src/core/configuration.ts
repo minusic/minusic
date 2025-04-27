@@ -1,5 +1,5 @@
-import { RangeShape } from "./enums"
-import { ConstructorParameters } from "./types"
+import { RangeShape } from "../enums"
+import { ConstructorParameters } from "../types"
 
 export function createConstructorParameters(
   options: Partial<ConstructorParameters>,

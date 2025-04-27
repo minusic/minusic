@@ -10,7 +10,7 @@ import Progress from "../lib/ui/progress"
 import CircularRange from "../lib/ui/circularRange"
 import Range from "../lib/ui/range"
 import { PlayerConfiguration } from "../types"
-import Minusic from "../minusic"
+import Minusic from "../core/minusic"
 import { DropdownMenu, MenuItem } from "./Menu"
 
 export function createPlayerElements(

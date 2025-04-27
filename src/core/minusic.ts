@@ -3,18 +3,18 @@ import {
   remove,
   unwrapElement,
   wrapElement,
-} from "./lib/elements"
-import { bound, formatTime, randomNumber } from "./lib/utils"
-import Visualizer from "./lib/visualizer"
+} from "../lib/elements"
+import { bound, formatTime, randomNumber } from "../lib/utils"
+import Visualizer from "../lib/visualizer"
 import {
   ConstructorParameters,
   Elements,
   PlayerConfiguration,
   TrackConfig,
   TrackSource,
-} from "./types"
-import { buildPlayerStructure } from "./components/Structure"
-import { createPlayerElements } from "./components/Controls"
+} from "../types"
+import { buildPlayerStructure } from "../components/Structure"
+import { createPlayerElements } from "../components/Controls"
 import { createConstructorParameters } from "./configuration"
 
 export default class Minusic {
