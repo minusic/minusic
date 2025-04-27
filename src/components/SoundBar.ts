@@ -1,6 +1,6 @@
 import { CSSClass, RangeShape } from "../enums"
-import CircularRange from "../lib/ui/circularRange"
-import Range from "../lib/ui/range"
+import CircularRange from "./ui/circularRange"
+import Range from "./ui/range"
 import Minusic from "../minusic"
 import { PlayerConfiguration } from "../types"
 

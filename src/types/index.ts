@@ -7,10 +7,10 @@ import {
   VisualizerStack,
   VisualizerSymmetry,
 } from "../enums"
-import CircularProgress from "../lib/ui/circularProgress"
-import CircularRange from "../lib/ui/circularRange"
-import Progress from "../lib/ui/progress"
-import Range from "../lib/ui/range"
+import CircularProgress from "../components/ui/circularProgress"
+import CircularRange from "../components/ui/circularRange"
+import Progress from "../components/ui/progress"
+import Range from "../components/ui/range"
 
 export interface PlayerConfiguration extends ConstructorParameters {
   skipDuration: number
