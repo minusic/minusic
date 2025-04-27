@@ -1,6 +1,6 @@
 import { CSSClass } from "../../enums"
 import { createSVGElement } from "../../utils/dom/elements"
-import { bound } from "../utils"
+import { bound } from "../../utils/math/bounds"
 
 interface CircularRangeConfig {
   value: number

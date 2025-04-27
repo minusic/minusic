@@ -1,6 +1,6 @@
 import { CSSClass } from "../../enums"
 import { createElement } from "../../utils/dom/elements"
-import { bound } from "../utils"
+import { bound } from "../../utils/math/bounds"
 
 interface RangeConfig {
   step?: number
