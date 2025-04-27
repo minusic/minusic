@@ -18,6 +18,7 @@ export enum CSSClass {
   RepeatButton = "minusic-controls-repeat-button",
   RandomButton = "minusic-controls-random-button",
   DownloadButton = "minusic-controls-download-button",
+  SettingsButton = "minusic-controls-settings-button",
   PlaybackSpeedButton = "minusic-controls-playback-speed-button",
   Range = "minusic-range",
   RangeBackground = "minusic-range-background",

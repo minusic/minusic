@@ -11,6 +11,7 @@ import CircularRange from "../lib/ui/circularRange"
 import Range from "../lib/ui/range"
 import { PlayerConfiguration } from "../types"
 import Minusic from "../minusic"
+import { DropdownMenu, MenuItem } from "./Menu"
 
 export function createPlayerElements(
   container: HTMLElement,
@@ -67,6 +68,25 @@ function createControlButtons(
   controls: PlayerConfiguration["controls"],
   player: Minusic,
 ) {
+  const menuItems: MenuItem[] = [
+    { text: "Download", action: () => console.log("Exit application") },
+    {
+      text: "Playback speed",
+      subItems: [
+        { text: "0.25x", action: () => console.log("Copy") },
+        { text: "0.5x", action: () => console.log("Copy") },
+        { text: "0.75x", action: () => console.log("Paste") },
+        { text: "1x", action: () => console.log("Paste") },
+        { text: "1.25x", action: () => console.log("Paste") },
+        { text: "1.5x", action: () => console.log("Paste") },
+        { text: "1.75x", action: () => console.log("Paste") },
+        { text: "2x", action: () => console.log("Paste") },
+      ],
+    },
+  ]
+  const menu = new DropdownMenu("Menu", menuItems)
+  menu.mount(controlsContainer)
+
   return {
     play: controls.playButton
       ? createButton(controlsContainer, "Play", CSSClass.PlayButton, () =>
@@ -140,6 +160,7 @@ function createControlButtons(
           },
         )
       : null,
+    settings: menu,
   }
 }
 
