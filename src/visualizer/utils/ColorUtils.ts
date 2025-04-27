@@ -1,10 +1,10 @@
-import { VisualizerColor, VisualizerConfiguration } from "../../../types"
-import { VisualizerGradient } from "../../../enums"
+import { VisualizerColor, VisualizerConfiguration } from "../../types"
+import { VisualizerGradient } from "../../enums"
 import {
   createConicGradient,
   createLinearGradient,
   createRadialGradient,
-} from "../../canvas"
+} from "../../lib/canvas"
 
 export class ColorUtils {
   private context: CanvasRenderingContext2D

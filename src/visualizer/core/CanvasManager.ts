@@ -1,5 +1,5 @@
-import { VisualizerConfiguration } from "../../../types"
-import { applyStyles } from "../../../utils/dom/elements"
+import { VisualizerConfiguration } from "../../types"
+import { applyStyles } from "../../utils/dom/elements"
 import { ColorUtils } from "../utils/ColorUtils"
 
 export class CanvasManager {

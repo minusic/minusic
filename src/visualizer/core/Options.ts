@@ -5,8 +5,8 @@ import {
   VisualizerShape,
   VisualizerStack,
   VisualizerSymmetry,
-} from "../../../enums"
-import { VisualizerConfiguration, VisualizerOptions } from "../../../types"
+} from "../../enums"
+import { VisualizerConfiguration, VisualizerOptions } from "../../types"
 
 export class OptionsHandler {
   visualizerOptions: VisualizerOptions

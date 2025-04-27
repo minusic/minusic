@@ -1,11 +1,11 @@
 import { BaseRenderer } from "./BaseRenderer"
-import { VisualizerMode, VisualizerPosition } from "../../../enums"
+import { VisualizerMode, VisualizerPosition } from "../../enums"
 import {
   drawCurve,
   drawLine,
   drawDrop,
   drawRoundedRectangle,
-} from "../../canvas"
+} from "../../lib/canvas"
 
 export class PolygonRenderer extends BaseRenderer {
   render(frequencies: number[]): void {

@@ -1,5 +1,5 @@
-import { VisualizerConfiguration } from "../../../types"
-import { drawLine, drawRoundedRectangle } from "../../canvas"
+import { VisualizerConfiguration } from "../../types"
+import { drawLine, drawRoundedRectangle } from "../../lib/canvas"
 
 export class DebugUtils {
   private context: CanvasRenderingContext2D

@@ -3,13 +3,13 @@ import {
   VisualizerDirection,
   VisualizerMode,
   VisualizerPosition,
-} from "../../../enums"
+} from "../../enums"
 import {
   drawCurve,
   drawLine,
   drawDrop,
   drawRoundedRectangle,
-} from "../../canvas"
+} from "../../lib/canvas"
 
 export class CircleRenderer extends BaseRenderer {
   render(frequencies: number[]): void {

@@ -3,14 +3,14 @@ import {
   VisualizerDirection,
   VisualizerMode,
   VisualizerPosition,
-} from "../../../enums"
+} from "../../enums"
 import {
   drawLine,
   drawCurve,
   drawDrop,
   drawLevels,
   drawRoundedRectangle,
-} from "../../canvas"
+} from "../../lib/canvas"
 
 export class LineRenderer extends BaseRenderer {
   render(frequencies: number[]): void {

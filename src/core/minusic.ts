@@ -4,7 +4,7 @@ import {
   unwrapElement,
   wrapElement,
 } from "../utils/dom/elements"
-import Visualizer from "../lib/visualizer"
+import Visualizer from "../visualizer"
 import {
   ConstructorParameters,
   Elements,

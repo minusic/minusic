@@ -1,4 +1,4 @@
-import { VisualizerConfiguration } from "../../../types"
+import { VisualizerConfiguration } from "../../types"
 import { ColorUtils } from "./ColorUtils"
 
 export class StackUtils {
