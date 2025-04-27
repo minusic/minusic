@@ -4,7 +4,7 @@ import {
   unwrapElement,
   wrapElement,
 } from "../utils/dom/elements"
-import { bound, formatTime, randomNumber } from "../lib/utils"
+import { bound, randomNumber } from "../lib/utils"
 import Visualizer from "../lib/visualizer"
 import {
   ConstructorParameters,
@@ -16,6 +16,7 @@ import {
 import { buildPlayerStructure } from "../components/Structure"
 import { createPlayerElements } from "../components/Controls"
 import { createConstructorParameters } from "./configuration"
+import { formatTime } from "../utils/media/time-formatter"
 
 export default class Minusic {
   private media!: HTMLMediaElement
