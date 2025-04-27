@@ -9,7 +9,7 @@ import {
   drawLine,
   drawDrop,
   drawRoundedRectangle,
-} from "../../lib/canvas"
+} from "../../utils/canvas/canvas"
 
 export class CircleRenderer extends BaseRenderer {
   render(frequencies: number[]): void {

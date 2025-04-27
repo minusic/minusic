@@ -5,7 +5,7 @@ import {
   drawLine,
   drawDrop,
   drawRoundedRectangle,
-} from "../../lib/canvas"
+} from "../../utils/canvas/canvas"
 
 export class PolygonRenderer extends BaseRenderer {
   render(frequencies: number[]): void {
