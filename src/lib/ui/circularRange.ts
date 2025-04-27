@@ -1,5 +1,5 @@
 import { CSSClass } from "../../enums"
-import { createSVGElement } from "../elements"
+import { createSVGElement } from "../../utils/dom/elements"
 import { bound } from "../utils"
 
 interface CircularRangeConfig {

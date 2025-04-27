@@ -1,6 +1,6 @@
 import { CSSClass, VisualizerShape, VisualizerStack } from "../../enums"
 import { VisualizerConfiguration, VisualizerOptions } from "../../types"
-import { createElement } from "../elements"
+import { createElement } from "../../utils/dom/elements"
 import { AudioProcessor } from "./core/AudioProcessor"
 import { CanvasManager } from "./core/CanvasManager"
 import { OptionsHandler } from "./core/Options"

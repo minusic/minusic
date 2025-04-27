@@ -1,5 +1,5 @@
 import { CSSClass } from "../../enums"
-import { createElement } from "../elements"
+import { createElement } from "../../utils/dom/elements"
 import { bound } from "../utils"
 
 interface RangeConfig {

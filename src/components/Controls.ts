@@ -1,5 +1,5 @@
 import { CSSClass, RangeShape } from "../enums"
-import { createButton, createElement, createMenu } from "../lib/elements"
+import { createButton, createElement, createMenu } from "../utils/dom/elements"
 import { createProgressContainer } from "./ProgressBar"
 import { createSoundBar } from "./SoundBar"
 import { createTimeDisplay } from "./TimeDisplay"

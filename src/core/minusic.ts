@@ -3,7 +3,7 @@ import {
   remove,
   unwrapElement,
   wrapElement,
-} from "../lib/elements"
+} from "../utils/dom/elements"
 import { bound, formatTime, randomNumber } from "../lib/utils"
 import Visualizer from "../lib/visualizer"
 import {

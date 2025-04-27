@@ -1,5 +1,5 @@
 import { CSSClass } from "../../enums"
-import { createSVGElement } from "../elements"
+import { createSVGElement } from "../../utils/dom/elements"
 
 export default class CircularProgress {
   private container: HTMLElement

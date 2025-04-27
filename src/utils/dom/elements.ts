@@ -1,4 +1,4 @@
-import { CSSClass } from "../enums"
+import { CSSClass } from "../../enums"
 
 export function createElement(
   type: string,

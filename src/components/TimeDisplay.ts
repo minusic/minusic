@@ -1,4 +1,4 @@
-import { createElement } from "../lib/elements"
+import { createElement } from "../utils/dom/elements"
 
 export function createTimeDisplay(
   container: HTMLElement,
