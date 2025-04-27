@@ -1,6 +1,6 @@
 import { VisualizerConfiguration } from "../../types"
 import { VisualizerDirection, VisualizerPosition } from "../../enums"
-import { drawLevels, drawRoundedRectangle } from "../../utils/canvas/canvas"
+import { drawLevels, drawRoundedRectangle } from "../../utils/canvas/drawing"
 
 export abstract class BaseRenderer {
   protected context: CanvasRenderingContext2D

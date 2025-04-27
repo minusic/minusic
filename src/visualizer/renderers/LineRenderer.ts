@@ -10,7 +10,7 @@ import {
   drawDrop,
   drawLevels,
   drawRoundedRectangle,
-} from "../../utils/canvas/canvas"
+} from "../../utils/canvas/drawing"
 
 export class LineRenderer extends BaseRenderer {
   render(frequencies: number[]): void {

@@ -4,7 +4,7 @@ import {
   createConicGradient,
   createLinearGradient,
   createRadialGradient,
-} from "../../utils/canvas/canvas"
+} from "../../utils/canvas/drawing"
 
 export class ColorUtils {
   private context: CanvasRenderingContext2D
