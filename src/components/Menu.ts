@@ -2,18 +2,8 @@ import { CSSClass } from "../enums"
 import { createElement } from "../utils/dom/elements"
 import { PlayerConfiguration } from "../types"
 
-export function createMenu(
-  container: HTMLElement,
-  options: PlayerConfiguration,
-) {
-  return createElement(
-    "div",
-    { container },
-    {
-      class: CSSClass.Controls,
-      "data-controls": `${options.displayOptions.showControls !== false}`,
-    },
-  )
+export function createMenu(container: HTMLElement) {
+  return createElement("div", { container }, { class: CSSClass.Controls })
 }
 
 export interface MenuItem {

@@ -10,7 +10,6 @@ import {
   Elements,
   PlayerConfiguration,
   TrackConfig,
-  TrackSource,
 } from "../types"
 import { buildPlayerStructure } from "../components/Structure"
 import { createPlayerElements } from "../components/Controls"
@@ -24,6 +23,8 @@ import {
   getValidSource,
   normalizeSources,
 } from "../utils/media/source-handler"
+import { EventBus } from "../utils/eventBus/event-bus"
+import { StateHandler } from "./state"
 
 export default class Minusic {
   private media!: HTMLMediaElement
@@ -36,9 +37,10 @@ export default class Minusic {
   private repeatState: number = 0
   private randomState: boolean = false
   private playbackRateState: number = 1
-  private sources: (string | TrackSource)[] = []
   private sourceErrors = 0
   private attemptedTracks: Set<unknown> = new Set()
+  private eventBus!: EventBus
+  private state!: StateHandler
 
   constructor(options: ConstructorParameters) {
     this.initializePlayer(options)
@@ -54,6 +56,9 @@ export default class Minusic {
     this.options = createConstructorParameters(options) as PlayerConfiguration
 
     const { container, controls } = buildPlayerStructure(this.options)
+    this.eventBus = new EventBus()
+    this.state = new StateHandler(container, this.eventBus)
+
     this.elements = createPlayerElements(
       container,
       controls,
@@ -102,7 +107,8 @@ export default class Minusic {
   }
 
   private applyInitialSettings(options: ConstructorParameters) {
-    if (options.displayOptions?.showNativeControls === true) this.showControls()
+    if (options.displayOptions?.showNativeControls === true)
+      this.showNativeControls()
     else this.hideControls()
     if (options.autoplay) this.media.setAttribute("autoplay", "")
     if (options.crossOrigin) this.media.setAttribute("crossorigin", "")
@@ -168,12 +174,12 @@ export default class Minusic {
   }
 
   private handlePlayState() {
-    this.elements.container.dataset.paused = "false"
+    this.state.setState({ paused: false })
     this.updateVisualizer()
   }
 
   private handlePauseState() {
-    this.elements.container.dataset.paused = "true"
+    this.state.setState({ paused: true })
   }
 
   private handleVolumeChange() {
@@ -199,13 +205,13 @@ export default class Minusic {
   }
 
   public mute() {
-    this.elements.container.dataset.muted = "true"
+    this.state.setState({ muted: true })
     if (this.elements.soundBar) this.elements.soundBar.value = 0
     this.media.muted = true
   }
 
   public unmute() {
-    this.elements.container.dataset.muted = "false"
+    this.state.setState({ muted: false })
     if (this.elements.soundBar) this.elements.soundBar.value = this.volume
     this.media.muted = false
     if (this.media.volume === 0) this.volume = 1
@@ -215,8 +221,10 @@ export default class Minusic {
   public repeatAll = () => (this.repeat = 2)
   public noRepeat = () => (this.repeat = 0)
 
-  public showControls = () => this.media.setAttribute("controls", "")
-  public hideControls = () => this.media.removeAttribute("controls")
+  public showControls = () => this.state.setState({ controls: true })
+  public hideControls = () => this.state.setState({ controls: false })
+  public showNativeControls = () => this.media.setAttribute("controls", "")
+  public hideNativeControls = () => this.media.removeAttribute("controls")
 
   public togglePlay = (state?: boolean) => {
     if (typeof state === "boolean") return state ? this.play() : this.pause()
@@ -236,12 +244,12 @@ export default class Minusic {
   }
   set repeat(value: number) {
     this.repeatState = value
-    this.elements.container.dataset.repeat = `${this.repeatState}`
+    this.state.setState({ repeat: this.repeatState })
   }
 
   public toggleRandom() {
     this.random = !this.random
-    this.elements.container.dataset.random = `${this.random}`
+    this.state.setState({ random: this.random })
   }
   get random() {
     return this.randomState
