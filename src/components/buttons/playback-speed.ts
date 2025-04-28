@@ -8,17 +8,17 @@ export class PlayBackSpeedButton {
   constructor(
     configuration: PlaybackSpeedConfiguration,
     player: any,
-    parent: HTMLElement,
+    container: HTMLElement,
   ) {
     const callback = (value: string) => {
       player.playbackRate = parseFloat(value)
     }
     this.button = new ToggleButton({
       options: configuration.options,
-      parent,
+      container,
       callback,
       defaultValue: configuration.defaultSpeed,
-      className: CSSClass.PlaybackSpeedButton,
+      cssClass: CSSClass.PlaybackSpeedButton,
     })
   }
 

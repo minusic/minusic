@@ -1,3 +1,4 @@
+import { Button } from "../../components/buttons/button"
 import { CSSClass } from "../../enums"
 
 export function createElement(
@@ -46,6 +47,14 @@ export function createButton(
   cssClass: CSSClass,
   onClick: () => void,
 ) {
+  const button = new Button({
+    label,
+    container,
+    cssClass,
+    callback: onClick,
+  })
+  return button.render()
+  return
   return createElement(
     "button",
     { container },

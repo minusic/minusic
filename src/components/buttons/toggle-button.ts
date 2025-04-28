@@ -1,3 +1,5 @@
+import { Button } from "./button"
+
 interface ToggleOption {
   label: string
   value: string | number
@@ -5,21 +7,20 @@ interface ToggleOption {
 
 interface ToggleButtonParams {
   options: ToggleOption[]
-  parent?: HTMLElement
+  container?: HTMLElement
   callback?: (value: any) => void
   defaultValue?: string | number
-  className?: string
+  cssClass?: string
 }
 
 export class ToggleButton {
   private options: ToggleOption[]
   private currentIndex: number = 0
-  private button: HTMLButtonElement
-  private parent?: HTMLElement
+  private button: Button
   private callback?: (value: any) => void
 
   constructor(params: ToggleButtonParams) {
-    const { options, parent, callback, defaultValue, className } = params
+    const { options, container, callback, defaultValue, cssClass } = params
 
     if (options.length < 2) {
       throw new Error(
@@ -28,11 +29,11 @@ export class ToggleButton {
     }
 
     this.options = options
-    this.button = document.createElement("button")
-    if (className) {
-      this.button.className = className
-    }
-    this.button.addEventListener("click", () => this.handleClick())
+    this.button = new Button({
+      container,
+      callback: this.handleClick.bind(this),
+      cssClass,
+    })
 
     if (defaultValue !== undefined) {
       const index = this.options.findIndex(
@@ -41,10 +42,6 @@ export class ToggleButton {
       this.currentIndex = index !== -1 ? index : 0
     }
 
-    if (parent) {
-      this.parent = parent
-      this.parent.appendChild(this.button)
-    }
     if (callback) {
       this.callback = callback
     }
@@ -67,11 +64,11 @@ export class ToggleButton {
 
   private updateButton(): void {
     const currentOption = this.options[this.currentIndex]
-    this.button.textContent = currentOption.label
+    this.button.text = currentOption.label
   }
 
   public render(): HTMLButtonElement {
-    return this.button
+    return this.button.render()
   }
 
   public setValue(value: string | number): void {

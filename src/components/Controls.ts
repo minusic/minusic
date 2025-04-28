@@ -12,7 +12,6 @@ import Range from "./ui/range"
 import { PlayerConfiguration } from "../types"
 import Minusic from "../core/minusic"
 import { DropdownMenu, MenuItem } from "./Menu"
-import { ToggleButton } from "./buttons/toggle-button"
 import { PlayBackSpeedButton } from "./buttons/playback-speed"
 
 export function createPlayerElements(
