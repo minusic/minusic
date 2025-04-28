@@ -283,4 +283,8 @@ export class DropdownMenu {
     parent.appendChild(this.container)
     //parent.prepend(this.container)
   }
+
+  public render() {
+    return this.button
+  }
 }

@@ -57,9 +57,7 @@ export class ToggleButton {
 
   private emitChange(): void {
     const currentValue = this.options[this.currentIndex].value
-    if (this.callback) {
-      this.callback(currentValue)
-    }
+    if (this.callback) this.callback(currentValue)
   }
 
   private updateButton(): void {

@@ -383,6 +383,11 @@ export default class Minusic {
     this.trackIndex = value
   }
 
+  public previousOrRestartTrack = (autoplay = false) => {
+    if (this.currentTime > 5) this.currentTime = 0
+    this.previousTrack()
+  }
+
   public previousTrack = (autoplay = false) =>
     this.loadTrack(this.track - 1, autoplay)
 

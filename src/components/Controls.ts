@@ -9,7 +9,7 @@ import CircularProgress from "./ui/circularProgress"
 import Progress from "./ui/progress"
 import CircularRange from "./ui/circularRange"
 import Range from "./ui/range"
-import { PlayerConfiguration } from "../types"
+import { Controls, Elements, PlayerConfiguration } from "../types"
 import Minusic from "../core/minusic"
 import { DropdownMenu, MenuItem } from "./Menu"
 import { PlayBackSpeedButton } from "./buttons/playback-speed"
@@ -69,7 +69,7 @@ function createControlButtons(
   controls: PlayerConfiguration["controls"],
   options: PlayerConfiguration,
   player: Minusic,
-) {
+): Elements["buttons"] {
   const menuItems: MenuItem[] = [
     { text: "Download", action: () => console.log("Exit application") },
     {
@@ -89,56 +89,30 @@ function createControlButtons(
   const menu = new DropdownMenu("Menu", menuItems)
   menu.mount(controlsContainer)
 
-  return {
-    play: controls.playButton
-      ? createButton(controlsContainer, "Play", CSSClass.PlayButton, () =>
-          player.togglePlay(),
-        )
-      : null,
-    mute: controls.muteButton
-      ? createButton(controlsContainer, "Mute", CSSClass.MuteButton, () =>
-          player.toggleMute(),
-        )
-      : null,
-    previous: controls.previousButton
-      ? createButton(
-          controlsContainer,
-          "Previous track",
-          CSSClass.PreviousButton,
-          () =>
-            player.currentTime > 5
-              ? (player.currentTime = 0)
-              : player.previousTrack(),
-        )
-      : null,
-    next: controls.nextButton
-      ? createButton(controlsContainer, "Next track", CSSClass.NextButton, () =>
-          player.nextTrack(),
-        )
-      : null,
-    backward: controls.backwardButton
-      ? createButton(
-          controlsContainer,
-          "Backward",
-          CSSClass.BackwardButton,
-          () => player.backward(),
-        )
-      : null,
-    forward: controls.forwardButton
-      ? createButton(controlsContainer, "Forward", CSSClass.ForwardButton, () =>
-          player.forward(),
-        )
-      : null,
-    repeat: controls.repeatButton
-      ? createButton(controlsContainer, "Repeat", CSSClass.RepeatButton, () =>
-          player.toggleRepeat(),
-        )
-      : null,
-    random: controls.randomButton
-      ? createButton(controlsContainer, "Random", CSSClass.RandomButton, () =>
-          player.toggleRandom(),
-        )
-      : null,
+  // prettier-ignore
+  const buttonConfigs = [
+    { key: "play", controlKey: "playButton", label: "Play", cssClass: CSSClass.PlayButton, handler: player.togglePlay },
+    { key: "mute", controlKey: "muteButton", label: "Mute", cssClass: CSSClass.MuteButton, handler: player.toggleMute },
+    { key: "previous", controlKey: "previousButton", label: "Previous track", cssClass: CSSClass.PreviousButton, handler: player.previousOrRestartTrack },
+    { key: "next", controlKey: "nextButton", label: "Next track", cssClass: CSSClass.NextButton, handler: player.nextTrack },
+    { key: "backward", controlKey: "backwardButton", label: "Backward", cssClass: CSSClass.BackwardButton, handler: player.backward },
+    { key: "forward", controlKey: "forwardButton", label: "Forward", cssClass: CSSClass.ForwardButton, handler: player.forward },
+    { key: "repeat", controlKey: "repeatButton", label: "Repeat", cssClass: CSSClass.RepeatButton, handler: player.toggleRepeat },
+    { key: "random", controlKey: "randomButton", label: "Random", cssClass: CSSClass.RandomButton, handler: player.toggleRandom, },
+  ]
+
+  const standardButtons = buttonConfigs.reduce(
+    (acc, config) => {
+      const { key, controlKey, label, cssClass, handler } = config
+      acc[key] = controls[controlKey as keyof Controls]
+        ? createButton(controlsContainer, label, cssClass, handler.bind(player))
+        : null
+      return acc
+    },
+    {} as Record<string, HTMLElement | null>,
+  )
+
+  const specialButtons = {
     download: controls.downloadButton
       ? (createElement(
           "a",
@@ -160,6 +134,8 @@ function createControlButtons(
         : null,
     settings: menu,
   }
+
+  return { ...standardButtons, ...specialButtons }
 }
 
 function createTimeBar(

@@ -54,16 +54,6 @@ export function createButton(
     callback: onClick,
   })
   return button.render()
-  return
-  return createElement(
-    "button",
-    { container },
-    {
-      class: [CSSClass.ControlButton, cssClass],
-      "aria-label": label,
-    },
-    { click: onClick },
-  )
 }
 
 export function createMenu(

@@ -141,19 +141,19 @@ export interface Elements {
   controls: HTMLElement
   metadata?: HTMLElement
   buttons: {
-    play: HTMLElement | null
-    mute: HTMLElement | null
-    backward: HTMLElement | null
-    forward: HTMLElement | null
-    playbackSpeed: {
+    play: HTMLButtonElement | null
+    mute: HTMLButtonElement | null
+    backward: HTMLButtonElement | null
+    forward: HTMLButtonElement | null
+    playbackSpeed: any /*{
       button: ToggleButton
       update: (value: number) => void
-    } | null
+    } | null*/
     download: HTMLAnchorElement | null
-    previous: HTMLElement | null
-    next: HTMLElement | null
-    repeat: HTMLElement | null
-    random: HTMLElement | null
+    previous: HTMLButtonElement | null
+    next: HTMLButtonElement | null
+    repeat: HTMLButtonElement | null
+    random: HTMLButtonElement | null
   }
   progress: {
     timeBar: Range | CircularRange | null
