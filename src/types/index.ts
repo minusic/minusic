@@ -41,6 +41,7 @@ export interface ConstructorParameters {
   endTime?: number
   muted?: boolean
   playbackRate?: number
+  playbackSpeed?: PlaybackSpeedConfiguration
   preservesPitch?: boolean
   defaultVolume?: number
   skipDuration?: number
@@ -104,7 +105,6 @@ export interface DisplayOptions {
   showNativeControls?: boolean
   timeBar?: RangeConfiguration
   soundBar?: RangeConfiguration
-  playbackSpeed?: PlaybackSpeedConfiguration
 }
 
 export interface TrackConfig {

@@ -152,9 +152,9 @@ function createControlButtons(
         ) as HTMLAnchorElement)
       : null,
     playbackSpeed:
-      controls.playbackSpeedButton && options.displayOptions?.playbackSpeed
+      controls.playbackSpeedButton && options.playbackSpeed
         ? new PlayBackSpeedButton(
-            options.displayOptions.playbackSpeed,
+            options.playbackSpeed,
             player,
             controlsContainer,
           )

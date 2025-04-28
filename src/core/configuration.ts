@@ -61,19 +61,6 @@ export function createConstructorParameters(
       endAngle: 360,
       clockwise: true,
     },
-    playbackSpeed: {
-      options: [
-        { label: "x0.25", value: 0.25 },
-        { label: "x0.5", value: 0.5 },
-        { label: "x0.75", value: 0.75 },
-        { label: "x1", value: 1 },
-        { label: "x1.25", value: 1.25 },
-        { label: "x1.5", value: 1.5 },
-        { label: "x1.75", value: 1.75 },
-        { label: "x2", value: 2 },
-      ],
-      defaultSpeed: 1,
-    },
   }
 
   // Default core configuration
@@ -88,6 +75,19 @@ export function createConstructorParameters(
     preservesPitch: true,
     defaultVolume: 1,
     skipDuration: 15,
+    playbackSpeed: {
+      options: [
+        { label: "x0.25", value: 0.25 },
+        { label: "x0.5", value: 0.5 },
+        { label: "x0.75", value: 0.75 },
+        { label: "x1", value: 1 },
+        { label: "x1.25", value: 1.25 },
+        { label: "x1.5", value: 1.5 },
+        { label: "x1.75", value: 1.75 },
+        { label: "x2", value: 2 },
+      ],
+      defaultSpeed: 1,
+    },
 
     // Merge default controls
     controls: { ...defaultControls, ...options.controls },

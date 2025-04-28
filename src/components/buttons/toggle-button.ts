@@ -1,4 +1,3 @@
-// toggle-button.ts
 interface ToggleOption {
   label: string
   value: string | number
