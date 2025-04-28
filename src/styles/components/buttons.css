@@ -22,3 +22,18 @@
   outline-width: 3px;
   border-radius: 2px;
 }
+
+.minusic-controls-playback-speed-button {
+  border: none;
+  border-radius: var(--minusic-border-radius);
+  border-radius: 6px;
+  background-color: transparent;
+  background-color: var(--minusic-text-primary);
+  color: var(--minusic-bg-container);
+  padding: 4px 6px;
+  font-size: 0.6rem;
+  font-weight: bold;
+}
+.minusic-controls-playback-speed-button:hover {
+  background-color: var(--minusic-color-theme);
+}
