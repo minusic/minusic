@@ -18,6 +18,12 @@ import { createConstructorParameters } from "./configuration"
 import { formatTime } from "../utils/media/time-formatter"
 import { randomNumber } from "../utils/math/random"
 import { bound } from "../utils/math/bounds"
+import {
+  SourceHandlerOptions,
+  attachSources,
+  getValidSource,
+  normalizeSources,
+} from "../utils/media/source-handler"
 
 export default class Minusic {
   private media!: HTMLMediaElement
@@ -287,77 +293,81 @@ export default class Minusic {
       else return
     }
 
-    if (!this.attemptedTracks) this.attemptedTracks = new Set()
-    if (this.attemptedTracks.size >= this.options.tracks.length) {
-      console.warn(
-        "All tracks have invalid sources, stopping playback to prevent infinite loop",
-      )
-      this.attemptedTracks.clear()
-      return
-    }
-
-    if (this.attemptedTracks.has(index)) {
-      console.warn(`Cannot load track at index ${index}: already attempted`)
-      if (this.repeat === 2) {
-        let nextIndex = (index + 1) % this.options.tracks.length
-        const originalIndex = index
-
-        while (
-          this.attemptedTracks.has(nextIndex) &&
-          nextIndex !== originalIndex
-        ) {
-          nextIndex = (nextIndex + 1) % this.options.tracks.length
-        }
-        if (nextIndex === originalIndex) {
-          console.warn("All tracks have invalid sources, stopping playback")
-          this.attemptedTracks.clear()
-          return
-        }
-        this.loadTrack(nextIndex, autoplay)
-      } else {
-        this.attemptedTracks.clear()
-      }
-    }
-
+    this.attemptedTracks.clear()
     this.attemptedTracks.add(index)
     const track = this.options.tracks[index]
-    const trackSources = Array.isArray(track.source)
-      ? [...track.source]
-      : [track.source]
 
-    this.removeSource()
-    this.addSource(trackSources)
-    this.updateDownloadButton()
+    this.loadTrackSources(track, playing)
+    this.updateDownloadButton(track)
     this.setMetadata(track)
     this.setWaveform(track)
     this.track = index
-
-    const handleCanPlay = () => {
-      this.updateProgress()
-      if (playing) this.play()
-      this.media.removeEventListener("canplay", handleCanPlay)
-      this.attemptedTracks.clear()
-    }
-
-    this.media.addEventListener("canplay", handleCanPlay)
-    this.media.load()
     this.updatePlaylist(index)
   }
 
-  private updateDownloadButton() {
-    const downloadButton = this.elements.buttons.download
-    if (!downloadButton) return
+  private async loadTrackSources(track: TrackConfig, autoplay: boolean) {
+    const sourceOptions: SourceHandlerOptions = {
+      crossOrigin: this.options.crossOrigin ? "anonymous" : undefined,
+      timeout: 30000,
+    }
 
-    if (this.audioSource && !this.options.livestream) {
-      downloadButton.href = this.audioSource
-      downloadButton.download = this.trackTitle || ""
-      downloadButton.style.display = ""
+    const validSource = await getValidSource(track, sourceOptions)
+    if (!validSource) {
+      this.handleSourceFailure(track, autoplay)
+      return
+    }
+
+    const sources = normalizeSources(track.source)
+    this.removeExistingSources()
+    attachSources(this.media, sources, sourceOptions)
+
+    this.media.load()
+    if (autoplay) {
+      const playPromise = this.media.play()
+      if (playPromise) {
+        playPromise.catch(() => {
+          console.warn("Autoplay prevented by browser")
+        })
+      }
+    }
+
+    this.updateProgress()
+  }
+  private handleSourceFailure(track: TrackConfig, autoplay: boolean) {
+    this.sourceErrors++
+    console.error(`Failed to load track: ${track.title}`)
+
+    if (this.track < this.options.tracks.length - 1) {
+      this.nextTrack(autoplay)
+    } else if (this.repeat === 2) {
+      this.loadTrack(0, autoplay)
     } else {
-      downloadButton.style.display = "none"
+      console.error("All audio sources failed to load")
+      this.attemptedTracks.clear()
     }
   }
 
-  updatePlaylist(currentTrack: number) {
+  private removeExistingSources() {
+    this.media.src = ""
+    this.media.querySelectorAll("source").forEach((src) => src.remove())
+  }
+
+  private updateDownloadButton(track: TrackConfig) {
+    const downloadButton = this.elements.buttons.download
+    if (!downloadButton) return
+    if (track && !this.options.livestream) {
+      const sources = normalizeSources(track.source)
+      if (sources.length > 0) {
+        downloadButton.href = sources[0].source
+        downloadButton.download = track.title || ""
+        downloadButton.style.display = ""
+        return
+      }
+    }
+    downloadButton.style.display = "none"
+  }
+
+  private updatePlaylist(currentTrack: number) {
     this.elements.playlist.tracks.forEach((track, index) => {
       if (!track) return
       if (index === currentTrack) track.dataset.state = "playing"
@@ -388,40 +398,6 @@ export default class Minusic {
   public restart() {
     this.currentTime = 0
     this.play()
-  }
-
-  private addSource(sources: (string | TrackSource)[]) {
-    this.sources = sources
-    sources.forEach((source) =>
-      createElement(
-        "source",
-        { container: this.media },
-        {
-          src: typeof source === "string" ? source : source.source,
-          type: typeof source === "string" ? "" : source.type,
-        },
-        { error: () => this.sourceFailed() },
-      ),
-    )
-  }
-
-  private sourceFailed() {
-    this.sourceErrors++
-    if (this.sourceErrors >= this.sources.length) {
-      if (this.track < this.options.tracks.length - 1) {
-        this.nextTrack(!this.paused)
-      } else if (this.repeat === 2) {
-        this.loadTrack(0, !this.paused)
-      } else {
-        console.error("All audio sources failed to load")
-        this.attemptedTracks.clear()
-      }
-    }
-  }
-
-  private removeSource() {
-    this.sources = []
-    this.media.querySelectorAll("source").forEach((element) => remove(element))
   }
 
   get paused() {
