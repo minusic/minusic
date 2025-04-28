@@ -1,5 +1,5 @@
 import { CSSClass, RangeShape } from "../enums"
-import { createButton, createElement, createMenu } from "../utils/dom/elements"
+import { createButton, createElement } from "../utils/dom/elements"
 import { createProgressContainer } from "./ProgressBar"
 import { createSoundBar } from "./SoundBar"
 import { createTimeDisplay } from "./TimeDisplay"
@@ -12,6 +12,8 @@ import Range from "./ui/range"
 import { PlayerConfiguration } from "../types"
 import Minusic from "../core/minusic"
 import { DropdownMenu, MenuItem } from "./Menu"
+import { ToggleButton } from "./buttons/toggle-button"
+import { PlayBackSpeedButton } from "./buttons/playback-speed"
 
 export function createPlayerElements(
   container: HTMLElement,
@@ -28,7 +30,7 @@ export function createPlayerElements(
   return {
     container,
     controls: controlsContainer,
-    buttons: createControlButtons(controlsContainer, controls, player),
+    buttons: createControlButtons(controlsContainer, controls, options, player),
     progress: {
       ...createTimeBar(progressContainer, options, player),
       bufferBar: createBufferBar(progressContainer, options),
@@ -66,6 +68,7 @@ export function createPlayerElements(
 function createControlButtons(
   controlsContainer: HTMLElement,
   controls: PlayerConfiguration["controls"],
+  options: PlayerConfiguration,
   player: Minusic,
 ) {
   const menuItems: MenuItem[] = [
@@ -148,18 +151,14 @@ function createControlButtons(
           },
         ) as HTMLAnchorElement)
       : null,
-    playbackSpeed: controls.playbackSpeedButton
-      ? createMenu(
-          controlsContainer,
-          "Speed",
-          ["0.25", "0.5", "0.75", "1", "1.25", "1.5", "1.75", "2"],
-          "1",
-          CSSClass.PlaybackSpeedButton,
-          (value: string) => {
-            player.playbackRate = parseFloat(value)
-          },
-        )
-      : null,
+    playbackSpeed:
+      controls.playbackSpeedButton && options.displayOptions?.playbackSpeed
+        ? new PlayBackSpeedButton(
+            options.displayOptions.playbackSpeed,
+            player,
+            controlsContainer,
+          )
+        : null,
     settings: menu,
   }
 }

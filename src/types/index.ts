@@ -11,6 +11,7 @@ import CircularProgress from "../components/ui/circularProgress"
 import CircularRange from "../components/ui/circularRange"
 import Progress from "../components/ui/progress"
 import Range from "../components/ui/range"
+import { ToggleButton } from "../components/buttons/toggle-button"
 
 export interface PlayerConfiguration extends ConstructorParameters {
   skipDuration: number
@@ -103,6 +104,7 @@ export interface DisplayOptions {
   showNativeControls?: boolean
   timeBar?: RangeConfiguration
   soundBar?: RangeConfiguration
+  playbackSpeed?: PlaybackSpeedConfiguration
 }
 
 export interface TrackConfig {
@@ -129,6 +131,11 @@ interface RangeConfiguration {
   clockwise?: boolean
 }
 
+export interface PlaybackSpeedConfiguration {
+  options: { label: string; value: string | number }[]
+  defaultSpeed: number
+}
+
 export interface Elements {
   container: HTMLElement
   controls: HTMLElement
@@ -138,7 +145,10 @@ export interface Elements {
     mute: HTMLElement | null
     backward: HTMLElement | null
     forward: HTMLElement | null
-    playbackSpeed: { menu: HTMLElement; update: (value: string) => void } | null
+    playbackSpeed: {
+      button: ToggleButton
+      update: (value: number) => void
+    } | null
     download: HTMLAnchorElement | null
     previous: HTMLElement | null
     next: HTMLElement | null

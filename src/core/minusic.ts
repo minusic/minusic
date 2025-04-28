@@ -186,10 +186,11 @@ export default class Minusic {
   }
 
   private handleRateChange() {
+    console.log(this.playbackRateState, this.playbackRate)
     if (this.elements.buttons.playbackSpeed) {
       if (this.playbackRateState !== this.playbackRate)
-        this.playbackRate = this.playbackRateState
-      this.elements.buttons.playbackSpeed.update(this.playbackRate.toString())
+        this.playbackRateState = this.playbackRate
+      this.elements.buttons.playbackSpeed.update(this.playbackRate)
     }
   }
 
