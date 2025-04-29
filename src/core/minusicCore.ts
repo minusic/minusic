@@ -4,7 +4,7 @@ import {
   PlayerConfiguration,
   VisualizerOptions,
 } from "../types"
-import { buildPlayerStructure } from "../components/Structure"
+import { buildPlayerStructure } from "../components/structure"
 import { createConstructorParameters } from "./configuration"
 import { EventBus } from "../utils/eventBus/event-bus"
 import { StateHandler } from "./state"
