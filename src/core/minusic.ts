@@ -19,6 +19,7 @@ import { bound } from "../utils/math/bounds"
 import { EventBus } from "../utils/eventBus/event-bus"
 import { StateHandler } from "./state"
 import { MediaSourceManager } from "./media/MediaSourceManager"
+import { PlaylistManager } from "./playlist/playlistManager"
 
 export default class Minusic {
   private media!: HTMLMediaElement
@@ -36,6 +37,7 @@ export default class Minusic {
   private eventBus!: EventBus
   private state!: StateHandler
   private sourceManager!: MediaSourceManager
+  private playlistManager!: PlaylistManager
 
   constructor(options: ConstructorParameters) {
     this.initializePlayer(options)
@@ -67,8 +69,27 @@ export default class Minusic {
       crossOrigin: this.options.crossOrigin,
       livestream: this.options.livestream,
     })
-    if (!this.audioSource) this.loadTrack()
 
+    this.playlistManager = new PlaylistManager(
+      this.options.tracks,
+      this.sourceManager,
+      this.eventBus,
+      {
+        repeat: 0,
+        random: false,
+      },
+    )
+    this.eventBus.on("trackLoaded", ({ track, index }) => {
+      this.updateMetadata(track)
+      this.updateWaveform(track)
+      this.playlistManager.updatePlaylistUI(this.elements.playlist.tracks)
+      this.sourceManager.updateDownloadButton(
+        track,
+        this.elements.buttons.download,
+      )
+    })
+
+    if (!this.audioSource) this.loadTrack()
     this.updateProgress()
   }
 
@@ -235,29 +256,6 @@ export default class Minusic {
     return this.muted ? this.unmute() : this.mute()
   }
 
-  public toggleRepeat = () => {
-    this.repeat = (this.repeat + 1) % 3
-  }
-
-  get repeat() {
-    return this.repeatState
-  }
-  set repeat(value: number) {
-    this.repeatState = value
-    this.state.setState({ repeat: this.repeatState })
-  }
-
-  public toggleRandom() {
-    this.random = !this.random
-    this.state.setState({ random: this.random })
-  }
-  get random() {
-    return this.randomState
-  }
-  set random(value: boolean) {
-    this.randomState = value
-  }
-
   public toggleControls = () =>
     this.media.getAttribute("controls")
       ? this.hideControls()
@@ -273,7 +271,7 @@ export default class Minusic {
     )
   }
 
-  public setMetadata(track: TrackConfig) {
+  public updateMetadata(track: TrackConfig) {
     if (!this.options.controls.metadata) return {}
     this.elements.title!.innerText = track.title || ""
     this.elements.author!.innerText = track.author || ""
@@ -281,91 +279,16 @@ export default class Minusic {
     this.elements.thumbnail!.src = track.thumbnail || ""
   }
 
-  public setWaveform(track: { waveform?: string }) {
+  public updateWaveform(track: { waveform?: string }) {
     if (this.elements.progress?.timeBar) {
       this.elements.progress.timeBar.background = track.waveform
     }
-  }
-
-  public async loadTrack(index = 0, autoplay = false) {
-    this.sourceManager.resetSourceErrors()
-    const playing = !this.paused || autoplay
-
-    if (!this.options.tracks || this.options.tracks.length === 0) {
-      console.warn("No tracks available to load")
-      return
-    }
-
-    if (this.options.tracks.length <= index || index < 0) {
-      if (this.repeat === 2) index = 0
-      else return
-    }
-
-    this.sourceManager.addAttemptedTrack(index)
-    const track = this.options.tracks[index]
-
-    const success = await this.sourceManager.loadTrackSources(track, playing)
-    if (!success) {
-      this.handleSourceFailure(track, autoplay)
-      return
-    }
-
-    this.sourceManager.updateDownloadButton(
-      track,
-      this.elements.buttons.download,
-    )
-    this.setMetadata(track)
-    this.setWaveform(track)
-    this.track = index
-    this.updatePlaylist(index)
-  }
-
-  private handleSourceFailure(track: TrackConfig, autoplay: boolean) {
-    this.sourceErrors++
-    console.error(`Failed to load track: ${track.title}`)
-
-    if (this.track < this.options.tracks.length - 1) {
-      this.nextTrack(autoplay)
-    } else if (this.repeat === 2) {
-      this.loadTrack(0, autoplay)
-    } else {
-      console.error("All audio sources failed to load")
-      this.attemptedTracks.clear()
-    }
-  }
-
-  private updatePlaylist(currentTrack: number) {
-    this.elements.playlist.tracks.forEach((track, index) => {
-      if (!track) return
-      if (index === currentTrack) track.dataset.state = "playing"
-      else track.dataset.state = ""
-    })
-  }
-
-  get track() {
-    return this.trackIndex
-  }
-
-  set track(value: number) {
-    this.trackIndex = value
   }
 
   public previousOrRestartTrack = (autoplay = false) => {
     if (this.currentTime > 5) this.currentTime = 0
     this.previousTrack()
   }
-
-  public previousTrack = (autoplay = false) =>
-    this.loadTrack(this.track - 1, autoplay)
-
-  public nextTrack = (autoplay = false) =>
-    this.random ? this.randomTrack() : this.loadTrack(this.track + 1, autoplay)
-
-  public randomTrack = (autoplay = false) =>
-    this.loadTrack(
-      randomNumber(0, this.options.tracks.length - 1, this.track),
-      autoplay,
-    )
 
   public restart() {
     this.currentTime = 0
@@ -451,5 +374,45 @@ export default class Minusic {
       if (source.src) return source.src
     }
     return null
+  }
+
+  public async loadTrack(index = 0, autoplay = false) {
+    return this.playlistManager.loadTrack(index, autoplay)
+  }
+
+  public previousTrack(autoplay = false) {
+    return this.playlistManager.previousTrack(autoplay)
+  }
+
+  public nextTrack(autoplay = false) {
+    return this.playlistManager.nextTrack(autoplay)
+  }
+
+  public randomTrack(autoplay = false) {
+    return this.playlistManager.randomTrack(autoplay)
+  }
+
+  public toggleRepeat() {
+    this.playlistManager.toggleRepeatMode()
+  }
+
+  public get repeat() {
+    return this.playlistManager.getRepeatMode()
+  }
+
+  public set repeat(value: number) {
+    this.playlistManager.setRepeatMode(value)
+  }
+
+  public toggleRandom() {
+    this.playlistManager.toggleRandomMode()
+  }
+
+  public get random() {
+    return this.playlistManager.getRandomMode()
+  }
+
+  public get track() {
+    return this.playlistManager.getCurrentIndex()
   }
 }
