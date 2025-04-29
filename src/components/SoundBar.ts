@@ -1,13 +1,13 @@
 import { CSSClass, RangeShape } from "../enums"
 import CircularRange from "./ui/circularRange"
 import Range from "./ui/range"
-import Minusic from "../minusic"
 import { PlayerConfiguration } from "../types"
+import MinusicCore from "../core/minusicCore"
 
 export function createSoundBar(
   container: HTMLElement,
   options: PlayerConfiguration,
-  player: Minusic,
+  player: MinusicCore,
 ) {
   if (options.displayOptions.soundBar?.shape === RangeShape.Circle) {
     return new CircularRange({
@@ -16,7 +16,7 @@ export function createSoundBar(
       handler: (value: number) => {
         player.volume = value
       },
-      value: player.volume,
+      value: 1,
       cssClass: [CSSClass.SoundBar],
       radius: options.displayOptions.soundBar.radius,
       startAngle: options.displayOptions.soundBar.startAngle,
@@ -30,7 +30,7 @@ export function createSoundBar(
       handler: (value: number) => {
         player.volume = value
       },
-      value: player.volume,
+      value: 1,
       cssClass: [CSSClass.SoundBar],
     })
   }

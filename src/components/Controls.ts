@@ -13,12 +13,13 @@ import { Controls, Elements, PlayerConfiguration } from "../types"
 import Minusic from "../core/minusic"
 import { DropdownMenu, MenuItem } from "./Menu"
 import { PlayBackSpeedButton } from "./buttons/playback-speed"
+import MinusicCore from "../core/minusicCore"
 
 export function createPlayerElements(
   container: HTMLElement,
   controlsContainer: HTMLElement,
   options: PlayerConfiguration,
-  player: Minusic,
+  player: MinusicCore,
 ): Elements {
   const progressContainer =
     options.controls.timeBar || options.controls.bufferBar
@@ -141,7 +142,7 @@ function createControlButtons(
 function createTimeBar(
   container: HTMLElement | null,
   options: PlayerConfiguration,
-  player: Minusic,
+  player: MinusicCore,
 ) {
   if (!container || !options.controls.timeBar) return { timeBar: null }
 
