@@ -105,6 +105,7 @@ export class VisualizerController {
 
   public updateOptions(options: Partial<VisualizerOptions>): boolean {
     if (!this.options || !this.visualizer) return false
+    this.visualizer.dispose()
     this.options = { ...this.options, ...options }
     return this.initialize(this.options)
   }
@@ -126,6 +127,7 @@ export class VisualizerController {
 
   public dispose(): void {
     this.stopAnimation()
+    this.visualizer?.dispose()
     this.visualizer = null
 
     this.eventBus.off("play", this.onPlay.bind(this))

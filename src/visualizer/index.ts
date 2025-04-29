@@ -12,20 +12,21 @@ import { FrequencyUtils } from "./utils/FrequencyUtils"
 import { StackUtils } from "./utils/StackUtils"
 
 export default class Visualizer {
-  private media!: HTMLMediaElement
-  private canvas!: HTMLCanvasElement
-  private context!: CanvasRenderingContext2D
-  private optionsHandler!: OptionsHandler
-  private canvasManager!: CanvasManager
-  private audioProcessor!: AudioProcessor
-  private stackUtils!: StackUtils
-  private freqUtils!: FrequencyUtils
-  private debugUtils!: DebugUtils
-  private lineRenderer!: LineRenderer
-  private circleRenderer!: CircleRenderer
-  private polygonRenderer!: PolygonRenderer
-  private options: VisualizerConfiguration
+  private media: HTMLMediaElement | null = null
+  private canvas: HTMLCanvasElement | null = null
+  private context: CanvasRenderingContext2D | null = null
+  private optionsHandler: OptionsHandler | null = null
+  private canvasManager: CanvasManager | null = null
+  private audioProcessor: AudioProcessor | null = null
+  private stackUtils: StackUtils | null = null
+  private freqUtils: FrequencyUtils | null = null
+  private debugUtils: DebugUtils | null = null
+  private lineRenderer: LineRenderer | null = null
+  private circleRenderer: CircleRenderer | null = null
+  private polygonRenderer: PolygonRenderer | null = null
+  private options: VisualizerConfiguration | null = null
   initialized = false
+  private destroyed = false
 
   constructor({
     container,
@@ -49,18 +50,20 @@ export default class Visualizer {
 
     this.initializeComponents()
 
-    this.canvasManager.initializeCanvas()
+    this.canvasManager?.initializeCanvas()
     this.initialized = true
     this.update(true)
   }
 
   private initializeComponents() {
+    if (!this.canvas || !this.context || !this.options) return
+
     this.canvasManager = new CanvasManager(
       this.canvas,
       this.context,
       this.options,
     )
-    this.audioProcessor = new AudioProcessor(this.media)
+    this.audioProcessor = new AudioProcessor(this.media!)
     this.lineRenderer = new LineRenderer(this.context, this.options)
     this.circleRenderer = new CircleRenderer(this.context, this.options)
     this.polygonRenderer = new PolygonRenderer(this.context, this.options)
@@ -70,19 +73,23 @@ export default class Visualizer {
   }
 
   update(paused: boolean, timestamp?: number) {
-    if (!paused && !this.audioProcessor.isInitialized()) {
+    if (
+      !paused &&
+      this.audioProcessor &&
+      !this.audioProcessor.isInitialized()
+    ) {
       this.audioProcessor.initialize()
     }
 
-    this.canvasManager.clearCanvas()
-    if (this.options.debug.showAxis) this.debugUtils.showAxis()
-    if (this.options.debug.showFPS) this.debugUtils.showFPS(timestamp)
-    if (this.options.invertColors) this.canvasManager.invertCanvasColors()
+    this.canvasManager?.clearCanvas()
+    if (this.options?.debug.showAxis) this.debugUtils?.showAxis()
+    if (this.options?.debug.showFPS) this.debugUtils?.showFPS(timestamp)
+    if (this.options?.invertColors) this.canvasManager?.invertCanvasColors()
 
-    const frequencies = this.freqUtils.getProcessedFrequencies(
-      paused,
-      this.audioProcessor,
-    )
+    const frequencies =
+      this.freqUtils?.getProcessedFrequencies(paused, this.audioProcessor!) ??
+      []
+
     if (!frequencies.length) return frequencies
 
     this.renderWithStackOption(frequencies)
@@ -90,6 +97,8 @@ export default class Visualizer {
   }
 
   private renderWithStackOption(frequencies: number[]) {
+    if (!this.options || !this.stackUtils) return
+
     switch (this.options.stack.type) {
       case VisualizerStack.Duplicate:
         this.stackUtils.renderDuplicateStack(
@@ -116,12 +125,41 @@ export default class Visualizer {
   }
 
   private renderVisualization(frequencies: number[]) {
+    if (!this.options) return
+
     if (this.options.shape === VisualizerShape.Line) {
-      this.lineRenderer.render(frequencies)
+      this.lineRenderer?.render(frequencies)
     } else if (this.options.shape === VisualizerShape.Circle) {
-      this.circleRenderer.render(frequencies)
+      this.circleRenderer?.render(frequencies)
     } else if (this.options.shape === VisualizerShape.Polygon) {
-      this.polygonRenderer.render(frequencies)
+      this.polygonRenderer?.render(frequencies)
     }
+  }
+
+  public dispose(): void {
+    if (this.destroyed) return
+    this.initialized = false
+
+    this.audioProcessor?.dispose()
+    this.canvasManager?.clearCanvas()
+
+    this.canvas?.parentNode?.removeChild(this.canvas)
+
+    this.audioProcessor = null
+    this.canvasManager = null
+    this.lineRenderer = null
+    this.circleRenderer = null
+    this.polygonRenderer = null
+    this.stackUtils = null
+    this.freqUtils = null
+    this.debugUtils = null
+    this.optionsHandler = null
+    this.options = null
+
+    this.canvas = null
+    this.context = null
+    this.media = null
+
+    this.destroyed = true
   }
 }

@@ -39,4 +39,25 @@ export class AudioProcessor {
     this.analyser.getByteFrequencyData(frequencies)
     return frequencies
   }
+
+  dispose(): void {
+    if (this.initialized) {
+      try {
+        if (this.audioSource) {
+          this.audioSource.disconnect()
+        }
+
+        if (this.analyser) {
+          this.analyser.disconnect()
+        }
+
+        if (this.audioContext && this.audioContext.state !== "closed") {
+          this.audioContext.close()
+        }
+      } catch (err) {
+        console.warn("Error disposing AudioProcessor:", err)
+      }
+      this.initialized = false
+    }
+  }
 }
