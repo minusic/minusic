@@ -59,7 +59,7 @@ export class StateHandler {
 
   reflectState() {
     Object.entries(this.state).map(([key, value]) => {
-      if (!!value) {
+      if (value) {
         this.instance.dataset[key] = value
       } else {
         delete this.instance.dataset[key]

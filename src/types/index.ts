@@ -11,7 +11,6 @@ import CircularProgress from "../components/ui/circularProgress"
 import CircularRange from "../components/ui/circularRange"
 import Progress from "../components/ui/progress"
 import Range from "../components/ui/range"
-import { ToggleButton } from "../components/buttons/toggle-button"
 
 export interface PlayerConfiguration extends ConstructorParameters {
   skipDuration: number

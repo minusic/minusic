@@ -4,8 +4,8 @@ import { TrackConfig } from "../../types"
 import { MediaSourceManager } from "../media/MediaSourceManager"
 
 export interface PlaylistOptions {
-  repeat?: number
-  random?: boolean
+  repeat: number
+  random: boolean
 }
 
 export class PlaylistManager {
@@ -22,7 +22,7 @@ export class PlaylistManager {
     tracks: TrackConfig[],
     mediaSourceManager: MediaSourceManager,
     eventBus: EventBus,
-    options?: PlaylistOptions,
+    options?: Partial<PlaylistOptions>,
   ) {
     this.tracks = tracks || []
     this.mediaSourceManager = mediaSourceManager

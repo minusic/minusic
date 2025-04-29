@@ -266,7 +266,6 @@ export class PolygonRenderer extends BaseRenderer {
       fillColor,
       outlineColor,
       elementStyling,
-      shapeOptions,
     } = this.options
 
     const centerX = width / 2

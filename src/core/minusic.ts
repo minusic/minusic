@@ -1,6 +1,5 @@
 import {
   createElement,
-  remove,
   unwrapElement,
   wrapElement,
 } from "../utils/dom/elements"
@@ -14,7 +13,6 @@ import {
 import { buildPlayerStructure } from "../components/Structure"
 import { createConstructorParameters } from "./configuration"
 import { formatTime } from "../utils/media/time-formatter"
-import { randomNumber } from "../utils/math/random"
 import { bound } from "../utils/math/bounds"
 import { EventBus } from "../utils/eventBus/event-bus"
 import { StateHandler } from "./state"
@@ -28,12 +26,7 @@ export default class Minusic {
   private elements!: Elements
   private animationHandler!: (timestamp: number) => void
   private visualizer!: Visualizer
-  private trackIndex: number = 0
-  private repeatState: number = 0
-  private randomState: boolean = false
   private playbackRateState: number = 1
-  private sourceErrors = 0
-  private attemptedTracks: Set<unknown> = new Set()
   private eventBus!: EventBus
   private state!: StateHandler
   private sourceManager!: MediaSourceManager
@@ -79,7 +72,7 @@ export default class Minusic {
         random: false,
       },
     )
-    this.eventBus.on("trackLoaded", ({ track, index }) => {
+    this.eventBus.on("trackLoaded", ({ track }) => {
       this.updateMetadata(track)
       this.updateWaveform(track)
       this.playlistManager.updatePlaylistUI(this.elements.playlist.tracks)
@@ -287,7 +280,7 @@ export default class Minusic {
 
   public previousOrRestartTrack = (autoplay = false) => {
     if (this.currentTime > 5) this.currentTime = 0
-    this.previousTrack()
+    this.previousTrack(autoplay)
   }
 
   public restart() {

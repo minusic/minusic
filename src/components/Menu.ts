@@ -1,6 +1,5 @@
 import { CSSClass } from "../enums"
 import { createElement } from "../utils/dom/elements"
-import { PlayerConfiguration } from "../types"
 
 export function createMenu(container: HTMLElement) {
   return createElement("div", { container }, { class: CSSClass.Controls })
