@@ -1,6 +1,6 @@
 import { CSSClass, RangeShape } from "../enums"
 import { createButton, createElement } from "../utils/dom/elements"
-import { createProgressContainer } from "./ProgressBar"
+import { createProgressContainer } from "./progressBar"
 import { createSoundBar } from "./SoundBar"
 import { createTimeDisplay } from "./TimeDisplay"
 import { createMetadata } from "./metadata"
