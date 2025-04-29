@@ -1,16 +1,14 @@
 import { CSSClass } from "../enums"
-import { createElement } from "../utils/dom/elements"
 import { PlayerConfiguration } from "../types"
 
-export function buildPlayerStructure(options: PlayerConfiguration) {
-  const container = createElement("div", {}, { class: CSSClass.Container })
-  const controls = createElement(
-    "div",
-    { container },
-    {
-      class: CSSClass.Controls,
-      "data-controls": `${options.displayOptions.showControls !== false}`,
-    },
-  )
+export function buildPlayerStructure() {
+  const container = document.createElement("div")
+  container.className = CSSClass.Container
+
+  const controls = document.createElement("div")
+  controls.className = CSSClass.Controls
+
+  container.appendChild(controls)
+
   return { container, controls }
 }

@@ -1,11 +1,14 @@
 import { EventBus } from "../utils/eventBus/event-bus"
 
 interface State {
+  playing: boolean
   paused: boolean
+  started: boolean
   muted: boolean
   random: boolean
   controls: boolean
   repeat: number
+
   isPlaying: boolean
   currentTime: number
   duration: number
@@ -20,11 +23,14 @@ export class StateHandler {
 
   constructor(instance: HTMLElement, eventBus: EventBus) {
     this.state = {
+      playing: false,
       paused: true,
+      started: false,
       muted: false,
       random: false,
       controls: true,
       repeat: 0,
+
       isPlaying: false,
       currentTime: 0,
       duration: 0,
@@ -33,8 +39,9 @@ export class StateHandler {
       playbackRate: 1,
     }
 
-    this.eventBus = new EventBus()
+    this.eventBus = eventBus
     this.instance = instance
+    this.reflectState()
   }
 
   getState(property: keyof State) {
@@ -52,7 +59,11 @@ export class StateHandler {
 
   reflectState() {
     Object.entries(this.state).map(([key, value]) => {
-      this.instance.dataset[key] = value // (key, value)
+      if (!!value) {
+        this.instance.dataset[key] = value
+      } else {
+        delete this.instance.dataset[key]
+      }
     })
   }
 

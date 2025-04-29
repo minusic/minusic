@@ -55,7 +55,7 @@ export default class Minusic {
 
     this.options = createConstructorParameters(options) as PlayerConfiguration
 
-    const { container, controls } = buildPlayerStructure(this.options)
+    const { container, controls } = buildPlayerStructure()
     this.eventBus = new EventBus()
     this.state = new StateHandler(container, this.eventBus)
 
@@ -109,7 +109,12 @@ export default class Minusic {
   private applyInitialSettings(options: ConstructorParameters) {
     if (options.displayOptions?.showNativeControls === true)
       this.showNativeControls()
-    else this.hideControls()
+    else this.hideNativeControls()
+    if (options.displayOptions?.showControls === false) {
+      this.hideControls()
+    } else {
+      this.showControls()
+    }
     if (options.autoplay) this.media.setAttribute("autoplay", "")
     if (options.crossOrigin) this.media.setAttribute("crossorigin", "")
     if (this.muted || options.muted) this.mute()
@@ -174,12 +179,12 @@ export default class Minusic {
   }
 
   private handlePlayState() {
-    this.state.setState({ paused: false })
+    this.state.setState({ paused: false, playing: true })
     this.updateVisualizer()
   }
 
   private handlePauseState() {
-    this.state.setState({ paused: true })
+    this.state.setState({ paused: true, playing: false })
   }
 
   private handleVolumeChange() {
