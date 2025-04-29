@@ -1,7 +1,7 @@
 import Minusic from "../core/minusic"
 import MinusicCore from "../core/minusicCore"
 import { CSSClass } from "../enums"
-import { createPlayerElements } from "./Controls"
+import { createPlayerElements } from "./controls"
 
 export function buildPlayerStructure(
   player: MinusicCore,
