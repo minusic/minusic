@@ -2,7 +2,7 @@ import {
   createElement,
   wrapElement,
   unwrapElement,
-} from "../utils/dom/elements"
+} from "../../utils/dom/elements"
 
 export class MediaManager {
   private media: HTMLMediaElement | null = null

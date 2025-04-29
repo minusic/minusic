@@ -1,7 +1,7 @@
 import { EventBus } from "../utils/eventBus/event-bus"
 import { formatTime } from "../utils/media/time-formatter"
 import { Elements, TrackConfig } from "../types"
-import { MediaSourceManager } from "./media/MediaSourceManager"
+import { MediaSourceManager } from "./media/mediaSourceManager"
 import { StateHandler } from "./state"
 import { PlaylistManager } from "./playlist/playlistManager"
 

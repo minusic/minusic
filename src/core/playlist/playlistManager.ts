@@ -1,7 +1,7 @@
 import { EventBus } from "../../utils/eventBus/event-bus"
 import { randomNumber } from "../../utils/math/random"
 import { TrackConfig } from "../../types"
-import { MediaSourceManager } from "../media/MediaSourceManager"
+import { MediaSourceManager } from "../media/mediaSourceManager"
 
 export interface PlaylistOptions {
   repeat: number
