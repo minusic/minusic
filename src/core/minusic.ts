@@ -3,12 +3,12 @@ import {
   unwrapElement,
   wrapElement,
 } from "../utils/dom/elements"
-import Visualizer from "../visualizer"
 import {
   ConstructorParameters,
   Elements,
   PlayerConfiguration,
   TrackConfig,
+  VisualizerOptions,
 } from "../types"
 import { buildPlayerStructure } from "../components/Structure"
 import { createConstructorParameters } from "./configuration"
@@ -18,19 +18,19 @@ import { EventBus } from "../utils/eventBus/event-bus"
 import { StateHandler } from "./state"
 import { MediaSourceManager } from "./media/MediaSourceManager"
 import { PlaylistManager } from "./playlist/playlistManager"
+import { VisualizerController } from "./visualizer/visualizerController"
 
 export default class Minusic {
   private media!: HTMLMediaElement
   private container!: HTMLElement
   private options!: PlayerConfiguration
   private elements!: Elements
-  private animationHandler!: (timestamp: number) => void
-  private visualizer!: Visualizer
   private playbackRateState: number = 1
   private eventBus!: EventBus
   private state!: StateHandler
   private sourceManager!: MediaSourceManager
   private playlistManager!: PlaylistManager
+  private visualizerController!: VisualizerController
 
   constructor(options: ConstructorParameters) {
     this.initializePlayer(options)
@@ -53,10 +53,6 @@ export default class Minusic {
     this.applyInitialSettings(options)
     this.bindMediaEvents()
     wrapElement(this.elements.container, this.media)
-
-    if (options.controls?.visualizer) {
-      this.initializeVisualizer()
-    }
 
     this.sourceManager = new MediaSourceManager(this.media, this.eventBus, {
       crossOrigin: this.options.crossOrigin,
@@ -82,6 +78,15 @@ export default class Minusic {
       )
     })
 
+    if (options.controls?.visualizer && options.visualizer) {
+      this.visualizerController = new VisualizerController(
+        this.media,
+        this.elements.container,
+        this.eventBus,
+        options.visualizer,
+      )
+    }
+
     if (!this.audioSource) this.loadTrack()
     this.updateProgress()
   }
@@ -98,6 +103,7 @@ export default class Minusic {
     events.forEach((event) => this.media.removeEventListener(event, () => {}))
     unwrapElement(this.elements.container, this.media)
     if (this.container) this.container.removeChild(this.media)
+    if (this.visualizerController) this.visualizerController.dispose()
   }
 
   private validateMediaElement() {
@@ -151,23 +157,18 @@ export default class Minusic {
     })
   }
 
-  private initializeVisualizer() {
-    if (!this.options.visualizer) return
-    this.visualizer = new Visualizer({
-      container: this.elements.container,
-      media: this.media,
-      options: this.options.visualizer,
-    })
-    if (!this.visualizer.initialized) return
-    if (!this.animationHandler)
-      this.animationHandler = this.updateVisualizer.bind(this)
+  public toggleVisualizer(enabled?: boolean): void {
+    if (!this.visualizerController) return
+
+    if (typeof enabled === "boolean") {
+      this.visualizerController.setEnabled(enabled)
+    } else {
+      this.visualizerController.setEnabled(!this.visualizerController.enabled)
+    }
   }
 
-  private updateVisualizer(timestamp: number = 0) {
-    if (!this.visualizer?.initialized) return
-    const frequencies = this.visualizer.update(this.paused, timestamp)
-    if (frequencies.some((value) => value > 0) || !this.paused)
-      requestAnimationFrame(this.animationHandler)
+  public updateVisualizerOptions(options: Partial<VisualizerOptions>): boolean {
+    return this.visualizerController?.updateOptions(options) || false
   }
 
   private updateProgress() {
@@ -189,11 +190,12 @@ export default class Minusic {
 
   private handlePlayState() {
     this.state.setState({ paused: false, playing: true })
-    this.updateVisualizer()
+    this.eventBus.emit("play")
   }
 
   private handlePauseState() {
     this.state.setState({ paused: true, playing: false })
+    this.eventBus.emit("pause")
   }
 
   private handleVolumeChange() {
