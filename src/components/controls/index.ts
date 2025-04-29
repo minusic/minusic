@@ -15,7 +15,7 @@ export function createPlayerElements(
   player: MinusicCore,
 ): Elements {
   const { controls, livestream } = options
-  
+
   const progressContainer =
     controls.timeBar || controls.bufferBar
       ? createProgressContainer(controlsContainer)
@@ -25,7 +25,12 @@ export function createPlayerElements(
     container,
     controls: controlsContainer,
     buttons: createControlButtons(controlsContainer, controls, options, player),
-    progress: createProgressElements(controlsContainer, progressContainer, options, player),
+    progress: createProgressElements(
+      controlsContainer,
+      progressContainer,
+      options,
+      player,
+    ),
     livestream: livestream
       ? createElement(
           "div",

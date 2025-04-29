@@ -14,7 +14,7 @@ export function createProgressElements(
   player: MinusicCore,
 ) {
   const { controls, livestream } = options
-  
+
   return {
     timeBar: createTimeBar(progressContainer, options, player)?.timeBar || null,
     bufferBar: createBufferBar(progressContainer, options),
@@ -27,11 +27,7 @@ export function createProgressElements(
       : null,
     totalTime:
       !livestream && controls.endTime
-        ? createTimeDisplay(
-            controlsContainer,
-            CSSClass.TotalTime,
-            "Total time",
-          )
+        ? createTimeDisplay(controlsContainer, CSSClass.TotalTime, "Total time")
         : null,
   }
 }
@@ -44,14 +40,14 @@ function createTimeBar(
   if (!container || !options.controls.timeBar) return null
 
   const { displayOptions } = options
-  
+
   if (displayOptions.timeBar?.shape === RangeShape.Circle) {
     return {
       timeBar: new CircularRange({
         container,
         label: "Seek time",
         handler: (value: number) => {
-          player.currentTime = value * player.duration / 100
+          player.currentTime = (value * player.duration) / 100
         },
         min: 0,
         max: 100,
@@ -65,7 +61,7 @@ function createTimeBar(
       }),
     }
   }
-  
+
   return {
     timeBar: new Range({
       container,
@@ -75,7 +71,7 @@ function createTimeBar(
       max: 100,
       step: 0.01,
       handler: (value: number) => {
-        player.currentTime = value * player.duration / 100
+        player.currentTime = (value * player.duration) / 100
       },
       value: 0,
     }),
@@ -89,7 +85,7 @@ function createBufferBar(
   if (!container || !options.controls.bufferBar) return null
 
   const { displayOptions } = options
-  
+
   if (displayOptions.timeBar?.shape === RangeShape.Circle) {
     return new CircularProgress({
       container,
@@ -100,7 +96,7 @@ function createBufferBar(
       clockwise: displayOptions.timeBar.clockwise,
     })
   }
-  
+
   return new Progress({
     container,
     cssClass: [CSSClass.BufferBar],

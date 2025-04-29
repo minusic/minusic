@@ -1,4 +1,9 @@
-import { Controls, Elements, PlayerConfiguration, PlaybackSpeedConfiguration } from "../../types"
+import {
+  Controls,
+  Elements,
+  PlayerConfiguration,
+  PlaybackSpeedConfiguration,
+} from "../../types"
 import { CSSClass } from "../../enums"
 import { createButton, createElement } from "../../utils/dom/elements"
 import { DropdownMenu } from "../ui/dropdown"
@@ -67,9 +72,9 @@ function createSpecialButtons(
 
   if (controls.playbackSpeedButton && options.playbackSpeed) {
     specialButtons.playbackSpeed = createPlaybackSpeedButton(
-      container, 
-      options.playbackSpeed, 
-      player
+      container,
+      options.playbackSpeed,
+      player,
     )
   }
 
@@ -110,12 +115,14 @@ function createSettingsMenu(container: HTMLElement) {
 
 function createSettingsMenuItems() {
   return [
-    { 
-      text: "Download", 
+    {
+      text: "Download",
       action: () => {
-        const downloadLink = document.querySelector(`.${CSSClass.DownloadButton}`) as HTMLAnchorElement
+        const downloadLink = document.querySelector(
+          `.${CSSClass.DownloadButton}`,
+        ) as HTMLAnchorElement
         if (downloadLink) downloadLink.click()
-      } 
+      },
     },
     {
       text: "Playback speed",
@@ -129,7 +136,7 @@ function createSettingsMenuItems() {
         { text: "1.75x", action: () => setPlaybackSpeed(1.75) },
         { text: "2x", action: () => setPlaybackSpeed(2) },
       ],
-    }
+    },
   ]
 }
 
