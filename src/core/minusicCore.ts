@@ -6,7 +6,7 @@ import {
 } from "../types"
 import { buildPlayerStructure } from "../components/structure"
 import { createConstructorParameters } from "./configuration"
-import { EventBus } from "../utils/eventBus/event-bus"
+import { EventBus } from "../utils/eventBus/eventBus"
 import { StateHandler } from "./state"
 import { MediaSourceManager } from "./media/mediaSourceManager"
 import { PlaylistManager } from "./playlist/playlistManager"

@@ -1,5 +1,5 @@
 import { bound } from "../utils/math/bounds"
-import { EventBus } from "../utils/eventBus/event-bus"
+import { EventBus } from "../utils/eventBus/eventBus"
 import { StateHandler } from "./state"
 
 export class PlaybackController {

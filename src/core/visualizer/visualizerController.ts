@@ -1,4 +1,4 @@
-import { EventBus } from "../../utils/eventBus/event-bus"
+import { EventBus } from "../../utils/eventBus/eventBus"
 import Visualizer from "../../visualizer"
 import { VisualizerOptions } from "../../types"
 

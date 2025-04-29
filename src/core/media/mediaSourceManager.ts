@@ -1,10 +1,10 @@
-import { EventBus } from "../../utils/eventBus/event-bus"
+import { EventBus } from "../../utils/eventBus/eventBus"
 import {
   SourceHandlerOptions,
   getValidSource,
   normalizeSources,
   attachSources,
-} from "./source-handler"
+} from "./sourceHandler"
 import { TrackConfig } from "../../types"
 
 export class MediaSourceManager {

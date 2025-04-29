@@ -1,4 +1,4 @@
-import { EventBus } from "../utils/eventBus/event-bus"
+import { EventBus } from "../utils/eventBus/eventBus"
 
 interface State {
   playing: boolean

@@ -1,5 +1,5 @@
-import { EventBus } from "../utils/eventBus/event-bus"
-import { formatTime } from "../utils/media/time-formatter"
+import { EventBus } from "../utils/eventBus/eventBus"
+import { formatTime } from "../utils/media/timeFormatter"
 import { Elements, TrackConfig } from "../types"
 import { MediaSourceManager } from "./media/mediaSourceManager"
 import { StateHandler } from "./state"
