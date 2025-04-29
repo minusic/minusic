@@ -10,6 +10,7 @@ interface ButtonParams {
 
 export class Button {
   private element: HTMLButtonElement
+
   constructor(params: ButtonParams) {
     const { text, label, container, callback, cssClass } = params
     this.element = document.createElement("button")

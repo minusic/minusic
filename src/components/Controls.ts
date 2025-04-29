@@ -19,7 +19,7 @@ export function createPlayerElements(
   controlsContainer: HTMLElement,
   options: PlayerConfiguration,
   player: Minusic,
-) {
+): Elements {
   const progressContainer =
     options.controls.timeBar || options.controls.bufferBar
       ? createProgressContainer(controlsContainer)

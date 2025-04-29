@@ -1,8 +1,12 @@
+import Minusic from "../core/minusic"
 import { CSSClass } from "../enums"
-import { PlayerConfiguration } from "../types"
+import { createPlayerElements } from "./Controls"
 
-export function buildPlayerStructure() {
-  const container = document.createElement("div")
+export function buildPlayerStructure(
+  player: Minusic,
+  options: Minusic["options"],
+) {
+  const container = document.createElement("minusic-player")
   container.className = CSSClass.Container
 
   const controls = document.createElement("div")
@@ -10,5 +14,7 @@ export function buildPlayerStructure() {
 
   container.appendChild(controls)
 
-  return { container, controls }
+  const elements = createPlayerElements(container, controls, options, player)
+
+  return elements
 }

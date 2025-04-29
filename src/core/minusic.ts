@@ -12,7 +12,6 @@ import {
   TrackConfig,
 } from "../types"
 import { buildPlayerStructure } from "../components/Structure"
-import { createPlayerElements } from "../components/Controls"
 import { createConstructorParameters } from "./configuration"
 import { formatTime } from "../utils/media/time-formatter"
 import { randomNumber } from "../utils/math/random"
@@ -53,22 +52,16 @@ export default class Minusic {
       this.createMediaElement()
     }
 
+    this.eventBus = new EventBus()
     this.options = createConstructorParameters(options) as PlayerConfiguration
 
-    const { container, controls } = buildPlayerStructure()
-    this.eventBus = new EventBus()
-    this.state = new StateHandler(container, this.eventBus)
+    this.elements = buildPlayerStructure(this, this.options)
 
-    this.elements = createPlayerElements(
-      container,
-      controls,
-      this.options,
-      this,
-    )
+    this.state = new StateHandler(this.elements.container, this.eventBus)
 
     this.applyInitialSettings(options)
     this.bindMediaEvents()
-    wrapElement(container, this.media)
+    wrapElement(this.elements.container, this.media)
 
     if (options.controls?.visualizer) {
       this.initializeVisualizer()
