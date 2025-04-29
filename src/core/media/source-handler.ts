@@ -120,6 +120,23 @@ export function attachSources(
   })
 }
 
+function determineErrorType(error: MediaError | null): SourceErrorType {
+  if (!error) return SourceErrorType.UNKNOWN
+
+  switch (error.code) {
+    case MediaError.MEDIA_ERR_ABORTED:
+      return SourceErrorType.UNAVAILABLE
+    case MediaError.MEDIA_ERR_NETWORK:
+      return SourceErrorType.NETWORK
+    case MediaError.MEDIA_ERR_DECODE:
+      return SourceErrorType.DECODE
+    case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+      return SourceErrorType.FORMAT
+    default:
+      return SourceErrorType.UNKNOWN
+  }
+}
+
 export function preloadSource(
   trackSource: TrackSource,
   options: SourceHandlerOptions = {},
@@ -204,23 +221,6 @@ export function preloadSource(
     audio.src = trackSource.source
     audio.load()
   })
-}
-
-function determineErrorType(error: MediaError | null): SourceErrorType {
-  if (!error) return SourceErrorType.UNKNOWN
-
-  switch (error.code) {
-    case MediaError.MEDIA_ERR_ABORTED:
-      return SourceErrorType.UNAVAILABLE
-    case MediaError.MEDIA_ERR_NETWORK:
-      return SourceErrorType.NETWORK
-    case MediaError.MEDIA_ERR_DECODE:
-      return SourceErrorType.DECODE
-    case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-      return SourceErrorType.FORMAT
-    default:
-      return SourceErrorType.UNKNOWN
-  }
 }
 
 export async function getValidSource(

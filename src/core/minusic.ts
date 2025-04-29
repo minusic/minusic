@@ -16,14 +16,9 @@ import { createConstructorParameters } from "./configuration"
 import { formatTime } from "../utils/media/time-formatter"
 import { randomNumber } from "../utils/math/random"
 import { bound } from "../utils/math/bounds"
-import {
-  SourceHandlerOptions,
-  attachSources,
-  getValidSource,
-  normalizeSources,
-} from "../utils/media/source-handler"
 import { EventBus } from "../utils/eventBus/event-bus"
 import { StateHandler } from "./state"
+import { MediaSourceManager } from "./media/MediaSourceManager"
 
 export default class Minusic {
   private media!: HTMLMediaElement
@@ -40,6 +35,7 @@ export default class Minusic {
   private attemptedTracks: Set<unknown> = new Set()
   private eventBus!: EventBus
   private state!: StateHandler
+  private sourceManager!: MediaSourceManager
 
   constructor(options: ConstructorParameters) {
     this.initializePlayer(options)
@@ -66,7 +62,13 @@ export default class Minusic {
     if (options.controls?.visualizer) {
       this.initializeVisualizer()
     }
+
+    this.sourceManager = new MediaSourceManager(this.media, this.eventBus, {
+      crossOrigin: this.options.crossOrigin,
+      livestream: this.options.livestream,
+    })
     if (!this.audioSource) this.loadTrack()
+
     this.updateProgress()
   }
 
@@ -285,8 +287,8 @@ export default class Minusic {
     }
   }
 
-  public loadTrack(index = 0, autoplay = false) {
-    this.sourceErrors = 0
+  public async loadTrack(index = 0, autoplay = false) {
+    this.sourceManager.resetSourceErrors()
     const playing = !this.paused || autoplay
 
     if (!this.options.tracks || this.options.tracks.length === 0) {
@@ -299,46 +301,25 @@ export default class Minusic {
       else return
     }
 
-    this.attemptedTracks.clear()
-    this.attemptedTracks.add(index)
+    this.sourceManager.addAttemptedTrack(index)
     const track = this.options.tracks[index]
 
-    this.loadTrackSources(track, playing)
-    this.updateDownloadButton(track)
+    const success = await this.sourceManager.loadTrackSources(track, playing)
+    if (!success) {
+      this.handleSourceFailure(track, autoplay)
+      return
+    }
+
+    this.sourceManager.updateDownloadButton(
+      track,
+      this.elements.buttons.download,
+    )
     this.setMetadata(track)
     this.setWaveform(track)
     this.track = index
     this.updatePlaylist(index)
   }
 
-  private async loadTrackSources(track: TrackConfig, autoplay: boolean) {
-    const sourceOptions: SourceHandlerOptions = {
-      crossOrigin: this.options.crossOrigin ? "anonymous" : undefined,
-      timeout: 30000,
-    }
-
-    const validSource = await getValidSource(track, sourceOptions)
-    if (!validSource) {
-      this.handleSourceFailure(track, autoplay)
-      return
-    }
-
-    const sources = normalizeSources(track.source)
-    this.removeExistingSources()
-    attachSources(this.media, sources, sourceOptions)
-
-    this.media.load()
-    if (autoplay) {
-      const playPromise = this.media.play()
-      if (playPromise) {
-        playPromise.catch(() => {
-          console.warn("Autoplay prevented by browser")
-        })
-      }
-    }
-
-    this.updateProgress()
-  }
   private handleSourceFailure(track: TrackConfig, autoplay: boolean) {
     this.sourceErrors++
     console.error(`Failed to load track: ${track.title}`)
@@ -351,26 +332,6 @@ export default class Minusic {
       console.error("All audio sources failed to load")
       this.attemptedTracks.clear()
     }
-  }
-
-  private removeExistingSources() {
-    this.media.src = ""
-    this.media.querySelectorAll("source").forEach((src) => src.remove())
-  }
-
-  private updateDownloadButton(track: TrackConfig) {
-    const downloadButton = this.elements.buttons.download
-    if (!downloadButton) return
-    if (track && !this.options.livestream) {
-      const sources = normalizeSources(track.source)
-      if (sources.length > 0) {
-        downloadButton.href = sources[0].source
-        downloadButton.download = track.title || ""
-        downloadButton.style.display = ""
-        return
-      }
-    }
-    downloadButton.style.display = "none"
   }
 
   private updatePlaylist(currentTrack: number) {
