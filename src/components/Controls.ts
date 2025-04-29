@@ -11,8 +11,8 @@ import CircularRange from "./ui/circularRange"
 import Range from "./ui/range"
 import { Controls, Elements, PlayerConfiguration } from "../types"
 import Minusic from "../core/minusic"
-import { DropdownMenu, MenuItem } from "./Menu"
-import { PlayBackSpeedButton } from "./buttons/playback-speed"
+import { DropdownMenu, MenuItem } from "./ui/dropdown"
+import { PlayBackSpeedButton } from "./buttons/playbackSpeed"
 import MinusicCore from "../core/minusicCore"
 
 export function createPlayerElements(

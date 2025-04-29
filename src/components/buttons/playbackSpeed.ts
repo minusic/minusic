@@ -1,6 +1,6 @@
 import { CSSClass } from "../../enums"
 import { PlaybackSpeedConfiguration } from "../../types"
-import { ToggleButton } from "./toggle-button"
+import { ToggleButton } from "./toggleButton"
 
 export class PlayBackSpeedButton {
   public button: ToggleButton

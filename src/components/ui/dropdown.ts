@@ -1,5 +1,5 @@
-import { CSSClass } from "../enums"
-import { createElement } from "../utils/dom/elements"
+import { CSSClass } from "../../enums"
+import { createElement } from "../../utils/dom/elements"
 
 export function createMenu(container: HTMLElement) {
   return createElement("div", { container }, { class: CSSClass.Controls })
