@@ -1,7 +1,7 @@
 import { CSSClass, VisualizerShape, VisualizerStack } from "../enums"
 import { VisualizerConfiguration, VisualizerOptions } from "../types"
 import { createElement } from "../utils/dom/elements"
-import { AudioProcessor } from "./core/AudioProcessor"
+import { AudioProcessor } from "../core/audio/audioProcessor"
 import { CanvasManager } from "./core/CanvasManager"
 import { OptionsHandler } from "./core/Options"
 import { CircleRenderer } from "./renderers/CircleRenderer"

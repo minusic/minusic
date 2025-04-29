@@ -1,6 +1,6 @@
 import { VisualizerConfiguration } from "../../types"
 import { VisualizerDirection, VisualizerSymmetry } from "../../enums"
-import { AudioProcessor } from "../core/AudioProcessor"
+import { AudioProcessor } from "../../core/audio/audioProcessor"
 
 export class FrequencyUtils {
   private options: VisualizerConfiguration
