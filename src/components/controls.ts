@@ -1,7 +1,7 @@
 import { CSSClass, RangeShape } from "../enums"
 import { createButton, createElement } from "../utils/dom/elements"
 import { createProgressContainer } from "./progressBar"
-import { createSoundBar } from "./SoundBar"
+import { createSoundBar } from "./soundBar"
 import { createTimeDisplay } from "./TimeDisplay"
 import { createMetadata } from "./metadata"
 import { createPlaylist } from "./playlist"
