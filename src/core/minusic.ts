@@ -1,184 +1,347 @@
-import { ConstructorParameters, VisualizerOptions } from "../types"
-import MinusicCore from "./minusicCore"
+import {
+  ConstructorParameters,
+  Elements,
+  PlayerConfiguration,
+  VisualizerOptions,
+} from "../types"
+import { buildPlayerStructure } from "../components/structure"
+import { createConstructorParameters } from "./configuration"
+import { EventBus } from "../utils/eventBus/eventBus"
+import { StateHandler } from "./state"
+import { MediaSourceManager } from "./media/mediaSourceManager"
+import { PlaylistManager } from "./playlist/playlistManager"
+import { VisualizerController } from "./visualizer/visualizerController"
+import { MediaManager } from "./media/mediaManager"
+import { UIManager } from "./uiManager"
+import { PlaybackController } from "./playbackController"
+import { VolumeController } from "./volumeController"
+import { EventHandler } from "./eventHandler"
 
-/**
- * Minusic - Advanced HTML5 audio player
- *
- * This class serves as a simplified public API facade for the MinusicCore implementation.
- * It maintains the same interface as the original Minusic class for backward compatibility.
- */
 export default class Minusic {
-  private core: MinusicCore
+  private media!: HTMLMediaElement
+  private options!: PlayerConfiguration
+  private elements!: Elements
+  private eventBus: EventBus = new EventBus()
+  private state!: StateHandler
+  private mediaManager: MediaManager = new MediaManager()
+  private uiManager!: UIManager
+  private playbackController!: PlaybackController
+  private volumeController!: VolumeController
+  private eventHandler!: EventHandler
+  private sourceManager!: MediaSourceManager
+  private playlistManager!: PlaylistManager
+  private visualizerController!: VisualizerController
 
   constructor(options: ConstructorParameters) {
-    this.core = new MinusicCore(options)
+    this.initializePlayer(options)
   }
 
-  // ===== Cleanup =====
+  private initializePlayer(options: ConstructorParameters): void {
+    this.options = createConstructorParameters(options) as PlayerConfiguration
+    this.media = this.mediaManager.initialize(options.media, options.container)
+
+    if (options.autoplay) {
+      this.media.setAttribute("autoplay", "")
+    }
+
+    if (options.crossOrigin) {
+      this.media.setAttribute("crossorigin", "")
+    }
+
+    if (options.muted) {
+      this.media.muted = true
+    }
+
+    if (typeof options.defaultVolume !== "undefined") {
+      this.media.volume = options.defaultVolume
+    }
+
+    this.elements = buildPlayerStructure(this, this.options)
+    this.state = new StateHandler(this.elements.container, this.eventBus)
+    this.uiManager = new UIManager(this.elements, this.media, this.state)
+    this.uiManager.applyInitialSettings(
+      this.options.displayOptions.showNativeControls,
+      this.options.displayOptions.showControls,
+    )
+
+    this.playbackController = new PlaybackController(
+      this.media,
+      this.eventBus,
+      this.state,
+      this.options.skipDuration,
+    )
+
+    this.volumeController = new VolumeController(
+      this.media,
+      this.elements,
+      this.state,
+    )
+
+    if (this.elements.soundBar) {
+      this.elements.soundBar.value = this.media.muted ? 0 : this.media.volume
+    }
+
+    this.sourceManager = new MediaSourceManager(this.media, this.eventBus, {
+      crossOrigin: this.options.crossOrigin,
+      livestream: this.options.livestream,
+    })
+
+    this.playlistManager = new PlaylistManager(
+      this.options.tracks,
+      this.sourceManager,
+      this.eventBus,
+      {
+        repeat: 0,
+        random: false,
+      },
+    )
+
+    this.eventHandler = new EventHandler(
+      this.media,
+      this.elements,
+      this.eventBus,
+      this.state,
+      this.sourceManager,
+      this.playlistManager,
+      this.updateProgress.bind(this),
+    )
+
+    if (options.controls?.visualizer && options.visualizer) {
+      this.visualizerController = new VisualizerController(
+        this.media,
+        this.elements.container,
+        this.eventBus,
+        options.visualizer,
+      )
+    }
+
+    if (options.playbackRate) {
+      this.playbackController.playbackRate = options.playbackRate
+    }
+
+    if (typeof options.preservesPitch !== "undefined") {
+      this.playbackController.preservesPitch = options.preservesPitch
+    }
+
+    this.mediaManager.wrapMediaElement(this.elements.container)
+
+    if (!this.audioSource) {
+      this.loadTrack()
+    }
+
+    this.updateProgress()
+  }
+
+  private updateProgress(): void {
+    this.eventHandler.updateProgress()
+  }
+
   public destroy(): void {
-    this.core.destroy()
+    this.eventHandler.unbindMediaEvents()
+    this.mediaManager.unwrapMediaElement(this.elements.container)
+    this.mediaManager.destroy()
+
+    if (this.visualizerController) {
+      this.visualizerController.dispose()
+    }
   }
 
-  // ===== Playback Controls =====
   public play(): Promise<void> {
-    return this.core.play()
+    return this.playbackController.play()
   }
 
   public pause(): void {
-    this.core.pause()
+    this.playbackController.pause()
   }
 
   public stop(): void {
-    this.core.stop()
+    this.playbackController.stop()
   }
 
   public togglePlay(state?: boolean): Promise<void> | void {
-    return this.core.togglePlay(state)
+    return this.playbackController.togglePlay(state)
   }
 
   public backward(): void {
-    this.core.backward()
+    this.playbackController.backward()
   }
 
   public forward(): void {
-    this.core.forward()
+    this.playbackController.forward()
   }
 
   public restart(): void {
-    this.core.restart()
+    this.playbackController.restart()
   }
 
-  // ===== Volume Controls =====
   public mute(): void {
-    this.core.mute()
+    this.volumeController.mute()
   }
 
   public unmute(): void {
-    this.core.unmute()
+    this.volumeController.unmute()
   }
 
   public toggleMute(state?: boolean): void {
-    this.core.toggleMute(state)
+    this.volumeController.toggleMute(state)
   }
 
-  // ===== UI Controls =====
-  public showControls = (): void => this.core.showControls()
-  public hideControls = (): void => this.core.hideControls()
-  public showNativeControls = (): void => this.core.showNativeControls()
-  public hideNativeControls = (): void => this.core.hideNativeControls()
-  public toggleControls = (): void => this.core.toggleControls()
+  public showControls(): void {
+    this.uiManager.showControls()
+  }
 
-  // ===== Playlist Controls =====
+  public hideControls(): void {
+    this.uiManager.hideControls()
+  }
+
+  public showNativeControls(): void {
+    this.uiManager.showNativeControls()
+  }
+
+  public hideNativeControls(): void {
+    this.uiManager.hideNativeControls()
+  }
+
+  public toggleControls(): void {
+    this.uiManager.toggleControls()
+  }
+
   public async loadTrack(index = 0, autoplay = false): Promise<boolean> {
-    return this.core.loadTrack(index, autoplay)
+    return this.playlistManager.loadTrack(index, autoplay)
   }
 
   public previousTrack(autoplay = false): Promise<boolean> {
-    return this.core.previousTrack(autoplay)
+    return this.playlistManager.previousTrack(autoplay)
   }
 
   public nextTrack(autoplay = false): Promise<boolean> {
-    return this.core.nextTrack(autoplay)
+    return this.playlistManager.nextTrack(autoplay)
   }
 
   public randomTrack(autoplay = false): Promise<boolean> {
-    return this.core.randomTrack(autoplay)
+    return this.playlistManager.randomTrack(autoplay)
   }
 
-  public previousOrRestartTrack = (autoplay = false): void => {
-    this.core.previousOrRestartTrack(autoplay)
+  public previousOrRestartTrack(autoplay = false): void {
+    if (this.playbackController.currentTime > 5) {
+      this.playbackController.currentTime = 0
+    } else {
+      this.previousTrack(autoplay)
+    }
   }
 
-  public toggleRepeat = (): void => this.core.toggleRepeat()
-  public repeatOne = (): void => this.core.repeatOne()
-  public repeatAll = (): void => this.core.repeatAll()
-  public noRepeat = (): void => this.core.noRepeat()
-  public toggleRandom = (): void => this.core.toggleRandom()
+  public toggleRepeat(): void {
+    this.playlistManager.toggleRepeatMode()
+  }
 
-  // ===== Visualizer Controls =====
+  public repeatOne(): void {
+    this.playlistManager.setRepeatMode(1)
+  }
+
+  public repeatAll(): void {
+    this.playlistManager.setRepeatMode(2)
+  }
+
+  public noRepeat(): void {
+    this.playlistManager.setRepeatMode(0)
+  }
+
+  public toggleRandom(): void {
+    this.playlistManager.toggleRandomMode()
+  }
+
   public toggleVisualizer(enabled?: boolean): void {
-    this.core.toggleVisualizer(enabled)
+    if (!this.visualizerController) return
+
+    if (typeof enabled === "boolean") {
+      this.visualizerController.setEnabled(enabled)
+    } else {
+      this.visualizerController.setEnabled(!this.visualizerController.enabled)
+    }
   }
 
   public updateVisualizerOptions(options: Partial<VisualizerOptions>): boolean {
-    return this.core.updateVisualizerOptions(options)
+    return this.visualizerController?.updateOptions(options) || false
   }
 
-  // ===== Property Getters/Setters =====
-
-  // Playback properties
   get currentTime(): number {
-    return this.core.currentTime
+    return this.playbackController.currentTime
   }
 
   set currentTime(time: number) {
-    this.core.currentTime = time
+    this.playbackController.currentTime = time
   }
 
   get duration(): number {
-    return this.core.duration
+    return this.playbackController.duration
   }
 
   get paused(): boolean {
-    return this.core.paused
+    return this.playbackController.paused
   }
 
   get progress(): number {
-    return this.core.progress
+    return this.playbackController.progress
   }
 
   get buffer(): number {
-    return this.core.buffer
+    return this.playbackController.buffer
   }
 
   get buffered(): number {
-    return this.core.buffered
+    return this.playbackController.buffered
   }
 
   get playbackRate(): number {
-    return this.core.playbackRate
+    return this.playbackController.playbackRate
   }
 
   set playbackRate(rate: number) {
-    this.core.playbackRate = rate
+    this.playbackController.playbackRate = rate
   }
 
-  // Volume properties
   get volume(): number {
-    return this.core.volume
+    return this.volumeController.volume
   }
 
   set volume(value: number) {
-    this.core.volume = value
+    this.volumeController.volume = value
   }
 
   get muted(): boolean {
-    return this.core.muted
+    return this.volumeController.muted
   }
 
-  // Playlist properties
   get repeat(): number {
-    return this.core.repeat
+    return this.playlistManager.getRepeatMode()
   }
 
   set repeat(value: number) {
-    this.core.repeat = value
+    this.playlistManager.setRepeatMode(value)
   }
 
   get random(): boolean {
-    return this.core.random
+    return this.playlistManager.getRandomMode()
   }
 
   get track(): number {
-    return this.core.track
+    return this.playlistManager.getCurrentIndex()
   }
 
-  // Content properties
   get trackTitle(): string | null {
-    return this.core.trackTitle
+    if (this.options.metadata.title) return this.options.metadata.title
+    else if (this.audioSource)
+      return decodeURI(this.audioSource.split("/").slice(-1)[0])
+    return null
   }
 
   get audioSource(): string | null {
-    return this.core.audioSource
+    if (this.media.src) return this.media.src
+
+    const sources = this.media.getElementsByTagName("source")
+    for (const source of sources) {
+      if (source.src) return source.src
+    }
+    return null
   }
 }

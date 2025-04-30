@@ -8,7 +8,7 @@ import { CSSClass } from "../../enums"
 import { createButton, createElement } from "../../utils/dom/elements"
 import { DropdownMenu } from "../ui/dropdown"
 import { PlayBackSpeedButton } from "../buttons/playbackSpeed"
-import MinusicCore from "../../core/minusicCore"
+import Minusic from "../../core/minusic"
 
 interface ButtonConfig {
   key: string
@@ -22,7 +22,7 @@ export function createControlButtons(
   controlsContainer: HTMLElement,
   controls: PlayerConfiguration["controls"],
   options: PlayerConfiguration,
-  player: MinusicCore,
+  player: Minusic,
 ): Elements["buttons"] {
   return {
     ...createStandardButtons(controlsContainer, controls, player),
@@ -33,7 +33,7 @@ export function createControlButtons(
 function createStandardButtons(
   container: HTMLElement,
   controls: PlayerConfiguration["controls"],
-  player: MinusicCore,
+  player: Minusic,
 ): Partial<Elements["buttons"]> {
   // prettier-ignore
   const buttonConfigs: ButtonConfig[] = [
@@ -63,7 +63,7 @@ function createSpecialButtons(
   container: HTMLElement,
   controls: PlayerConfiguration["controls"],
   options: PlayerConfiguration,
-  player: MinusicCore,
+  player: Minusic,
 ): Partial<Elements["buttons"]> {
   const specialButtons: Partial<Elements["buttons"]> = {
     download: createDownloadButton(container, controls),
@@ -101,7 +101,7 @@ function createDownloadButton(
 function createPlaybackSpeedButton(
   container: HTMLElement,
   config: PlaybackSpeedConfiguration,
-  player: MinusicCore,
+  player: Minusic,
 ) {
   return new PlayBackSpeedButton(config, player, container)
 }

@@ -5,13 +5,13 @@ import CircularProgress from "../ui/circularProgress"
 import Progress from "../ui/progress"
 import CircularRange from "../ui/circularRange"
 import Range from "../ui/range"
-import MinusicCore from "../../core/minusicCore"
+import Minusic from "../../core/minusic"
 
 export function createProgressElements(
   controlsContainer: HTMLElement,
   progressContainer: HTMLElement | null,
   options: PlayerConfiguration,
-  player: MinusicCore,
+  player: Minusic,
 ) {
   const { controls, livestream } = options
 
@@ -35,7 +35,7 @@ export function createProgressElements(
 function createTimeBar(
   container: HTMLElement | null,
   options: PlayerConfiguration,
-  player: MinusicCore,
+  player: Minusic,
 ) {
   if (!container || !options.controls.timeBar) return null
 

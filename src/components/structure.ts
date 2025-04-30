@@ -1,10 +1,10 @@
-import MinusicCore from "../core/minusicCore"
+import Minusic from "../core/minusic"
 import { CSSClass } from "../enums"
 import { createPlayerElements } from "./controls"
 
 export function buildPlayerStructure(
-  player: MinusicCore,
-  options: MinusicCore["options"],
+  player: Minusic,
+  options: Minusic["options"],
 ) {
   const container = document.createElement("minusic-player")
   container.className = CSSClass.Container

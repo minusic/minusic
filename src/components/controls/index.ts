@@ -6,13 +6,13 @@ import { createPlaylist } from "../playlist"
 import { createSoundBar } from "../soundBar"
 import { createElement } from "../../utils/dom/elements"
 import { CSSClass } from "../../enums"
-import MinusicCore from "../../core/minusicCore"
+import Minusic from "../../core/minusic"
 
 export function createPlayerElements(
   container: HTMLElement,
   controlsContainer: HTMLElement,
   options: PlayerConfiguration,
-  player: MinusicCore,
+  player: Minusic,
 ): Elements {
   const { controls, livestream } = options
 
