@@ -9,11 +9,7 @@ interface State {
   controls: boolean
   repeat: number
 
-  isPlaying: boolean
-  currentTime: number
-  duration: number
   volume: number
-  isMuted: boolean
   playbackRate: number
 }
 export class StateHandler {
@@ -31,11 +27,7 @@ export class StateHandler {
       controls: true,
       repeat: 0,
 
-      isPlaying: false,
-      currentTime: 0,
-      duration: 0,
       volume: 1,
-      isMuted: false,
       playbackRate: 1,
     }
 
