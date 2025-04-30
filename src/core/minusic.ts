@@ -52,8 +52,8 @@ export default class Minusic {
       this.media.muted = true
     }
 
-    if (typeof options.defaultVolume !== "undefined") {
-      this.media.volume = options.defaultVolume
+    if (typeof options.volume !== "undefined") {
+      this.media.volume = options.volume
     }
 
     this.elements = buildPlayerStructure(this, this.options)

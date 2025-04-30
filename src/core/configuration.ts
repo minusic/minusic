@@ -73,7 +73,7 @@ export function createConstructorParameters(
     muted: false,
     playbackRate: 1,
     preservesPitch: true,
-    defaultVolume: 1,
+    volume: 1,
     skipDuration: 15,
     playbackSpeed: {
       options: [

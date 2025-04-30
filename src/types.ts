@@ -42,7 +42,7 @@ export interface ConstructorParameters {
   playbackRate?: number
   playbackSpeed?: PlaybackSpeedConfiguration
   preservesPitch?: boolean
-  defaultVolume?: number
+  volume?: number
   skipDuration?: number
 
   // Content metadata
