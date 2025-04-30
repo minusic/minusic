@@ -49,11 +49,16 @@ export class MediaSourceManager {
       return false
     }
 
+    const currentPlaybackRate = this.mediaElement.playbackRate
+
     const sources = normalizeSources(track.source)
     this.removeExistingSources()
     attachSources(this.mediaElement, sources, sourceOptions)
 
     this.mediaElement.load()
+
+    this.mediaElement.playbackRate = currentPlaybackRate
+
     if (autoplay) {
       try {
         await this.mediaElement.play()
