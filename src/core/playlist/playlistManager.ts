@@ -2,6 +2,7 @@ import { EventBus } from "../../utils/eventBus/eventBus"
 import { randomNumber } from "../../utils/math/random"
 import { TrackConfig } from "../../types"
 import { MediaSourceManager } from "../media/mediaSourceManager"
+import { StateHandler } from "../state"
 
 export interface PlaylistOptions {
   repeat: number
@@ -13,6 +14,7 @@ export class PlaylistManager {
   private currentIndex: number = 0
   private mediaSourceManager: MediaSourceManager
   private eventBus: EventBus
+  private stateHandler: StateHandler
   private options: PlaylistOptions = {
     repeat: 0, // 0: no repeat, 1: repeat one, 2: repeat all
     random: false,
@@ -22,14 +24,20 @@ export class PlaylistManager {
     tracks: TrackConfig[],
     mediaSourceManager: MediaSourceManager,
     eventBus: EventBus,
+    stateHandler: StateHandler,
     options?: Partial<PlaylistOptions>,
   ) {
     this.tracks = tracks || []
     this.mediaSourceManager = mediaSourceManager
     this.eventBus = eventBus
+    this.stateHandler = stateHandler
 
     if (options) {
       this.options = { ...this.options, ...options }
+      this.stateHandler.setState({
+        repeat: this.options.repeat,
+        random: this.options.random
+      })
     }
   }
 
@@ -127,16 +135,19 @@ export class PlaylistManager {
 
   public setRepeatMode(mode: number): void {
     this.options.repeat = mode
+    this.stateHandler.setState({ repeat: mode })
     this.eventBus.emit("repeatModeChanged", { mode })
   }
 
   public toggleRepeatMode(): void {
     this.options.repeat = (this.options.repeat + 1) % 3
+    this.stateHandler.setState({ repeat: this.options.repeat })
     this.eventBus.emit("repeatModeChanged", { mode: this.options.repeat })
   }
 
   public toggleRandomMode(): void {
     this.options.random = !this.options.random
+    this.stateHandler.setState({ random: this.options.random })
     this.eventBus.emit("randomModeChanged", { enabled: this.options.random })
   }
 

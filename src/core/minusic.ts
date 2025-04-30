@@ -90,6 +90,7 @@ export default class Minusic {
       this.options.tracks,
       this.sourceManager,
       this.eventBus,
+      this.state,
       {
         repeat: 0,
         random: false,
