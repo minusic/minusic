@@ -14,6 +14,7 @@ export class EventHandler {
   private playlistManager: PlaylistManager
   private updateProgressCallback: () => void
   private playbackRateState: number = 1
+  private eventHandlers: Record<string, EventListener> = {}
 
   constructor(
     media: HTMLMediaElement,
@@ -37,7 +38,7 @@ export class EventHandler {
   }
 
   public bindMediaEvents(): void {
-    const events = {
+    const handlers: Record<string, EventListener> = {
       timeupdate: () => this.updateProgressCallback(),
       pause: () => this.handlePauseState(),
       play: () => this.handlePlayState(),
@@ -46,24 +47,18 @@ export class EventHandler {
       ended: () => this.handleTrackEnded(),
     }
 
-    Object.entries(events).forEach(([event, handler]) => {
+    this.eventHandlers = handlers
+
+    Object.entries(handlers).forEach(([event, handler]) => {
       this.media.addEventListener(event, handler)
     })
   }
 
   public unbindMediaEvents(): void {
-    const events = [
-      "timeupdate",
-      "pause",
-      "play",
-      "volumechange",
-      "ratechange",
-      "ended",
-    ]
-
-    events.forEach((event) => {
-      this.media.removeEventListener(event, () => {})
+    Object.entries(this.eventHandlers).forEach(([event, handler]) => {
+      this.media.removeEventListener(event, handler)
     })
+    this.eventHandlers = {}
   }
 
   private setupTrackLoadedEvents(): void {

@@ -10,6 +10,7 @@ export class VisualizerController {
   private animationFrameId: number | null = null
   private eventBus: EventBus
   private isEnabled: boolean = false
+  private boundUpdateVisualizer: (timestamp: number) => void
 
   constructor(
     mediaElement: HTMLMediaElement,
@@ -28,6 +29,7 @@ export class VisualizerController {
 
     this.eventBus.on("play", this.onPlay.bind(this))
     this.eventBus.on("pause", this.onPause.bind(this))
+    this.boundUpdateVisualizer = this.updateVisualizer.bind(this)
   }
 
   public initialize(options: VisualizerOptions): boolean {
@@ -68,13 +70,19 @@ export class VisualizerController {
     const isPaused = this.mediaElement.paused
     const frequencies = this.visualizer.update(isPaused, timestamp)
 
-    if (frequencies.some((value) => value > 0) || !isPaused) {
-      this.animationFrameId = requestAnimationFrame(
-        this.updateVisualizer.bind(this),
-      )
+    if (!isPaused || (isPaused && this.hasActiveFrequencies(frequencies))) {
+      this.animationFrameId = requestAnimationFrame(this.boundUpdateVisualizer)
     } else {
       this.stopAnimation()
     }
+  }
+
+  private hasActiveFrequencies(frequencies: number[]): boolean {
+    const len = frequencies.length
+    for (let i = 0; i < len; i++) {
+      if (frequencies[i] > 0) return true
+    }
+    return false
   }
 
   public startAnimation(): void {

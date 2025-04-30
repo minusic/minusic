@@ -12,6 +12,8 @@ import {
 } from "../../utils/canvas/drawing"
 
 export class CircleRenderer extends BaseRenderer {
+  private particlePool: any[] = []
+
   render(frequencies: number[]): void {
     const { mode } = this.options
 

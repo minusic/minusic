@@ -21,25 +21,40 @@ export class FrequencyUtils {
     const { tick, frequencyRange, symmetry, direction } = this.options
     const step = Math.floor((frequencies.length * frequencyRange) / tick)
 
-    const processedFreq = Array.from(
-      { length: tick },
-      (_, i) => frequencies[step * i],
-    )
-
-    if (symmetry === VisualizerSymmetry.Symmetric) {
-      return [...processedFreq, ...processedFreq.reverse()]
-    } else if (symmetry === VisualizerSymmetry.Reversed) {
-      return [...[...processedFreq].reverse(), ...processedFreq]
-    } else if (
-      [
-        VisualizerDirection.RightToLeft,
-        VisualizerDirection.BottomToTop,
-      ].includes(direction)
+    // Preallocate the result array to avoid resizing
+    let resultLength = tick
+    if (
+      symmetry === VisualizerSymmetry.Symmetric ||
+      symmetry === VisualizerSymmetry.Reversed
     ) {
-      return processedFreq.reverse()
+      resultLength = tick * 2
     }
 
-    return processedFreq
+    const result = new Array(resultLength)
+
+    // Fill the array directly without intermediate arrays
+    for (let i = 0; i < tick; i++) {
+      const value = frequencies[step * i]
+
+      if (symmetry === VisualizerSymmetry.Symmetric) {
+        result[i] = value
+        result[resultLength - 1 - i] = value
+      } else if (symmetry === VisualizerSymmetry.Reversed) {
+        result[i] = frequencies[step * (tick - 1 - i)]
+        result[i + tick] = frequencies[step * i]
+      } else if (
+        [
+          VisualizerDirection.RightToLeft,
+          VisualizerDirection.BottomToTop,
+        ].includes(direction)
+      ) {
+        result[i] = frequencies[step * (tick - 1 - i)]
+      } else {
+        result[i] = frequencies[step * i]
+      }
+    }
+
+    return result
   }
 
   isVertical(): boolean {
