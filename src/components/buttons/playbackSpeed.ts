@@ -1,3 +1,4 @@
+import Minusic from "../../core/minusic"
 import { CSSClass } from "../../enums"
 import { PlaybackSpeedConfiguration } from "../../types"
 import { ToggleButton } from "./toggleButton"
@@ -7,7 +8,7 @@ export class PlayBackSpeedButton {
 
   constructor(
     configuration: PlaybackSpeedConfiguration,
-    player: any,
+    player: Minusic,
     container: HTMLElement,
   ) {
     const callback = (value: string) => {
