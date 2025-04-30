@@ -49,10 +49,16 @@ export class StateHandler {
     this.reflectState()
   }
 
-  reflectState() {
-    Object.entries(this.state).map(([key, value]) => {
-      if (value) {
-        this.instance.dataset[key] = value
+  reflectState(): void {
+    Object.entries(this.state).forEach(([key, value]) => {
+      if (typeof value === "boolean") {
+        if (value) {
+          this.instance.dataset[key] = "true"
+        } else {
+          delete this.instance.dataset[key]
+        }
+      } else if (value !== null && value !== undefined) {
+        this.instance.dataset[key] = String(value)
       } else {
         delete this.instance.dataset[key]
       }
