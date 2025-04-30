@@ -2,7 +2,7 @@ import {
   Controls,
   Elements,
   PlayerConfiguration,
-  PlaybackSpeedConfiguration,
+  PlaybackSpeedOption,
 } from "../../types"
 import { CSSClass } from "../../enums"
 import { createButton, createElement } from "../../utils/dom/elements"
@@ -70,11 +70,12 @@ function createSpecialButtons(
     settings: createSettingsMenu(container),
   }
 
-  if (controls.playbackSpeedButton && options.playbackSpeed) {
+  if (controls.playbackSpeedButton && options.playbackSpeedOptions) {
     specialButtons.playbackSpeed = createPlaybackSpeedButton(
       container,
-      options.playbackSpeed,
+      options.playbackSpeedOptions,
       player,
+      options.playbackRate,
     )
   }
 
@@ -100,10 +101,11 @@ function createDownloadButton(
 
 function createPlaybackSpeedButton(
   container: HTMLElement,
-  config: PlaybackSpeedConfiguration,
+  config: PlaybackSpeedOption[],
   player: Minusic,
+  defaultRate: number = 1,
 ) {
-  return new PlayBackSpeedButton(config, player, container)
+  return new PlayBackSpeedButton(config, player, container, defaultRate)
 }
 
 function createSettingsMenu(container: HTMLElement) {

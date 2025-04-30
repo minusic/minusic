@@ -1,24 +1,25 @@
 import Minusic from "../../core/minusic"
 import { CSSClass } from "../../enums"
-import { PlaybackSpeedConfiguration } from "../../types"
+import { PlaybackSpeedOption } from "../../types"
 import { ToggleButton } from "./toggleButton"
 
 export class PlayBackSpeedButton {
   public button: ToggleButton
 
   constructor(
-    configuration: PlaybackSpeedConfiguration,
+    options: PlaybackSpeedOption[],
     player: Minusic,
     container: HTMLElement,
+    defaultValue: number,
   ) {
     const callback = (value: string) => {
       player.playbackRate = parseFloat(value)
     }
     this.button = new ToggleButton({
-      options: configuration.options,
+      options,
       container,
       callback,
-      defaultValue: configuration.defaultSpeed,
+      defaultValue,
       cssClass: CSSClass.PlaybackSpeedButton,
     })
   }

@@ -40,7 +40,7 @@ export interface ConstructorParameters {
   endTime?: number
   muted?: boolean
   playbackRate?: number
-  playbackSpeed?: PlaybackSpeedConfiguration
+  playbackSpeedOptions?: PlaybackSpeedOption[]
   preservesPitch?: boolean
   volume?: number
   skipDuration?: number
@@ -130,9 +130,9 @@ interface RangeConfiguration {
   clockwise?: boolean
 }
 
-export interface PlaybackSpeedConfiguration {
-  options: { label: string; value: string | number }[]
-  defaultSpeed: number
+export interface PlaybackSpeedOption {
+  label: string
+  value: string | number
 }
 
 export interface Elements {
