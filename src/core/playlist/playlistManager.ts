@@ -36,7 +36,7 @@ export class PlaylistManager {
       this.options = { ...this.options, ...options }
       this.stateHandler.setState({
         repeat: this.options.repeat,
-        random: this.options.random
+        random: this.options.random,
       })
     }
   }
