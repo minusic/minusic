@@ -14,7 +14,7 @@ export function createPlayerElements(
   options: PlayerConfiguration,
   player: Minusic,
 ): Elements {
-  const { controls, livestream } = options
+  const { controls, media } = options
 
   const progressContainer =
     controls.timeBar || controls.bufferBar
@@ -31,7 +31,7 @@ export function createPlayerElements(
       options,
       player,
     ),
-    livestream: livestream
+    livestream: media.isLivestream
       ? createElement(
           "div",
           { container: controlsContainer, text: "Live" },

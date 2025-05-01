@@ -1,5 +1,6 @@
 import { RangeShape } from "../enums"
 import { MinusicConfiguration } from "../types"
+import { deepMerge } from "../utils/object-utils/deepMerge"
 
 export function createMinusicConfiguration(
   options: Partial<MinusicConfiguration>,
@@ -90,12 +91,18 @@ export function createMinusicConfiguration(
     showCustomControls: true,
   }
 
+  const defaultMedia = {
+    crossOrigin: false,
+    isLivestream: false,
+  }
+
   // Default core configuration
   const defaultConfig: MinusicConfiguration = {
-    selectors: { ...defaultSelectors, ...options.selectors },
-    playback: { ...defaultPlayBack, ...options.playback },
-    controls: { ...defaultControls, ...options.controls },
-    appearance: {...defaultAppearance, ...options.appearance},
+    selectors: defaultSelectors,
+    playback: defaultPlayBack,
+    controls: defaultControls,
+    appearance: defaultAppearance,
+    media: defaultMedia,
 
     // Merge default metadata
     metadata: { ...defaultMetadata, ...options.metadata },
@@ -116,30 +123,8 @@ export function createMinusicConfiguration(
 
     // Other defaults
     tracks: [],
-    livestream: false,
-    crossOrigin: false,
   }
 
   // Deep merge the provided options with default configuration
-  return {
-    ...defaultConfig,
-    ...options,
-    // Ensure nested objects are properly merged
-    playback: { ...defaultConfig.playback, ...options.playback },
-    appearance: {...defaultAppearance, ...options.appearance},
-    controls: { ...defaultConfig.controls, ...options.controls },
-    metadata: { ...defaultConfig.metadata, ...options.metadata },
-    displayOptions: {
-      ...defaultConfig.displayOptions,
-      ...options.displayOptions,
-      timeBar: {
-        ...defaultConfig.displayOptions?.timeBar,
-        ...options.displayOptions?.timeBar,
-      },
-      soundBar: {
-        ...defaultConfig.displayOptions?.soundBar,
-        ...options.displayOptions?.soundBar,
-      },
-    },
-  }
+  return deepMerge(defaultConfig, options)
 }

@@ -55,6 +55,21 @@ export interface MinusicConfiguration {
     showNativeControls: boolean
   }
 
+  // Media settings
+  media: {
+    crossOrigin: boolean | "anonymous" | "use-credentials"
+    isLivestream: boolean
+
+    // Current track info (single track use case)
+    currentTrack?: {
+      source: string | string[] | { source: string; type: string } // Audio source URL(s) or object with MIME type
+      metadata: TrackMetadata // Track metadata
+    }
+
+    // Playlist (multi-track use case)
+    playlist?: TrackInfo[]
+  }
+
   // Content metadata
   metadata?: {
     title?: string
@@ -65,10 +80,6 @@ export interface MinusicConfiguration {
 
   // Tracks configuration
   tracks?: TrackConfig[]
-
-  // Playback environment settings
-  crossOrigin?: boolean
-  livestream?: boolean
 
   // Display and interaction controls
   displayOptions?: DisplayOptions
@@ -124,6 +135,21 @@ export interface TrackConfig {
   album?: string
   duration?: string | number
   download?: boolean
+  waveform?: string
+}
+
+export interface TrackInfo {
+  source: string | string[] | { source: string; type: string }
+  metadata: TrackMetadata
+  duration?: string | number
+  allowDownload?: boolean
+}
+
+export interface TrackMetadata {
+  title: string
+  artist: string
+  album?: string
+  thumbnail?: string
   waveform?: string
 }
 

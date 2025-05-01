@@ -40,13 +40,13 @@ export default class Minusic {
     this.options = createMinusicConfiguration(options) as PlayerConfiguration
     this.media = this.mediaManager.initialize(options.selectors)
 
-    console.log(options)
+    console.log(this.options)
     if (this.options.playback.autoplay) {
       this.media.setAttribute("autoplay", "")
     }
 
-    if (this.options.crossOrigin) {
-      this.media.setAttribute("crossorigin", "")
+    if (typeof this.options.media.crossOrigin === "string") {
+      this.media.setAttribute("crossorigin", this.options.media.crossOrigin)
     }
 
     this.media.muted = this.options.playback.muted
@@ -78,8 +78,8 @@ export default class Minusic {
     }
 
     this.sourceManager = new MediaSourceManager(this.media, this.eventBus, {
-      crossOrigin: this.options.crossOrigin,
-      livestream: this.options.livestream,
+      crossOrigin: this.options.media.crossOrigin,
+      livestream: this.options.media.isLivestream,
     })
 
     this.playlistManager = new PlaylistManager(

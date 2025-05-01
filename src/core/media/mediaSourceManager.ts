@@ -19,7 +19,7 @@ export class MediaSourceManager {
     mediaElement: HTMLMediaElement,
     eventBus: EventBus,
     options: {
-      crossOrigin?: boolean
+      crossOrigin?: boolean | string
       livestream?: boolean
     } = {},
   ) {
@@ -34,7 +34,12 @@ export class MediaSourceManager {
     autoplay: boolean,
   ): Promise<boolean> {
     const sourceOptions: SourceHandlerOptions = {
-      crossOrigin: this.crossOrigin ? "anonymous" : undefined,
+      crossOrigin:
+        typeof this.crossOrigin === "string"
+          ? this.crossOrigin
+          : this.crossOrigin
+            ? "anonymous"
+            : undefined,
       timeout: 30000,
     }
 
