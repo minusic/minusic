@@ -13,7 +13,6 @@ import Progress from "./components/ui/progress"
 import Range from "./components/ui/range"
 
 export interface PlayerConfiguration extends MinusicConfiguration {
-  skipDuration: number
   tracks: TrackConfig[]
   metadata: {
     title: string
@@ -36,16 +35,18 @@ export interface MinusicConfiguration {
     container: string
   }
 
-  // Playback core settings
-  autoplay?: boolean
-  duration?: number | string
-  endTime?: number
-  muted?: boolean
-  playbackRate?: number
-  playbackSpeedOptions?: PlaybackSpeedOption[]
-  preservesPitch?: boolean
-  volume?: number
-  skipDuration?: number
+  playback: {
+    autoplay: boolean
+    volume: number
+    muted: boolean
+    playbackRate: number
+    preservePitch: boolean
+    skipDuration: number
+    speedOptions: Array<{
+      value: number
+      label: string
+    }>
+  }
 
   // Content metadata
   metadata?: {

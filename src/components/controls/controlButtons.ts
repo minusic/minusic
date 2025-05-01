@@ -70,12 +70,12 @@ function createSpecialButtons(
     settings: createSettingsMenu(container),
   }
 
-  if (controls.playbackSpeedButton && options.playbackSpeedOptions) {
+  if (controls.playbackSpeedButton && options.playback.speedOptions) {
     specialButtons.playbackSpeed = createPlaybackSpeedButton(
       container,
-      options.playbackSpeedOptions,
+      options.playback.speedOptions,
       player,
-      options.playbackRate,
+      options.playback.playbackRate,
     )
   }
 

@@ -63,21 +63,14 @@ export function createMinusicConfiguration(
     },
   }
 
-  // Default core configuration
-  const defaultConfig: MinusicConfiguration = {
-    selectors: {
-      media: "",
-      container: "",
-    },
-
-    // Playback settings
+  const defaultPlayBack = {
     autoplay: false,
+    volume: 1,
     muted: false,
     playbackRate: 1,
-    preservesPitch: true,
-    volume: 1,
+    preservePitch: true,
     skipDuration: 15,
-    playbackSpeedOptions: [
+    speedOptions: [
       { label: "x0.25", value: 0.25 },
       { label: "x0.5", value: 0.5 },
       { label: "x0.75", value: 0.75 },
@@ -87,6 +80,17 @@ export function createMinusicConfiguration(
       { label: "x1.75", value: 1.75 },
       { label: "x2", value: 2 },
     ],
+  }
+
+  // Default core configuration
+  const defaultConfig: MinusicConfiguration = {
+    selectors: {
+      media: "",
+      container: "",
+    },
+
+    // Merge playback settings
+    playback: { ...defaultPlayBack, ...options.playback },
 
     // Merge default controls
     controls: { ...defaultControls, ...options.controls },
@@ -119,6 +123,7 @@ export function createMinusicConfiguration(
     ...defaultConfig,
     ...options,
     // Ensure nested objects are properly merged
+    playback: { ...defaultConfig.playback, ...options.playback },
     controls: { ...defaultConfig.controls, ...options.controls },
     metadata: { ...defaultConfig.metadata, ...options.metadata },
     displayOptions: {

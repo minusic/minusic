@@ -40,21 +40,17 @@ export default class Minusic {
     this.options = createMinusicConfiguration(options) as PlayerConfiguration
     this.media = this.mediaManager.initialize(options.selectors)
 
-    if (options.autoplay) {
+    console.log(options)
+    if (this.options.playback.autoplay) {
       this.media.setAttribute("autoplay", "")
     }
 
-    if (options.crossOrigin) {
+    if (this.options.crossOrigin) {
       this.media.setAttribute("crossorigin", "")
     }
 
-    if (options.muted) {
-      this.media.muted = true
-    }
-
-    if (typeof options.volume !== "undefined") {
-      this.media.volume = options.volume
-    }
+    this.media.muted = this.options.playback.muted
+    this.media.volume = this.options.playback.volume
 
     this.elements = buildPlayerStructure(this, this.options)
     this.state = new StateHandler(this.elements.container, this.eventBus)
@@ -68,7 +64,7 @@ export default class Minusic {
       this.media,
       this.eventBus,
       this.state,
-      this.options.skipDuration,
+      this.options.playback.skipDuration,
     )
 
     this.volumeController = new VolumeController(
@@ -107,22 +103,17 @@ export default class Minusic {
       this.updateProgress.bind(this),
     )
 
-    if (options.controls?.visualizer && options.visualizer) {
+    if (this.options.controls?.visualizer && this.options.visualizer) {
       this.visualizerController = new VisualizerController(
         this.media,
         this.elements.container,
         this.eventBus,
-        options.visualizer,
+        this.options.visualizer,
       )
     }
 
-    if (options.playbackRate) {
-      this.playbackController.playbackRate = options.playbackRate
-    }
-
-    if (typeof options.preservesPitch !== "undefined") {
-      this.playbackController.preservesPitch = options.preservesPitch
-    }
+    this.playbackController.playbackRate = this.options.playback.playbackRate
+    this.playbackController.preservesPitch = this.options.playback.preservePitch
 
     this.mediaManager.wrapMediaElement(this.elements.container)
 
