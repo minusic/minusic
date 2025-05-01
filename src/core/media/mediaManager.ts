@@ -10,14 +10,14 @@ export class MediaManager {
 
   constructor() {}
 
-  public initialize(
-    mediaSelector: string,
-    containerSelector: string,
-  ): HTMLMediaElement {
-    this.media = document.querySelector(mediaSelector) as HTMLMediaElement
+  public initialize(selectors: {
+    media: string
+    container: string
+  }): HTMLMediaElement {
+    this.media = document.querySelector(selectors.media) as HTMLMediaElement
 
     if (!this.validateMediaElement()) {
-      if (!this.validateContainerElement(containerSelector)) {
+      if (!this.validateContainerElement(selectors.container)) {
         throw new Error("Neither valid media element nor container found")
       }
       this.createMediaElement()

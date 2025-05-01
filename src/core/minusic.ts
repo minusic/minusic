@@ -1,11 +1,11 @@
 import {
-  ConstructorParameters,
+  MinusicConfiguration,
   Elements,
   PlayerConfiguration,
   VisualizerOptions,
 } from "../types"
 import { buildPlayerStructure } from "../components/structure"
-import { createConstructorParameters } from "./configuration"
+import { createMinusicConfiguration } from "./configuration"
 import { EventBus } from "../utils/eventBus/eventBus"
 import { StateHandler } from "./state"
 import { MediaSourceManager } from "./media/mediaSourceManager"
@@ -32,13 +32,13 @@ export default class Minusic {
   private playlistManager!: PlaylistManager
   private visualizerController!: VisualizerController
 
-  constructor(options: ConstructorParameters) {
+  constructor(options: MinusicConfiguration) {
     this.initializePlayer(options)
   }
 
-  private initializePlayer(options: ConstructorParameters): void {
-    this.options = createConstructorParameters(options) as PlayerConfiguration
-    this.media = this.mediaManager.initialize(options.media, options.container)
+  private initializePlayer(options: MinusicConfiguration): void {
+    this.options = createMinusicConfiguration(options) as PlayerConfiguration
+    this.media = this.mediaManager.initialize(options.selectors)
 
     if (options.autoplay) {
       this.media.setAttribute("autoplay", "")

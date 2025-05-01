@@ -12,7 +12,7 @@ import CircularRange from "./components/ui/circularRange"
 import Progress from "./components/ui/progress"
 import Range from "./components/ui/range"
 
-export interface PlayerConfiguration extends ConstructorParameters {
+export interface PlayerConfiguration extends MinusicConfiguration {
   skipDuration: number
   tracks: TrackConfig[]
   metadata: {
@@ -29,10 +29,12 @@ export interface PlayerConfiguration extends ConstructorParameters {
   }
 }
 
-export interface ConstructorParameters {
+export interface MinusicConfiguration {
   // Media source configuration
-  media: string
-  container: string
+  selectors: {
+    media: string
+    container: string
+  }
 
   // Playback core settings
   autoplay?: boolean

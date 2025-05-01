@@ -1,9 +1,9 @@
 import { RangeShape } from "../enums"
-import { ConstructorParameters } from "../types"
+import { MinusicConfiguration } from "../types"
 
-export function createConstructorParameters(
-  options: Partial<ConstructorParameters>,
-): ConstructorParameters {
+export function createMinusicConfiguration(
+  options: Partial<MinusicConfiguration>,
+): MinusicConfiguration {
   // Default controls configuration
   const defaultControls = {
     // Playback controls
@@ -64,9 +64,11 @@ export function createConstructorParameters(
   }
 
   // Default core configuration
-  const defaultConfig: ConstructorParameters = {
-    media: "",
-    container: "",
+  const defaultConfig: MinusicConfiguration = {
+    selectors: {
+      media: "",
+      container: "",
+    },
 
     // Playback settings
     autoplay: false,
