@@ -38,9 +38,11 @@ export class VolumeController {
 
   public toggleMute(state?: boolean): void {
     if (typeof state === "boolean") {
-      state ? this.unmute() : this.mute()
+      if (state) this.unmute()
+      else this.mute()
     } else {
-      this.muted ? this.unmute() : this.mute()
+      if (this.muted) this.unmute()
+      else this.mute()
     }
   }
 
