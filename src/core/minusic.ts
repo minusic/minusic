@@ -56,8 +56,8 @@ export default class Minusic {
     this.state = new StateHandler(this.elements.container, this.eventBus)
     this.uiManager = new UIManager(this.elements, this.media, this.state)
     this.uiManager.applyInitialSettings(
-      this.options.displayOptions.showNativeControls,
-      this.options.displayOptions.showControls,
+      this.options.appearance.showNativeControls,
+      this.options.appearance.showCustomControls,
     )
 
     this.playbackController = new PlaybackController(

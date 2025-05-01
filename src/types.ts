@@ -35,6 +35,7 @@ export interface MinusicConfiguration {
     container: string
   }
 
+  // Playback settings
   playback: {
     autoplay: boolean
     volume: number
@@ -46,6 +47,12 @@ export interface MinusicConfiguration {
       value: number
       label: string
     }>
+  }
+
+  // Appearance settings
+  appearance: {
+    showCustomControls: boolean
+    showNativeControls: boolean
   }
 
   // Content metadata

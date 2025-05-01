@@ -45,8 +45,6 @@ export function createMinusicConfiguration(
 
   // Default display options
   const defaultDisplayOptions = {
-    showControls: true,
-    showNativeControls: false,
     timeBar: {
       shape: RangeShape.Line,
       radius: 0,
@@ -82,18 +80,22 @@ export function createMinusicConfiguration(
     ],
   }
 
+  const defaultSelectors = {
+    media: "",
+    container: "",
+  }
+
+  const defaultAppearance = {
+    showNativeControls: false,
+    showCustomControls: true,
+  }
+
   // Default core configuration
   const defaultConfig: MinusicConfiguration = {
-    selectors: {
-      media: "",
-      container: "",
-    },
-
-    // Merge playback settings
+    selectors: { ...defaultSelectors, ...options.selectors },
     playback: { ...defaultPlayBack, ...options.playback },
-
-    // Merge default controls
     controls: { ...defaultControls, ...options.controls },
+    appearance: {...defaultAppearance, ...options.appearance},
 
     // Merge default metadata
     metadata: { ...defaultMetadata, ...options.metadata },
@@ -124,6 +126,7 @@ export function createMinusicConfiguration(
     ...options,
     // Ensure nested objects are properly merged
     playback: { ...defaultConfig.playback, ...options.playback },
+    appearance: {...defaultAppearance, ...options.appearance},
     controls: { ...defaultConfig.controls, ...options.controls },
     metadata: { ...defaultConfig.metadata, ...options.metadata },
     displayOptions: {
