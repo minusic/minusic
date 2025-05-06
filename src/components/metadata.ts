@@ -13,28 +13,30 @@ export function createMetadata(
     { container },
     { class: CSSClass.Metadata },
   )
+  const { title, artist, album, thumbnail } =
+    options.media.currentTrack?.metadata || {}
 
   return {
     title: createElement(
       "p",
-      { text: options.metadata.title, container: metadata },
+      { text: title, container: metadata },
       { class: CSSClass.Title },
     ),
     author: createElement(
       "p",
-      { text: options.metadata.author, container: metadata },
+      { text: artist, container: metadata },
       { class: CSSClass.Author },
     ),
     album: createElement(
       "p",
-      { text: options.metadata.album, container: metadata },
+      { text: album, container: metadata },
       { class: CSSClass.Album },
     ),
     thumbnail: createElement(
       "img",
       { container: metadata },
       {
-        src: options.metadata.thumbnail ? options.metadata.thumbnail : "",
+        src: thumbnail ? thumbnail : "",
         class: CSSClass.Thumbnail,
       },
     ) as HTMLImageElement,

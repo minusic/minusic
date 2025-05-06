@@ -321,7 +321,8 @@ export default class Minusic {
   }
 
   get trackTitle(): string | null {
-    if (this.options.metadata.title) return this.options.metadata.title
+    if (this.options.media.currentTrack?.metadata.title)
+      return this.options.media.currentTrack?.metadata.title
     else if (this.audioSource)
       return decodeURI(this.audioSource.split("/").slice(-1)[0])
     return null
