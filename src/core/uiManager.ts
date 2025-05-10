@@ -41,23 +41,6 @@ export class UIManager {
     }
   }
 
-  public updateMetadata(track: TrackConfig): void {
-    if (!this.elements.title) return
-
-    this.elements.title.innerText = track.title || ""
-    if (this.elements.author)
-      this.elements.author.innerText = track.author || ""
-    if (this.elements.album) this.elements.album.innerText = track.album || ""
-    if (this.elements.thumbnail)
-      this.elements.thumbnail.src = track.thumbnail || ""
-  }
-
-  public updateWaveform(track: { waveform?: string }): void {
-    if (this.elements.progress?.timeBar) {
-      this.elements.progress.timeBar.background = track.waveform
-    }
-  }
-
   public applyInitialSettings(
     showNativeControls: boolean = false,
     showControls: boolean = true,
