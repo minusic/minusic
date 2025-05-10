@@ -13,12 +13,10 @@ export function createProgressElements(
   options: PlayerConfiguration,
   player: Minusic,
 ) {
-  const { controls, livestream } = options
-
   return {
     timeBar: createTimeBar(progressContainer, options, player)?.timeBar || null,
     bufferBar: createBufferBar(progressContainer, options),
-    currentTime: controls.currentTime
+    currentTime: options.controls.currentTime
       ? createTimeDisplay(
           controlsContainer,
           CSSClass.CurrentTime,
@@ -26,7 +24,7 @@ export function createProgressElements(
         )
       : null,
     totalTime:
-      !livestream && controls.endTime
+      !options.media.isLivestream && options.controls.endTime
         ? createTimeDisplay(controlsContainer, CSSClass.TotalTime, "Total time")
         : null,
   }
@@ -62,20 +60,22 @@ function createTimeBar(
     }
   }
 
-  return {
-    timeBar: new Range({
-      container,
-      cssClass: [CSSClass.TimeBar],
-      label: "Seek time",
-      min: 0,
-      max: 100,
-      step: 0.01,
-      handler: (value: number) => {
-        player.currentTime = (value * player.duration) / 100
-      },
-      value: 0,
-    }),
+  const timeBar = new Range({
+    container,
+    cssClass: [CSSClass.TimeBar],
+    label: "Seek time",
+    min: 0,
+    max: 100,
+    step: 0.01,
+    handler: (value: number) => {
+      player.currentTime = (value * player.duration) / 100
+    },
+    value: 0,
+  })
+  if (options.media.currentTrack?.metadata.waveform) {
+    timeBar.background = options.media.currentTrack?.metadata.waveform
   }
+  return { timeBar }
 }
 
 function createBufferBar(
