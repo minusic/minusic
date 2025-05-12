@@ -13,7 +13,6 @@ import Progress from "./components/ui/progress"
 import Range from "./components/ui/range"
 
 export interface PlayerConfiguration extends MinusicConfiguration {
-  tracks: TrackConfig[]
   metadata: {
     title: string
     author: string
@@ -67,7 +66,7 @@ export interface MinusicConfiguration {
     }
 
     // Playlist (multi-track use case)
-    playlist?: TrackInfo[]
+    playlist: TrackInfo[]
   }
 
   // Content metadata
@@ -77,9 +76,6 @@ export interface MinusicConfiguration {
     album?: string
     thumbnail?: string
   }
-
-  // Tracks configuration
-  tracks?: TrackConfig[]
 
   // Display and interaction controls
   displayOptions?: DisplayOptions
@@ -127,21 +123,9 @@ export interface DisplayOptions {
   soundBar?: RangeConfiguration
 }
 
-export interface TrackConfig {
-  source: string | string[] | TrackSource
-  title: string
-  author: string
-  thumbnail?: string
-  album?: string
-  duration?: string | number
-  download?: boolean
-  waveform?: string
-}
-
 export interface TrackInfo {
   source: string | string[] | { source: string; type: string }
   metadata: TrackMetadata
-  duration?: string | number
   allowDownload?: boolean
 }
 
@@ -151,6 +135,7 @@ export interface TrackMetadata {
   album?: string
   thumbnail?: string
   waveform?: string
+  duration?: string | number
 }
 
 export interface TrackSource {

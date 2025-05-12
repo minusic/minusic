@@ -1,6 +1,6 @@
 import { EventBus } from "../../utils/eventBus/eventBus"
 import { randomNumber } from "../../utils/math/random"
-import { TrackConfig } from "../../types"
+import { TrackInfo } from "../../types"
 import { MediaSourceManager } from "../media/mediaSourceManager"
 import { StateHandler } from "../state"
 
@@ -10,7 +10,7 @@ export interface PlaylistOptions {
 }
 
 export class PlaylistManager {
-  private tracks: TrackConfig[]
+  private tracks: TrackInfo[]
   private currentIndex: number = 0
   private mediaSourceManager: MediaSourceManager
   private eventBus: EventBus
@@ -21,7 +21,7 @@ export class PlaylistManager {
   }
 
   constructor(
-    tracks: TrackConfig[],
+    tracks: TrackInfo[],
     mediaSourceManager: MediaSourceManager,
     eventBus: EventBus,
     stateHandler: StateHandler,
@@ -104,7 +104,7 @@ export class PlaylistManager {
   }
 
   private async handleSourceFailure(
-    track: TrackConfig,
+    track: TrackInfo,
     autoplay: boolean,
   ): Promise<boolean> {
     this.eventBus.emit("trackLoadError", {
@@ -151,7 +151,7 @@ export class PlaylistManager {
     this.eventBus.emit("randomModeChanged", { enabled: this.options.random })
   }
 
-  public getCurrentTrack(): TrackConfig | null {
+  public getCurrentTrack(): TrackInfo | null {
     return this.isValidIndex(this.currentIndex)
       ? this.tracks[this.currentIndex]
       : null
@@ -177,13 +177,13 @@ export class PlaylistManager {
     return index >= 0 && index < this.tracks.length
   }
 
-  public setTracks(tracks: TrackConfig[]): void {
+  public setTracks(tracks: TrackInfo[]): void {
     this.tracks = tracks || []
     this.currentIndex = 0
     this.eventBus.emit("tracksChanged", { tracks: this.tracks })
   }
 
-  public addTrack(track: TrackConfig): void {
+  public addTrack(track: TrackInfo): void {
     this.tracks.push(track)
     this.eventBus.emit("trackAdded", { track, index: this.tracks.length - 1 })
   }

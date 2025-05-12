@@ -94,6 +94,7 @@ export function createMinusicConfiguration(
   const defaultMedia = {
     crossOrigin: false,
     isLivestream: false,
+    playlist: [],
   }
 
   // Default core configuration
@@ -120,9 +121,6 @@ export function createMinusicConfiguration(
         ...options.displayOptions?.soundBar,
       },
     },
-
-    // Other defaults
-    tracks: [],
   }
 
   // Deep merge the provided options with default configuration

@@ -1,4 +1,4 @@
-import { TrackConfig, TrackSource } from "../../types"
+import { TrackInfo, TrackSource } from "../../types"
 
 export enum SourceErrorType {
   NETWORK = "network",
@@ -224,7 +224,7 @@ export function preloadSource(
 }
 
 export async function getValidSource(
-  track: TrackConfig,
+  track: TrackInfo,
   options: SourceHandlerOptions = {},
 ): Promise<TrackSource | null> {
   if (!track || !track.source) return null

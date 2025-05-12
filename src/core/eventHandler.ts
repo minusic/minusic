@@ -1,6 +1,6 @@
 import { EventBus } from "../utils/eventBus/eventBus"
 import { formatTime } from "../utils/media/timeFormatter"
-import { Elements, TrackConfig } from "../types"
+import { Elements, TrackInfo } from "../types"
 import { MediaSourceManager } from "./media/mediaSourceManager"
 import { StateHandler } from "./state"
 import { PlaylistManager } from "./playlist/playlistManager"
@@ -67,7 +67,7 @@ export class EventHandler {
     })
   }
 
-  private handleTrackLoaded(track: TrackConfig): void {
+  private handleTrackLoaded(track: TrackInfo): void {
     this.updateMetadata(track)
     this.updateWaveform(track)
     this.playlistManager.updatePlaylistUI(this.elements.playlist.tracks)
@@ -136,20 +136,22 @@ export class EventHandler {
     }
   }
 
-  private updateMetadata(track: TrackConfig): void {
+  private updateMetadata(track: TrackInfo): void {
     if (!this.elements.title) return
+    const metadata = track.metadata || {}
 
-    this.elements.title.innerText = track.title || ""
+    this.elements.title.innerText = metadata.title || ""
     if (this.elements.author)
-      this.elements.author.innerText = track.author || ""
-    if (this.elements.album) this.elements.album.innerText = track.album || ""
+      this.elements.author.innerText = metadata.artist || ""
+    if (this.elements.album)
+      this.elements.album.innerText = metadata.album || ""
     if (this.elements.thumbnail)
-      this.elements.thumbnail.src = track.thumbnail || ""
+      this.elements.thumbnail.src = metadata.thumbnail || ""
   }
 
-  private updateWaveform(track: { waveform?: string }): void {
+  private updateWaveform(track: TrackInfo): void {
     if (this.elements.progress?.timeBar) {
-      this.elements.progress.timeBar.background = track.waveform
+      this.elements.progress.timeBar.background = track.metadata?.waveform
     }
   }
 

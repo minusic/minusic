@@ -1,17 +1,11 @@
-import { Elements, TrackConfig } from "../types"
+import { Elements } from "../types"
 import { StateHandler } from "./state"
 
 export class UIManager {
-  private elements: Elements
   private media: HTMLMediaElement
   private state: StateHandler
 
-  constructor(
-    elements: Elements,
-    media: HTMLMediaElement,
-    state: StateHandler,
-  ) {
-    this.elements = elements
+  constructor(media: HTMLMediaElement, state: StateHandler) {
     this.media = media
     this.state = state
   }

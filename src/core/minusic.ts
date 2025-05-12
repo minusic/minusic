@@ -54,7 +54,7 @@ export default class Minusic {
 
     this.elements = buildPlayerStructure(this, this.options)
     this.state = new StateHandler(this.elements.container, this.eventBus)
-    this.uiManager = new UIManager(this.elements, this.media, this.state)
+    this.uiManager = new UIManager(this.media, this.state)
     this.uiManager.applyInitialSettings(
       this.options.appearance.showNativeControls,
       this.options.appearance.showCustomControls,
@@ -83,7 +83,7 @@ export default class Minusic {
     })
 
     this.playlistManager = new PlaylistManager(
-      this.options.tracks,
+      this.options.media.playlist,
       this.sourceManager,
       this.eventBus,
       this.state,

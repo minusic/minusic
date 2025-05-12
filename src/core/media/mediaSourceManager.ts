@@ -5,7 +5,7 @@ import {
   normalizeSources,
   attachSources,
 } from "./sourceHandler"
-import { TrackConfig } from "../../types"
+import { TrackInfo } from "../../types"
 
 export class MediaSourceManager {
   private mediaElement: HTMLMediaElement
@@ -30,7 +30,7 @@ export class MediaSourceManager {
   }
 
   public async loadTrackSources(
-    track: TrackConfig,
+    track: TrackInfo,
     autoplay: boolean,
   ): Promise<boolean> {
     const sourceOptions: SourceHandlerOptions = {
@@ -82,7 +82,7 @@ export class MediaSourceManager {
   }
 
   public updateDownloadButton(
-    track: TrackConfig,
+    track: TrackInfo,
     downloadButton: HTMLAnchorElement | null,
   ): void {
     if (!downloadButton) return
@@ -91,7 +91,7 @@ export class MediaSourceManager {
       const sources = normalizeSources(track.source)
       if (sources.length > 0) {
         downloadButton.href = sources[0].source
-        downloadButton.download = track.title || ""
+        downloadButton.download = track.metadata?.title || ""
         downloadButton.style.display = ""
         return
       }

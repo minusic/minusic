@@ -1,7 +1,7 @@
 import { CSSClass } from "../enums"
 import { createElement } from "../utils/dom/elements"
-import Minusic from "../minusic"
-import { PlayerConfiguration } from "../types"
+import Minusic from "../core/minusic"
+import { PlayerConfiguration, TrackInfo } from "../types"
 
 export function createPlaylist(
   container: HTMLElement,
@@ -13,7 +13,7 @@ export function createPlaylist(
     { container },
     { class: CSSClass.Playlist, role: "menu" },
   )
-  const { tracks } = options
+  const tracks = options.media.playlist
 
   if (!tracks || !options.controls.metadata)
     return { trackContainer, tracks: [] }
@@ -38,11 +38,14 @@ export function createPlaylist(
       },
     )
 
-    if (track.thumbnail) {
+    if (track.metadata?.thumbnail) {
       createElement(
         "img",
         { container: trackDetails },
-        { class: CSSClass.PlaylistItemThumbnail, src: track.thumbnail },
+        {
+          class: CSSClass.PlaylistItemThumbnail,
+          src: track.metadata?.thumbnail,
+        },
       )
     } else {
       createElement(
@@ -61,43 +64,42 @@ export function createPlaylist(
     // Title
     createElement(
       "span",
-      { container: trackDetails, text: track.title },
+      { container: trackDetails, text: track.metadata?.title },
       { class: CSSClass.PlaylistItemTitle },
     )
 
     // Author
     createElement(
       "span",
-      { container: trackDetails, text: track.author },
+      { container: trackDetails, text: track.metadata?.artist },
       { class: CSSClass.PlaylistItemAuthor },
     )
 
     // Album
     createElement(
       "span",
-      { container: trackDetails, text: track.album },
+      { container: trackDetails, text: track.metadata?.album },
       { class: CSSClass.PlaylistItemAlbum },
     )
 
-    if (track.waveform)
-      createElement(
-        "span",
-        { container: trackDetails },
-        {
-          class: CSSClass.PlaylistItemWaveform,
-          style: `background-image: ${track.waveform ? `url("${track.waveform}")` : "none"}`,
-        },
-      )
+    createElement(
+      "span",
+      { container: trackDetails },
+      {
+        class: CSSClass.PlaylistItemWaveform,
+        style: `background-image: ${track.metadata?.waveform ? `url("${track.metadata.waveform}")` : "none"}`,
+      },
+    )
 
-    if (track.download)
+    if (track.allowDownload)
       createElement(
         "a",
         { container: trackDetails, text: "Download" },
         {
           class: CSSClass.PlaylistItemDownload,
-          href: track.source,
-          download: track.title || "",
-          title: `Download track ${track.title || ""}`,
+          href: getDownloadTitle(track),
+          download: track.metadata?.title || "",
+          title: `Download track ${track.metadata?.title || ""}`,
         },
       )
 
@@ -106,7 +108,7 @@ export function createPlaylist(
       "span",
       {
         container: trackDetails,
-        text: track.duration ? `${track.duration}` : "",
+        text: `${track.metadata?.duration || ""}`,
       },
       { class: CSSClass.PlaylistItemDuration },
     )
@@ -115,4 +117,13 @@ export function createPlaylist(
   }
 
   return { trackContainer, tracks: playlistTracks }
+}
+
+export function getDownloadTitle(track: TrackInfo | string): string {
+  if (track instanceof Array) return getDownloadTitle(track[0])
+  else if (typeof track === "string") return track
+  else if (track instanceof Object) {
+    if (track.source instanceof Array) return getDownloadTitle(track.source[0])
+    return (track.source as string) || "track"
+  } else return "track"
 }
