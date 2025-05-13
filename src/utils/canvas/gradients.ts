@@ -4,30 +4,25 @@ export function createLinearGradient(
     height: number
     context: CanvasRenderingContext2D
   },
-  parameters: {
-    angle?: number
-    values: { [key: number]: string }
-  },
+  parameters: { angle?: number; values: { [key: number]: string } },
 ) {
-  const angleInRadians =
-    typeof parameters.angle !== "undefined"
-      ? (parameters.angle * Math.PI) / 180
-      : 0
   const { width, height, context } = canvasProperties
+  const angleInRadians = ((parameters.angle ?? 0) % 360) * (Math.PI / 180)
   const diagonal = Math.sqrt(width * width + height * height)
   const centerX = width / 2
   const centerY = height / 2
-  const startX = centerX - (diagonal / 2) * Math.cos(angleInRadians)
-  const startY = centerY - (diagonal / 2) * Math.sin(angleInRadians)
-  const endX = centerX + (diagonal / 2) * Math.cos(angleInRadians)
-  const endY = centerY + (diagonal / 2) * Math.sin(angleInRadians)
+  const deltaX = (diagonal / 2) * Math.cos(angleInRadians)
+  const deltaY = (diagonal / 2) * Math.sin(angleInRadians)
+
+  const startX = centerX - deltaX
+  const startY = centerY - deltaY
+  const endX = centerX + deltaX
+  const endY = centerY + deltaY
 
   const gradient = context.createLinearGradient(startX, startY, endX, endY)
-
-  Object.entries(parameters.values).forEach(([key, value]) => {
-    gradient.addColorStop(parseFloat(key), value)
-  })
-
+  for (const [offset, color] of Object.entries(parameters.values)) {
+    gradient.addColorStop(parseFloat(offset), color)
+  }
   return gradient
 }
 
