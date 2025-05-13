@@ -4,6 +4,7 @@ export class MockElement {
   innerHTML = ""
   innerText = ""
   eventListeners = {}
+  dataset: Record<string, string> = {}
   children: MockElement[] = []
 
   constructor(tagName) {
