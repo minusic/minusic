@@ -9,8 +9,11 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "format": "prettier --write \"./{demo,src}/**/*.{ts,html,js,css}\"",
-    "lint": "eslint ."
+    "format": "prettier --write \"./{demo,src,tests}/**/*.{ts,html,js,css}\"",
+    "lint": "eslint .",
+    "test": "npm run test:build && npm run test:unit",
+    "test:build": "tsup --config tsup.test.config.ts",
+    "test:unit": "node --test ./build-tests/**/*.test.js"
   },
   "keywords": [
     "Music Player",
