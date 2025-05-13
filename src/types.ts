@@ -41,6 +41,8 @@ export interface MinusicConfiguration {
     muted: boolean
     playbackRate: number
     preservePitch: boolean
+    shuffle: boolean
+    repeat: number
     skipDuration: number
     speedOptions: Array<{
       value: number

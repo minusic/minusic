@@ -88,8 +88,8 @@ export default class Minusic {
       this.eventBus,
       this.state,
       {
-        repeat: 0,
-        random: false,
+        repeat: this.options.playback.repeat,
+        random: this.options.playback.shuffle,
       },
     )
 

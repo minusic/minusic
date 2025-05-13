@@ -68,6 +68,8 @@ export function createMinusicConfiguration(
     muted: false,
     playbackRate: 1,
     preservePitch: true,
+    shuffle: false,
+    repeat: 0,
     skipDuration: 15,
     speedOptions: [
       { label: "x0.25", value: 0.25 },
