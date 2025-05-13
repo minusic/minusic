@@ -15,7 +15,7 @@ export function createPlaylist(
   )
   const tracks = options.media.playlist
 
-  if (!tracks || !options.controls.metadata)
+  if (!tracks || !options.controls.playlist)
     return { trackContainer, tracks: [] }
 
   const playlistTracks: HTMLElement[] = []
