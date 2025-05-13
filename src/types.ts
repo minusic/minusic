@@ -11,6 +11,7 @@ import CircularProgress from "./components/ui/circularProgress"
 import CircularRange from "./components/ui/circularRange"
 import Progress from "./components/ui/progress"
 import Range from "./components/ui/range"
+import { PlayBackSpeedButton } from "./components/buttons/playbackSpeed"
 
 export interface PlayerConfiguration extends MinusicConfiguration {
   metadata: {
@@ -167,10 +168,7 @@ export interface Elements {
     mute: HTMLButtonElement | null
     backward: HTMLButtonElement | null
     forward: HTMLButtonElement | null
-    playbackSpeed: any /*{
-      button: ToggleButton
-      update: (value: number) => void
-    } | null*/
+    playbackSpeed: PlayBackSpeedButton
     download: HTMLAnchorElement | null
     previous: HTMLButtonElement | null
     next: HTMLButtonElement | null
