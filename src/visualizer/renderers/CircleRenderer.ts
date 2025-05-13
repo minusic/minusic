@@ -1,4 +1,4 @@
-import { BaseRenderer } from "./BaseRenderer"
+import { BaseRenderer, Particle } from "./BaseRenderer"
 import {
   VisualizerDirection,
   VisualizerMode,
@@ -12,8 +12,6 @@ import {
 } from "../../utils/canvas/drawing"
 
 export class CircleRenderer extends BaseRenderer {
-  private particlePool: any[] = []
-
   render(frequencies: number[]): void {
     const { mode } = this.options
 
@@ -268,7 +266,7 @@ export class CircleRenderer extends BaseRenderer {
   }
 
   private resetParticle(
-    particle: any,
+    particle: Particle,
     cx: number,
     cy: number,
     r: number,

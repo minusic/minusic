@@ -1,4 +1,4 @@
-import { BaseRenderer } from "./BaseRenderer"
+import { BaseRenderer, Particle } from "./BaseRenderer"
 import { VisualizerMode, VisualizerPosition } from "../../enums"
 import {
   drawCurve,
@@ -334,7 +334,7 @@ export class PolygonRenderer extends BaseRenderer {
   }
 
   private resetPolygonParticle(
-    particle: any,
+    particle: Particle,
     vertices: number[][],
     centerX: number,
     centerY: number,

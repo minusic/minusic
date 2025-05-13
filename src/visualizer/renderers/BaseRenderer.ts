@@ -2,10 +2,20 @@ import { VisualizerConfiguration } from "../../types"
 import { VisualizerDirection, VisualizerPosition } from "../../enums"
 import { drawLevels, drawRoundedRectangle } from "../../utils/canvas/drawing"
 
+export interface Particle {
+  x: number
+  y: number
+  baseSize: number
+  vx: number
+  vy: number
+  opacity: number
+  angle: number
+}
+
 export abstract class BaseRenderer {
   protected context: CanvasRenderingContext2D
   protected options: VisualizerConfiguration
-  protected particles: any[] = []
+  protected particles: Particle[] = []
 
   constructor(
     context: CanvasRenderingContext2D,

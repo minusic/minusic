@@ -1,4 +1,3 @@
-import { Elements } from "../types"
 import { StateHandler } from "./state"
 
 export class UIManager {
