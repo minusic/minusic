@@ -14,7 +14,7 @@ export function createProgressElements(
   player: Minusic,
 ) {
   return {
-    timeBar: createTimeBar(progressContainer, options, player)?.timeBar || null,
+    seekBar: createSeekBar(progressContainer, options, player)?.seekBar || null,
     bufferBar: createBufferBar(progressContainer, options),
     currentTime: options.controls.currentTime
       ? createTimeDisplay(
@@ -24,24 +24,24 @@ export function createProgressElements(
         )
       : null,
     totalTime:
-      !options.media.isLivestream && options.controls.endTime
+      !options.media.isLivestream && options.controls.duration
         ? createTimeDisplay(controlsContainer, CSSClass.TotalTime, "Total time")
         : null,
   }
 }
 
-function createTimeBar(
+function createSeekBar(
   container: HTMLElement | null,
   options: PlayerConfiguration,
   player: Minusic,
 ) {
-  if (!container || !options.controls.timeBar) return null
+  if (!container || !options.controls.seekBar) return null
 
   const { displayOptions } = options
 
-  if (displayOptions.timeBar?.shape === RangeShape.Circle) {
+  if (displayOptions.seekBar?.shape === RangeShape.Circle) {
     return {
-      timeBar: new CircularRange({
+      seekBar: new CircularRange({
         container,
         label: "Seek time",
         handler: (value: number) => {
@@ -51,18 +51,18 @@ function createTimeBar(
         max: 100,
         step: 0.01,
         value: 0,
-        cssClass: [CSSClass.TimeBar],
-        radius: displayOptions.timeBar.radius,
-        startAngle: displayOptions.timeBar.startAngle,
-        endAngle: displayOptions.timeBar.endAngle,
-        clockwise: displayOptions.timeBar.clockwise,
+        cssClass: [CSSClass.SeekBar],
+        radius: displayOptions.seekBar.radius,
+        startAngle: displayOptions.seekBar.startAngle,
+        endAngle: displayOptions.seekBar.endAngle,
+        clockwise: displayOptions.seekBar.clockwise,
       }),
     }
   }
 
-  const timeBar = new Range({
+  const seekBar = new Range({
     container,
-    cssClass: [CSSClass.TimeBar],
+    cssClass: [CSSClass.SeekBar],
     label: "Seek time",
     min: 0,
     max: 100,
@@ -73,9 +73,9 @@ function createTimeBar(
     value: 0,
   })
   if (options.media.currentTrack?.metadata.waveform) {
-    timeBar.background = options.media.currentTrack?.metadata.waveform
+    seekBar.background = options.media.currentTrack?.metadata.waveform
   }
-  return { timeBar }
+  return { seekBar }
 }
 
 function createBufferBar(
@@ -86,14 +86,14 @@ function createBufferBar(
 
   const { displayOptions } = options
 
-  if (displayOptions.timeBar?.shape === RangeShape.Circle) {
+  if (displayOptions.seekBar?.shape === RangeShape.Circle) {
     return new CircularProgress({
       container,
       cssClass: [CSSClass.BufferBar],
-      radius: displayOptions.timeBar.radius,
-      startAngle: displayOptions.timeBar.startAngle,
-      endAngle: displayOptions.timeBar.endAngle,
-      clockwise: displayOptions.timeBar.clockwise,
+      radius: displayOptions.seekBar.radius,
+      startAngle: displayOptions.seekBar.startAngle,
+      endAngle: displayOptions.seekBar.endAngle,
+      clockwise: displayOptions.seekBar.clockwise,
     })
   }
 

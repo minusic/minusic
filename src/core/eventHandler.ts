@@ -150,20 +150,20 @@ export class EventHandler {
   }
 
   private updateWaveform(track: TrackInfo): void {
-    if (this.elements.progress?.timeBar) {
-      this.elements.progress.timeBar.background = track.metadata?.waveform
+    if (this.elements.progress?.seekBar) {
+      this.elements.progress.seekBar.background = track.metadata?.waveform
     }
   }
 
   public updateProgress(): void {
-    const { timeBar, currentTime, totalTime, bufferBar } =
+    const { seekBar, currentTime, totalTime, bufferBar } =
       this.elements.progress
     const duration = this.media.duration || 0
     const current = this.media.currentTime || 0
     const buffered = this.media.buffered.length ? this.media.buffered.end(0) : 0
 
     if (bufferBar) bufferBar.value = duration ? (buffered / duration) * 100 : 0
-    if (timeBar) timeBar.value = duration ? (current / duration) * 100 : 0
+    if (seekBar) seekBar.value = duration ? (current / duration) * 100 : 0
     if (currentTime) currentTime.innerText = formatTime(current)
     if (totalTime) totalTime.innerText = formatTime(duration)
   }

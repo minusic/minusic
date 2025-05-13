@@ -17,7 +17,7 @@ export function createPlayerElements(
   const { controls, media } = options
 
   const progressContainer =
-    controls.timeBar || controls.bufferBar
+    controls.seekBar || controls.bufferBar
       ? createProgressContainer(controlsContainer)
       : null
 
@@ -39,7 +39,7 @@ export function createPlayerElements(
         )
       : null,
     playlist: createPlaylist(container, options, player),
-    soundBar: controls.soundBar
+    soundBar: controls.volume
       ? createSoundBar(controlsContainer, options, player)
       : null,
     ...createMetadata(container, options),

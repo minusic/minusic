@@ -8,27 +8,27 @@ export function createMinusicConfiguration(
   // Default controls configuration
   const defaultControls = {
     // Playback controls
-    playButton: true,
-    muteButton: true,
-    backwardButton: true,
-    forwardButton: true,
-    playbackSpeedButton: false,
+    play: true,
+    skipBackward: true,
+    skipForward: true,
+    playbackSpeed: false,
 
     // Time and progress controls
     currentTime: true,
-    endTime: true,
-    timeBar: true,
+    duration: true,
+    seekBar: true,
     bufferBar: true,
 
     // Sound controls
-    soundBar: true,
+    mute: true,
+    volume: true,
 
     // Playlist and navigation controls
-    previousButton: false,
+    previous: false,
     nextButton: false,
-    repeatButton: false,
-    randomButton: false,
-    downloadButton: false,
+    repeat: false,
+    shuffle: false,
+    download: false,
 
     //
     metadata: false,
@@ -46,7 +46,7 @@ export function createMinusicConfiguration(
 
   // Default display options
   const defaultDisplayOptions = {
-    timeBar: {
+    seekBar: {
       shape: RangeShape.Line,
       radius: 0,
       startAngle: 0,
@@ -112,9 +112,9 @@ export function createMinusicConfiguration(
     displayOptions: {
       ...defaultDisplayOptions,
       ...options.displayOptions,
-      timeBar: {
-        ...defaultDisplayOptions.timeBar,
-        ...options.displayOptions?.timeBar,
+      seekBar: {
+        ...defaultDisplayOptions.seekBar,
+        ...options.displayOptions?.seekBar,
       },
       soundBar: {
         ...defaultDisplayOptions.soundBar,

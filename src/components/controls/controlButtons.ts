@@ -37,14 +37,14 @@ function createStandardButtons(
 ): Partial<Elements["buttons"]> {
   // prettier-ignore
   const buttonConfigs: ButtonConfig[] = [
-    { key: "play", controlKey: "playButton", label: "Play", cssClass: CSSClass.PlayButton, handler: player.togglePlay },
-    { key: "mute", controlKey: "muteButton", label: "Mute", cssClass: CSSClass.MuteButton, handler: player.toggleMute },
-    { key: "previous", controlKey: "previousButton", label: "Previous track", cssClass: CSSClass.PreviousButton, handler: player.previousOrRestartTrack },
-    { key: "next", controlKey: "nextButton", label: "Next track", cssClass: CSSClass.NextButton, handler: player.nextTrack },
-    { key: "backward", controlKey: "backwardButton", label: "Backward", cssClass: CSSClass.BackwardButton, handler: player.backward },
-    { key: "forward", controlKey: "forwardButton", label: "Forward", cssClass: CSSClass.ForwardButton, handler: player.forward },
-    { key: "repeat", controlKey: "repeatButton", label: "Repeat", cssClass: CSSClass.RepeatButton, handler: player.toggleRepeat },
-    { key: "random", controlKey: "randomButton", label: "Random", cssClass: CSSClass.RandomButton, handler: player.toggleRandom },
+    { key: "play", controlKey: "play", label: "Play", cssClass: CSSClass.PlayButton, handler: player.togglePlay },
+    { key: "mute", controlKey: "mute", label: "Mute", cssClass: CSSClass.MuteButton, handler: player.toggleMute },
+    { key: "previous", controlKey: "previous", label: "Previous track", cssClass: CSSClass.PreviousButton, handler: player.previousOrRestartTrack },
+    { key: "next", controlKey: "next", label: "Next track", cssClass: CSSClass.NextButton, handler: player.nextTrack },
+    { key: "backward", controlKey: "skipBackward", label: "Backward", cssClass: CSSClass.BackwardButton, handler: player.backward },
+    { key: "forward", controlKey: "skipForward", label: "Forward", cssClass: CSSClass.ForwardButton, handler: player.forward },
+    { key: "repeat", controlKey: "repeat", label: "Repeat", cssClass: CSSClass.RepeatButton, handler: player.toggleRepeat },
+    { key: "random", controlKey: "shuffle", label: "Random", cssClass: CSSClass.RandomButton, handler: player.toggleRandom },
   ]
 
   return buttonConfigs.reduce(
@@ -70,7 +70,7 @@ function createSpecialButtons(
     settings: createSettingsMenu(container),
   }
 
-  if (controls.playbackSpeedButton && options.playback.speedOptions) {
+  if (controls.playbackSpeed && options.playback.speedOptions) {
     specialButtons.playbackSpeed = createPlaybackSpeedButton(
       container,
       options.playback.speedOptions,
@@ -86,7 +86,7 @@ function createDownloadButton(
   container: HTMLElement,
   controls: PlayerConfiguration["controls"],
 ): HTMLAnchorElement | null {
-  if (!controls.downloadButton) return null
+  if (!controls.download) return null
 
   return createElement(
     "a",

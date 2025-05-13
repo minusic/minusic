@@ -35,7 +35,7 @@ export enum CSSClass {
   CircularProgress = "minusic-circular-progress",
   CircularProgressBackground = "minusic-circular-progress-background",
   CircularProgressBar = "minusic-circular-progress-bar",
-  TimeBar = "minusic-controls-seek-bar",
+  SeekBar = "minusic-controls-seek-bar",
   BufferBar = "minusic-controls-buffer-bar",
   SoundBar = "minusic-controls-sound-bar",
   CurrentTime = "minusic-controls-current-time",

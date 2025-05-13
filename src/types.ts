@@ -88,27 +88,27 @@ export interface MinusicConfiguration {
 
 export interface Controls {
   // Playback controls
-  playButton?: boolean
-  muteButton?: boolean
-  backwardButton?: boolean
-  forwardButton?: boolean
-  playbackSpeedButton?: boolean
+  play?: boolean
+  skipBackward?: boolean
+  skipForward?: boolean
+  playbackSpeed?: boolean
 
   // Time and progress controls
   currentTime?: boolean
-  endTime?: boolean
-  timeBar?: boolean
+  duration?: boolean
+  seekBar?: boolean
   bufferBar?: boolean
 
   // Sound controls
-  soundBar?: boolean
+  mute?: boolean
+  volume?: boolean
 
   // Playlist and navigation controls
-  previousButton?: boolean
-  nextButton?: boolean
-  repeatButton?: boolean
-  randomButton?: boolean
-  downloadButton?: boolean
+  previous?: boolean
+  next?: boolean
+  repeat?: boolean
+  shuffle?: boolean
+  download?: boolean
 
   //
   metadata?: boolean
@@ -119,7 +119,7 @@ export interface Controls {
 export interface DisplayOptions {
   showControls?: boolean
   showNativeControls?: boolean
-  timeBar?: RangeConfiguration
+  seekBar?: RangeConfiguration
   soundBar?: RangeConfiguration
 }
 
@@ -176,7 +176,7 @@ export interface Elements {
     random: HTMLButtonElement | null
   }
   progress: {
-    timeBar: Range | CircularRange | null
+    seekBar: Range | CircularRange | null
     bufferBar: Progress | CircularProgress | null
     currentTime: HTMLElement | null
     totalTime: HTMLElement | null
