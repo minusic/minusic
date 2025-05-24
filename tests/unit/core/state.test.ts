@@ -194,7 +194,7 @@ test("StateHandler", async (t) => {
       2,
       "callback should not be called after unsubscribe",
     )
-    
+
     assert.strictEqual(
       lastState!.muted,
       false,
