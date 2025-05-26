@@ -1,25 +1,35 @@
-import { mock } from "node:test"
+import { MockMediaElementAudioSourceNode } from "./HTMLMedia.mock"
+
+export class MockAnalyserNode {
+  frequencyBinCount = 256
+
+  getByteFrequencyData(array: Uint8Array) {
+    for (let i = 0; i < array.length; i++) {
+      array[i] = i % 256
+    }
+  }
+
+  connect(target: any) {
+    return target
+  }
+
+  disconnect() {}
+}
 
 export class MockAudioContext {
   state = "running"
-  destination = { connect: mock.fn() }
+  destination = {}
 
-  createMediaElementSource = mock.fn(() => ({
-    connect: mock.fn().mockReturnThis(),
-    disconnect: mock.fn(),
-  }))
+  createMediaElementSource(media: HTMLMediaElement) {
+    return new MockMediaElementAudioSourceNode()
+  }
 
-  createAnalyser = mock.fn(() => ({
-    frequencyBinCount: 256,
-    getByteFrequencyData: mock.fn((array) => {
-      // Fill with mock frequency data
-      for (let i = 0; i < array.length; i++) {
-        array[i] = Math.floor(Math.random() * 255)
-      }
-    }),
-    connect: mock.fn().mockReturnThis(),
-    disconnect: mock.fn(),
-  }))
+  createAnalyser() {
+    return new MockAnalyserNode()
+  }
 
-  close = mock.fn().mockResolvedValue(undefined)
+  close() {
+    this.state = "closed"
+    return Promise.resolve()
+  }
 }

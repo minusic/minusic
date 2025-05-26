@@ -10,20 +10,26 @@ export class AudioProcessor {
   }
 
   initialize() {
-    this.audioContext = new (window.AudioContext || null)()
-    if (this.audioContext === null) {
+    if (this.initialized) return true
+    try {
+      const audioContext = this.getAudioContext()
+      if (!audioContext) return false
+
+      this.audioContext = new audioContext()
+      this.audioSource = this.audioContext.createMediaElementSource(this.media)
+      this.analyser = this.audioContext.createAnalyser()
+
+      this.audioSource
+        .connect(this.analyser)
+        .connect(this.audioContext.destination)
+
+      this.initialized = true
+      return true
+    } catch (error) {
+      console.warn("Failed to initialize AudioProcessor:", error)
+      this.cleanup()
       return false
     }
-
-    this.audioSource = this.audioContext.createMediaElementSource(this.media)
-    this.analyser = this.audioContext.createAnalyser()
-
-    this.audioSource
-      .connect(this.analyser)
-      .connect(this.audioContext.destination)
-
-    this.initialized = true
-    return true
   }
 
   isInitialized(): boolean {
@@ -42,22 +48,45 @@ export class AudioProcessor {
 
   dispose(): void {
     if (this.initialized) {
-      try {
-        if (this.audioSource) {
-          this.audioSource.disconnect()
-        }
-
-        if (this.analyser) {
-          this.analyser.disconnect()
-        }
-
-        if (this.audioContext && this.audioContext.state !== "closed") {
-          this.audioContext.close()
-        }
-      } catch (err) {
-        console.warn("Error disposing AudioProcessor:", err)
-      }
+      this.cleanup()
       this.initialized = false
+    }
+  }
+
+  private getAudioContext(): typeof AudioContext | null {
+    if (typeof AudioContext !== "undefined") {
+      return AudioContext
+    } else if (typeof window !== "undefined" && window.AudioContext) {
+      return window.AudioContext
+    } else if (
+      typeof window !== "undefined" &&
+      (window as any).webkitAudioContext
+    ) {
+      return (window as any).webkitAudioContext
+    } else if (typeof (globalThis as any).webkitAudioContext !== "undefined") {
+      return (globalThis as any).webkitAudioContext
+    }
+    return null
+  }
+
+  private cleanup(): void {
+    try {
+      if (this.audioSource) {
+        this.audioSource.disconnect()
+        this.audioSource = undefined as any
+      }
+
+      if (this.analyser) {
+        this.analyser.disconnect()
+        this.analyser = undefined as any
+      }
+
+      if (this.audioContext && this.audioContext.state !== "closed") {
+        this.audioContext.close()
+        this.audioContext = undefined as any
+      }
+    } catch (err) {
+      console.warn("Error disposing AudioProcessor:", err)
     }
   }
 }
