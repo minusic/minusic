@@ -50,7 +50,7 @@ export function normalizeSources(
 export function inferMimeType(source: string): string {
   if (!source) return ""
 
-  const extension = source.split(".").pop()?.toLowerCase()
+  const extension = source.toLowerCase().match(/\.([\w\d]+)(?=\?|$)/)?.[1]
   if (!extension) return ""
 
   const mimeTypes: Record<string, string> = {
@@ -124,13 +124,13 @@ function determineErrorType(error: MediaError | null): SourceErrorType {
   if (!error) return SourceErrorType.UNKNOWN
 
   switch (error.code) {
-    case MediaError.MEDIA_ERR_ABORTED:
+    case 1:
       return SourceErrorType.UNAVAILABLE
-    case MediaError.MEDIA_ERR_NETWORK:
+    case 2:
       return SourceErrorType.NETWORK
-    case MediaError.MEDIA_ERR_DECODE:
+    case 3:
       return SourceErrorType.DECODE
-    case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+    case 4:
       return SourceErrorType.FORMAT
     default:
       return SourceErrorType.UNKNOWN

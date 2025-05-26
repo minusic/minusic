@@ -1,6 +1,6 @@
 import { test, describe, beforeEach, afterEach, mock } from "node:test"
 import { strict as assert } from "node:assert"
-import { AudioProcessor } from "../../../../src/core/audio/audioProcessor.js"
+import { AudioProcessor } from "../../../../src/core/audio/audioProcessor"
 import {
   MockAnalyserNode,
   MockAudioContext,
