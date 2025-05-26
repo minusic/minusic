@@ -1,23 +1,21 @@
-export class MockEventBus {
-  events: Record<string, any[]> = {}
+import { EventBus } from "../../src/utils/eventBus/eventBus"
 
-  on(event: string, callback: Function) {
-    if (!this.events[event]) {
-      this.events[event] = []
-    }
-    this.events[event].push(callback)
-    return () => this.off(event, callback)
+export class MockEventBus extends EventBus {
+  public emittedEvents: Array<{ event: string; payload?: any }> = []
+
+  emit<T = any>(event: string, payload?: T): void {
+    this.emittedEvents.push({ event, payload })
+    super.emit(event, payload)
   }
 
-  off(event: string, callback: Function) {
-    if (this.events[event]) {
-      this.events[event] = this.events[event].filter((cb) => cb !== callback)
-    }
+  clearEvents() {
+    this.emittedEvents = []
   }
 
-  emit(event: string, payload?: any) {
-    if (this.events[event]) {
-      this.events[event].forEach((callback) => callback(payload))
+  getEmittedEvents(eventName?: string) {
+    if (eventName) {
+      return this.emittedEvents.filter((e) => e.event === eventName)
     }
+    return this.emittedEvents
   }
 }

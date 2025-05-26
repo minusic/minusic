@@ -2,8 +2,8 @@ import { test, describe, beforeEach, afterEach } from "node:test"
 import assert from "node:assert/strict"
 import { PlaybackController } from "../../../src/core/playbackController"
 import { EventBus } from "../../../src/utils/eventBus/eventBus.js"
-import { StateHandler } from "../../../src/core/state.js"
 import { MockStateHandler } from "../../mocks/StateHandler.mock.js"
+import { MockEventBus } from "../../mocks/EventBus.mock.js"
 
 // Mock HTMLMediaElement
 class MockMediaElement {
@@ -127,27 +127,6 @@ class MockTimeRanges {
       return this.ranges[index].end
     }
     throw new Error("Index out of range")
-  }
-}
-
-// Mock EventBus
-class MockEventBus extends EventBus {
-  public emittedEvents: Array<{ event: string; payload?: any }> = []
-
-  emit<T = any>(event: string, payload?: T): void {
-    this.emittedEvents.push({ event, payload })
-    super.emit(event, payload)
-  }
-
-  clearEvents() {
-    this.emittedEvents = []
-  }
-
-  getEmittedEvents(eventName?: string) {
-    if (eventName) {
-      return this.emittedEvents.filter((e) => e.event === eventName)
-    }
-    return this.emittedEvents
   }
 }
 
