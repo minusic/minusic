@@ -57,7 +57,7 @@ export class PlaybackController {
   }
 
   get currentTime(): number {
-    return this.media.currentTime || 0
+    return bound(this.media.currentTime, 0, this.duration)
   }
 
   set currentTime(time: number) {
