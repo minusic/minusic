@@ -9,10 +9,8 @@ test("StateHandler", async (t) => {
   let mockElement: HTMLElement
   let eventBus: MockEventBus
 
-  // Set up fresh instances before each test
   t.beforeEach(() => {
-    mockElement = new MockElement() as unknown as HTMLElement
-
+    mockElement = new MockElement("audio") as unknown as HTMLElement
     eventBus = new MockEventBus()
     stateHandler = new StateHandler(mockElement, eventBus as any)
   })
