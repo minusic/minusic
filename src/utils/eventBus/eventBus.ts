@@ -23,6 +23,7 @@ export class EventBus {
   }
 
   emit<T = any>(event: string, payload?: T): void {
+    console.log(event, payload)
     this.listeners.get(event)?.forEach((handler) => handler(payload))
   }
 }

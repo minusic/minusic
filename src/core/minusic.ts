@@ -117,11 +117,33 @@ export default class Minusic {
 
     this.mediaManager.wrapMediaElement(this.elements.container)
 
-    if (!this.audioSource) {
+    if (this.audioSource) {
+      this.setupExistingSourceHandling()
+    } else if (this.options.media.playlist.length > 0) {
       this.loadTrack()
     }
 
     this.updateProgress()
+  }
+
+  private setupExistingSourceHandling(): void {
+    const handleError = () => {
+      this.eventBus.emit("sourceError", {
+        track: null,
+        error: "Failed to load existing audio source",
+        attemptCount: 1,
+      })
+    }
+
+    const handleCanPlay = () => {
+      this.eventBus.emit("sourceLoaded", { track: null })
+    }
+
+    this.media.addEventListener("error", handleError)
+    this.media.addEventListener("canplay", handleCanPlay)
+
+    console.log(this.media.readyState)
+    if (this.media.readyState >= 3) handleCanPlay()
   }
 
   private updateProgress(): void {
