@@ -16,6 +16,7 @@ import { UIManager } from "./uiManager"
 import { PlaybackController } from "./playbackController"
 import { VolumeController } from "./volumeController"
 import { EventHandler } from "./eventHandler"
+import { ErrorManager } from "./errorManager"
 
 export default class Minusic {
   private media!: HTMLMediaElement
@@ -31,6 +32,7 @@ export default class Minusic {
   private sourceManager!: MediaSourceManager
   private playlistManager!: PlaylistManager
   private visualizerController!: VisualizerController
+  private errorManager!: ErrorManager
 
   constructor(options: MinusicConfiguration) {
     this.initializePlayer(options)
@@ -54,6 +56,7 @@ export default class Minusic {
 
     this.elements = buildPlayerStructure(this, this.options)
     this.state = new StateHandler(this.elements.container, this.eventBus)
+    this.errorManager = new ErrorManager(this.eventBus, this.elements.container)
     this.uiManager = new UIManager(this.media, this.state)
     this.uiManager.applyInitialSettings(
       this.options.appearance.showNativeControls,
@@ -153,6 +156,7 @@ export default class Minusic {
   public destroy(): void {
     this.eventHandler.unbindMediaEvents()
     this.mediaManager.unwrapMediaElement(this.elements.container)
+    this.errorManager.dispose()
     this.mediaManager.destroy()
 
     if (this.visualizerController) {

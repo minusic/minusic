@@ -1,0 +1,10 @@
+.minusic-error-display {
+  background: #dc3545;
+  color: white;
+  padding: 10px 15px;
+  border-radius: var(--minusic-border-radius);
+  font-size: 14px;
+  font-family: inherit;
+  margin: 10px 0;
+  display: none;
+}
