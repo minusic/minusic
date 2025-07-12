@@ -42,7 +42,6 @@ export default class Minusic {
     this.options = createMinusicConfiguration(options) as PlayerConfiguration
     this.media = this.mediaManager.initialize(options.selectors)
 
-    console.log(this.options)
     if (this.options.playback.autoplay) {
       this.media.setAttribute("autoplay", "")
     }
@@ -145,7 +144,6 @@ export default class Minusic {
     this.media.addEventListener("error", handleError)
     this.media.addEventListener("canplay", handleCanPlay)
 
-    console.log(this.media.readyState)
     if (this.media.readyState >= 3) handleCanPlay()
   }
 
